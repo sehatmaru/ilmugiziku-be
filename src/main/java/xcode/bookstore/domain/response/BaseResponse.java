@@ -1,4 +1,4 @@
-package com.homestay.be.domain.response;
+package xcode.bookstore.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

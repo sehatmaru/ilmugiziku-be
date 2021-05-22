@@ -1,0 +1,88 @@
+2020-03-26 02:25:46.541  WARN 11384 --- [main] o.s.boot.StartupInfoLogger               : InetAddress.getLocalHost().getHostName() took 5005 milliseconds to respond. Please verify your network configuration (macOS machines may need to add entries to /etc/hosts).
+2020-03-26 02:25:51.550  INFO 11384 --- [main] com.homestay.be.HomestayBeApplication    : Starting HomestayBeApplication on sehat-MacBook-Air.local with PID 11384 (/Users/whee/sehat/uncommon/springboot/homestay-be/target/classes started by whee in /Users/whee/sehat/uncommon/springboot/homestay-be)
+2020-03-26 02:25:51.596  INFO 11384 --- [main] com.homestay.be.HomestayBeApplication    : No active profile set, falling back to default profiles: default
+2020-03-26 02:25:52.362  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:25:52.364  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2020-03-26 02:25:52.459  INFO 11384 --- [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface HomeRepository. If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2020-03-26 02:25:52.460  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 83ms. Found 0 JDBC repository interfaces.
+2020-03-26 02:25:52.474  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:25:52.475  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2020-03-26 02:25:52.529  INFO 11384 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 45ms. Found 1 JPA repository interfaces.
+2020-03-26 02:25:53.215  INFO 11384 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-03-26 02:25:53.629  INFO 11384 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2020-03-26 02:25:53.732  INFO 11384 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2020-03-26 02:25:53.968  INFO 11384 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.12.Final
+2020-03-26 02:25:54.408  INFO 11384 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2020-03-26 02:25:54.839  INFO 11384 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2020-03-26 02:25:56.263  INFO 11384 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2020-03-26 02:25:56.282  INFO 11384 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:25:57.305  INFO 11384 --- [main] com.homestay.be.HomestayBeApplication    : Started HomestayBeApplication in 21.48 seconds (JVM running for 27.433)
+2020-03-26 02:25:57.312  INFO 11384 --- [SpringContextShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:25:57.317  INFO 11384 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-03-26 02:25:57.325  INFO 11384 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2020-03-26 02:27:03.355  WARN 11392 --- [main] o.s.boot.StartupInfoLogger               : InetAddress.getLocalHost().getHostName() took 5005 milliseconds to respond. Please verify your network configuration (macOS machines may need to add entries to /etc/hosts).
+2020-03-26 02:27:08.368  INFO 11392 --- [main] com.homestay.be.HomestayBeApplication    : Starting HomestayBeApplication on sehat-MacBook-Air.local with PID 11392 (/Users/whee/sehat/uncommon/springboot/homestay-be/target/classes started by whee in /Users/whee/sehat/uncommon/springboot/homestay-be)
+2020-03-26 02:27:08.369  INFO 11392 --- [main] com.homestay.be.HomestayBeApplication    : No active profile set, falling back to default profiles: default
+2020-03-26 02:27:09.775  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:27:09.777  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2020-03-26 02:27:09.864  INFO 11392 --- [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface HomeRepository. If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2020-03-26 02:27:09.865  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 75ms. Found 0 JDBC repository interfaces.
+2020-03-26 02:27:09.880  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:27:09.880  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2020-03-26 02:27:09.948  INFO 11392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57ms. Found 1 JPA repository interfaces.
+2020-03-26 02:27:10.664  INFO 11392 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-03-26 02:27:10.881  INFO 11392 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2020-03-26 02:27:10.982  INFO 11392 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2020-03-26 02:27:11.214  INFO 11392 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.12.Final
+2020-03-26 02:27:11.661  INFO 11392 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2020-03-26 02:27:12.087  INFO 11392 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2020-03-26 02:27:13.658  INFO 11392 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2020-03-26 02:27:13.679  INFO 11392 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:27:15.022  INFO 11392 --- [main] com.homestay.be.HomestayBeApplication    : Started HomestayBeApplication in 22.375 seconds (JVM running for 28.328)
+2020-03-26 02:27:15.031  INFO 11392 --- [SpringContextShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:27:15.036  INFO 11392 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-03-26 02:27:15.045  INFO 11392 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2020-03-26 02:27:43.834  WARN 11413 --- [main] o.s.boot.StartupInfoLogger               : InetAddress.getLocalHost().getHostName() took 5005 milliseconds to respond. Please verify your network configuration (macOS machines may need to add entries to /etc/hosts).
+2020-03-26 02:27:48.846  INFO 11413 --- [main] com.homestay.be.HomestayBeApplication    : Starting HomestayBeApplication on sehat-MacBook-Air.local with PID 11413 (/Users/whee/sehat/uncommon/springboot/homestay-be/target/classes started by whee in /Users/whee/sehat/uncommon/springboot/homestay-be)
+2020-03-26 02:27:48.848  INFO 11413 --- [main] com.homestay.be.HomestayBeApplication    : No active profile set, falling back to default profiles: default
+2020-03-26 02:27:49.383  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:27:49.384  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2020-03-26 02:27:49.430  INFO 11413 --- [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface HomeRepository. If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2020-03-26 02:27:49.431  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 41ms. Found 0 JDBC repository interfaces.
+2020-03-26 02:27:49.441  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:27:49.442  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2020-03-26 02:27:49.473  INFO 11413 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28ms. Found 1 JPA repository interfaces.
+2020-03-26 02:27:49.930  INFO 11413 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-03-26 02:27:50.179  INFO 11413 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2020-03-26 02:27:50.242  INFO 11413 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2020-03-26 02:27:50.321  INFO 11413 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.12.Final
+2020-03-26 02:27:50.484  INFO 11413 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2020-03-26 02:27:50.609  INFO 11413 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2020-03-26 02:27:51.269  INFO 11413 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2020-03-26 02:27:51.277  INFO 11413 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:27:51.822  INFO 11413 --- [main] com.homestay.be.HomestayBeApplication    : Started HomestayBeApplication in 18.52 seconds (JVM running for 19.046)
+2020-03-26 02:27:51.829  INFO 11413 --- [SpringContextShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:27:51.833  INFO 11413 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-03-26 02:27:51.839  INFO 11413 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2020-03-26 02:30:45.125  WARN 11440 --- [main] o.s.boot.StartupInfoLogger               : InetAddress.getLocalHost().getHostName() took 5006 milliseconds to respond. Please verify your network configuration (macOS machines may need to add entries to /etc/hosts).
+2020-03-26 02:30:50.136  INFO 11440 --- [main] com.homestay.be.HomestayBeApplication    : Starting HomestayBeApplication on sehat-MacBook-Air.local with PID 11440 (/Users/whee/sehat/uncommon/springboot/homestay-be/target/classes started by whee in /Users/whee/sehat/uncommon/springboot/homestay-be)
+2020-03-26 02:30:50.137  INFO 11440 --- [main] com.homestay.be.HomestayBeApplication    : No active profile set, falling back to default profiles: default
+2020-03-26 02:30:50.967  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:30:50.971  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2020-03-26 02:30:51.058  INFO 11440 --- [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface HomeRepository. If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2020-03-26 02:30:51.059  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 72ms. Found 0 JDBC repository interfaces.
+2020-03-26 02:30:51.076  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2020-03-26 02:30:51.077  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2020-03-26 02:30:51.139  INFO 11440 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 54ms. Found 1 JPA repository interfaces.
+2020-03-26 02:30:51.827  INFO 11440 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-03-26 02:30:52.053  INFO 11440 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2020-03-26 02:30:52.154  INFO 11440 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2020-03-26 02:30:52.420  INFO 11440 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.12.Final
+2020-03-26 02:30:52.873  INFO 11440 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2020-03-26 02:30:53.323  INFO 11440 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2020-03-26 02:30:54.813  INFO 11440 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2020-03-26 02:30:54.830  INFO 11440 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:30:55.812  INFO 11440 --- [main] com.homestay.be.HomestayBeApplication    : Started HomestayBeApplication in 21.367 seconds (JVM running for 27.19)
+2020-03-26 02:30:55.818  INFO 11440 --- [SpringContextShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2020-03-26 02:30:55.822  INFO 11440 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-03-26 02:30:55.829  INFO 11440 --- [SpringContextShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

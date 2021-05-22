@@ -1,8 +1,5 @@
-package com.homestay.be.controller;
+package xcode.bookstore.controller;
 
-import com.homestay.be.domain.model.Home;
-import com.homestay.be.domain.response.BaseResponse;
-import com.homestay.be.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,20 +9,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xcode.bookstore.domain.model.Book;
+import xcode.bookstore.domain.response.BaseResponse;
+import xcode.bookstore.service.BookService;
 
 @RestController
-@RequestMapping(value = "home")
-public class HomeController {
+@RequestMapping(value = "book")
+public class BookController {
 
     @Autowired
-    HomeService homeService;
+    BookService bookService;
 
-    @PostMapping
-    ResponseEntity<BaseResponse> create (@RequestBody @Validated Home home) {
+    @PostMapping("/create")
+    ResponseEntity<BaseResponse> create (@RequestBody @Validated Book request) {
         BaseResponse response = new BaseResponse();
         response.setCode(200);
         response.setMessage("success");
-        response.setData(homeService.create(home));
+        response.setData(bookService.create(request));
 
         return ResponseEntity
                 .status(HttpStatus.OK)

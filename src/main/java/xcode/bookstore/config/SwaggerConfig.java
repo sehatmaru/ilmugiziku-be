@@ -1,4 +1,4 @@
-package com.homestay.be.config;
+package xcode.bookstore.config;
 
 import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +35,8 @@ public class SwaggerConfig {
                 "",
                 "");
         return new ApiInfo(
-                "Homestay",
-                "Homestay",
+                "Bookstore",
+                "xcode bookstore",
                 "Version 1.0.0",
                 "",
                 contact,
