@@ -13,30 +13,33 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 public class Book {
 
-   @Id @Column(name = "id",length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
+   @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
 
-   @Column(name = "title", nullable = false)
+   @Column(name = "title")
    private String title;
 
-   @Column(name = "author", nullable = false)
+   @Column(name = "author")
    private String author;
 
-   @Column(name = "publication", nullable = false)
+   @Column(name = "publication")
    private String publication;
 
-   @Column(name = "year", nullable = false)
+   @Column(name = "year")
    private String year;
 
-   @Column(name = "created_at", nullable = false)
+   @Column(name = "created_at")
    private Date createdAt;
 
-   @Column(name = "updated_at", nullable = false)
+   @Column(name = "updated_at")
    private Date updatedAt;
+
+   @Column(name = "deleted_at")
+   private Date deletedAt;
 }

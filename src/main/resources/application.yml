@@ -1,0 +1,14 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        username: xcodecom_user
+        password: '+J4LMJ75Q),P'
+        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5Dialect
+    main:
+        allow-bean-definition-overriding: true
