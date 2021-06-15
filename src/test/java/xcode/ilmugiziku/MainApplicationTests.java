@@ -1,10 +1,10 @@
-package xcode.bookstore;
+package xcode.ilmugiziku;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BookstoreApplicationTests {
+class MainApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,4 +1,4 @@
-package xcode.bookstore.domain.model;
+package xcode.ilmugiziku.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -33,6 +32,9 @@ public class Book {
 
    @Column(name = "year")
    private String year;
+
+   @Column(name = "price")
+   private int price;
 
    @Column(name = "created_at")
    private Date createdAt;

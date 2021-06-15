@@ -1,4 +1,4 @@
-package xcode.bookstore.config;
+package xcode.ilmugiziku.config;
 
 import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +35,8 @@ public class SwaggerConfig {
                 "",
                 "");
         return new ApiInfo(
-                "Bookstore",
-                "xcode bookstore",
+                "ilmugiziku-apps",
+                "ilmugiziku-apps",
                 "Version 1.0.0",
                 "",
                 contact,

@@ -1,4 +1,4 @@
-package xcode.bookstore.shared;
+package xcode.ilmugiziku.shared;
 
 public class BaseResponseConst {
     //ERROR

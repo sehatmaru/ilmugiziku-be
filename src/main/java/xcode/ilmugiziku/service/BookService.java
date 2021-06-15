@@ -1,10 +1,10 @@
-package xcode.bookstore.service;
+package xcode.ilmugiziku.service;
 
-import xcode.bookstore.domain.model.Book;
-import xcode.bookstore.domain.repository.BookRepository;
+import xcode.ilmugiziku.domain.model.Book;
+import xcode.ilmugiziku.domain.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.bookstore.controller.BookPresenter;
+import xcode.ilmugiziku.controller.BookPresenter;
 
 import java.util.List;
 

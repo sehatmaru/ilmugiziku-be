@@ -1,4 +1,4 @@
-package xcode.bookstore.config;
+package xcode.ilmugiziku.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

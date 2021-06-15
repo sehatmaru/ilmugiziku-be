@@ -1,6 +1,6 @@
-package xcode.bookstore.controller;
+package xcode.ilmugiziku.controller;
 
-import xcode.bookstore.domain.model.Book;
+import xcode.ilmugiziku.domain.model.Book;
 
 import java.util.List;
 

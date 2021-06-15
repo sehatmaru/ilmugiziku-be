@@ -1,4 +1,4 @@
-package xcode.bookstore.domain.response;
+package xcode.ilmugiziku.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

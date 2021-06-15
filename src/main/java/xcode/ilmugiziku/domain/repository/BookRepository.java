@@ -1,6 +1,6 @@
-package xcode.bookstore.domain.repository;
+package xcode.ilmugiziku.domain.repository;
 
-import xcode.bookstore.domain.model.Book;
+import xcode.ilmugiziku.domain.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
