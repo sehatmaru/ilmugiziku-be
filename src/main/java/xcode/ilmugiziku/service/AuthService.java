@@ -42,29 +42,34 @@ public class AuthService implements AuthPresenter {
 
       if (request.getRole() == ADMIN || request.getRole() == CONSUMER) {
          if (request.getType() == EMAIL || request.getType() == GOOGLE_FB) {
-            AuthModel authModel = new AuthModel();
-            authModel.setSecureId(generateSecureId());
-            authModel.setName(request.getName());
-            authModel.setEmail(request.getEmail());
-            authModel.setType(request.getType());
-            authModel.setRole(request.getRole());
-            authModel.setCreatedAt(new Date());
+            if (authRepository.findByEmail(request.getEmail()) == null) {
+               AuthModel authModel = new AuthModel();
+               authModel.setSecureId(generateSecureId());
+               authModel.setName(request.getName());
+               authModel.setEmail(request.getEmail());
+               authModel.setType(request.getType());
+               authModel.setRole(request.getRole());
+               authModel.setCreatedAt(new Date());
 
-            if (request.getPassword() != null) {
-               authModel.setPassword(encrypt(request.getPassword()));
-            }
+               if (request.getPassword() != null) {
+                  authModel.setPassword(encrypt(request.getPassword()));
+               }
 
-            try {
-               AuthModel saved = authRepository.save(authModel);
+               try {
+                  AuthModel saved = authRepository.save(authModel);
 
-               response.setStatusCode(SUCCESS_CODE);
-               response.setMessage(SUCCESS_MESSAGE);
-               createResponse.setSecureId(saved.getSecureId());
+                  response.setStatusCode(SUCCESS_CODE);
+                  response.setMessage(SUCCESS_MESSAGE);
+                  createResponse.setSecureId(saved.getSecureId());
 
-               response.setResult(createResponse);
-            } catch (Exception e) {
-               response.setStatusCode(FAILED_CODE);
-               response.setMessage(e.toString());
+                  response.setResult(createResponse);
+               } catch (Exception e) {
+                  response.setStatusCode(FAILED_CODE);
+                  response.setMessage(e.toString());
+               }
+            } else {
+               response.setStatusCode(EXIST_CODE);
+               response.setMessage(EXIST_MESSAGE);
             }
          } else {
             response.setStatusCode(PARAMS_CODE);
