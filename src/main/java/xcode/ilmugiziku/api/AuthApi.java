@@ -5,13 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.request.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.LoginResponse;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 
 @RestController
@@ -23,32 +22,23 @@ public class AuthApi {
 
     @PostMapping("/register")
     ResponseEntity<BaseResponse<CreateBaseResponse>> register (@RequestBody @Validated RegisterRequest body) {
-        BaseResponse<CreateBaseResponse> response = authPresenter.create(body);
+        BaseResponse<CreateBaseResponse> response = authPresenter.register(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-//
-//    @GetMapping("/detail")
-//    ResponseEntity<BaseResponse<AuthModel>> getDetail(@RequestParam @Validated int id) {
-//        BaseResponse<AuthModel> response = new BaseResponse<>();
-//
-//        if (authPresenter.isBookExist(id)) {
-//            response.setCode(SUCCESS_CODE);
-//            response.setMessage(SUCCESS_MESSAGE);
-//            response.setData(authPresenter.findById(id));
-//        } else {
-//            response.setCode(NOT_FOUND_CODE);
-//            response.setMessage(NOT_FOUND_MESSAGE);
-//        }
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
+
+    @GetMapping("/login")
+    ResponseEntity<BaseResponse<LoginResponse>> login(@RequestParam @Validated String email, @RequestParam @Validated String password, @RequestParam @Validated int role, @RequestParam @Validated int type) {
+        BaseResponse<LoginResponse> response = authPresenter.login(email, password, role, type);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 //
 //    @DeleteMapping("/delete")
 //    ResponseEntity<BaseResponse<Integer>> delete(@RequestParam @Validated int id) {

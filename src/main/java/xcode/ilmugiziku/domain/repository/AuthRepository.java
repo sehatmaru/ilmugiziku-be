@@ -11,6 +11,8 @@ public interface AuthRepository extends JpaRepository<AuthModel, String> {
 
    AuthModel findByEmail(String email);
 
+   AuthModel findByEmailAndRole(String email, int role);
+
    AuthModel findByEmailAndPasswordAndDeletedAtIsNull(String email, String password);
 
    AuthModel findByEmailAndPasswordAndRoleAndDeletedAtIsNull(String email, String password, int role);

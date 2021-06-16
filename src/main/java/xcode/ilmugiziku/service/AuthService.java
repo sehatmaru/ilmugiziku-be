@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.request.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.LoginResponse;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.encrypt;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.Utils.*;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 import static xcode.ilmugiziku.shared.refs.TypeRefs.EMAIL;
@@ -31,12 +31,48 @@ public class AuthService implements AuthPresenter {
    }
 
    @Override
-   public AuthModel findByEmailAndPasswordAndRole(String email, String password, int role) {
-      return authRepository.findByEmailAndPasswordAndRoleAndDeletedAtIsNull(email, password, role);
+   public BaseResponse<LoginResponse> login(String email, String password, int role, int type) {
+      BaseResponse<LoginResponse> response = new BaseResponse<>();
+      LoginResponse loginResponse = new LoginResponse();
+
+      AuthModel model = authRepository.findByEmailAndRole(email, role);
+
+      if (role == ADMIN || role == CONSUMER) {
+         if (type == EMAIL || type == GOOGLE_FB) {
+            if (model != null) {
+               System.out.println(decrypt(model.getPassword()));
+               if (password.equals(decrypt(model.getPassword()))) {
+                  loginResponse.setEmail(model.getEmail());
+                  loginResponse.setName(model.getName());
+                  loginResponse.setSecureId(model.getSecureId());
+                  loginResponse.setType(model.getType());
+                  loginResponse.setRole(model.getRole());
+
+                  response.setStatusCode(SUCCESS_CODE);
+                  response.setMessage(SUCCESS_MESSAGE);
+                  response.setResult(loginResponse);
+               } else {
+                  response.setStatusCode(NOT_FOUND_CODE);
+                  response.setMessage(AUTH_ERROR_MESSAGE);
+               }
+            } else {
+               response.setStatusCode(NOT_FOUND_CODE);
+               response.setMessage(AUTH_ERROR_MESSAGE);
+            }
+         } else {
+            response.setStatusCode(PARAMS_CODE);
+            response.setMessage(PARAMS_ERROR_MESSAGE);
+         }
+      } else {
+         response.setStatusCode(PARAMS_CODE);
+         response.setMessage(PARAMS_ERROR_MESSAGE);
+      }
+
+      return response;
    }
 
    @Override
-   public BaseResponse<CreateBaseResponse> create(RegisterRequest request) {
+   public BaseResponse<CreateBaseResponse> register(RegisterRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
