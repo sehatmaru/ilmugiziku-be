@@ -12,29 +12,32 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "book")
+@Table(name = "auth")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class AuthModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
 
-   @Column(name = "title")
-   private String title;
+   @Column(name = "secure_id")
+   private String secureId;
 
-   @Column(name = "author")
-   private String author;
+   @Column(name = "name")
+   private String name;
 
-   @Column(name = "publication")
-   private String publication;
+   @Column(name = "email")
+   private String email;
 
-   @Column(name = "year")
-   private String year;
+   @Column(name = "password")
+   private String password;
 
-   @Column(name = "price")
-   private int price;
+   @Column(name = "type")
+   private int type;
+
+   @Column(name = "role")
+   private int role;
 
    @Column(name = "created_at")
    private Date createdAt;
