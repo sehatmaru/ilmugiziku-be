@@ -6,6 +6,7 @@ spring:
         url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db?autoReconnect=true
         hikari:
             max-lifetime: 600000
+            maximum-pool-size: 10
     jpa:
         hibernate:
             ddl-auto: update
