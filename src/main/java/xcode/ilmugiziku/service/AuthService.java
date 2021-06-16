@@ -35,12 +35,18 @@ public class AuthService implements AuthPresenter {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
       LoginResponse loginResponse = new LoginResponse();
 
-      AuthModel model = authRepository.findByEmailAndRole(email, role);
+      AuthModel model = new AuthModel();
+
+      try {
+          model= authRepository.findByEmailAndRole(email, role);
+      } catch (Exception e) {
+         response.setStatusCode(FAILED_CODE);
+         response.setMessage(e.toString());
+      }
 
       if (role == ADMIN || role == CONSUMER) {
          if (type == EMAIL || type == GOOGLE_FB) {
             if (model != null) {
-               System.out.println(decrypt(model.getPassword()));
                if (password.equals(decrypt(model.getPassword()))) {
                   loginResponse.setEmail(model.getEmail());
                   loginResponse.setName(model.getName());
@@ -78,34 +84,35 @@ public class AuthService implements AuthPresenter {
 
       if (request.getRole() == ADMIN || request.getRole() == CONSUMER) {
          if (request.getType() == EMAIL || request.getType() == GOOGLE_FB) {
-            if (authRepository.findByEmail(request.getEmail()) == null) {
-               AuthModel authModel = new AuthModel();
-               authModel.setSecureId(generateSecureId());
-               authModel.setName(request.getName());
-               authModel.setEmail(request.getEmail());
-               authModel.setType(request.getType());
-               authModel.setRole(request.getRole());
-               authModel.setCreatedAt(new Date());
+            try {
+               if (authRepository.findByEmail(request.getEmail()) == null) {
+                  AuthModel authModel = new AuthModel();
+                  authModel.setSecureId(generateSecureId());
+                  authModel.setName(request.getName());
+                  authModel.setEmail(request.getEmail());
+                  authModel.setType(request.getType());
+                  authModel.setRole(request.getRole());
+                  authModel.setCreatedAt(new Date());
 
-               if (request.getPassword() != null) {
-                  authModel.setPassword(encrypt(request.getPassword()));
+                  if (request.getPassword() != null) {
+                     authModel.setPassword(encrypt(request.getPassword()));
+                  }
+
+
+                     AuthModel saved = authRepository.save(authModel);
+
+                     response.setStatusCode(SUCCESS_CODE);
+                     response.setMessage(SUCCESS_MESSAGE);
+                     createResponse.setSecureId(saved.getSecureId());
+
+                     response.setResult(createResponse);
+               } else {
+                  response.setStatusCode(EXIST_CODE);
+                  response.setMessage(EXIST_MESSAGE);
                }
-
-               try {
-                  AuthModel saved = authRepository.save(authModel);
-
-                  response.setStatusCode(SUCCESS_CODE);
-                  response.setMessage(SUCCESS_MESSAGE);
-                  createResponse.setSecureId(saved.getSecureId());
-
-                  response.setResult(createResponse);
-               } catch (Exception e) {
-                  response.setStatusCode(FAILED_CODE);
-                  response.setMessage(e.toString());
-               }
-            } else {
-               response.setStatusCode(EXIST_CODE);
-               response.setMessage(EXIST_MESSAGE);
+            } catch (Exception e) {
+               response.setStatusCode(FAILED_CODE);
+               response.setMessage(e.toString());
             }
          } else {
             response.setStatusCode(PARAMS_CODE);
