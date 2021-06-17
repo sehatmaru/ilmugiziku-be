@@ -4,25 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.QuestionResponse;
+import xcode.ilmugiziku.domain.response.ScheduleResponse;
 import xcode.ilmugiziku.presenter.QuizPresenter;
+import xcode.ilmugiziku.presenter.SchedulePresenter;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "quiz")
-public class QuizApi {
+@RequestMapping(value = "schedule")
+public class ScheduleApi {
 
     @Autowired
-    QuizPresenter quizPresenter;
+    SchedulePresenter schedulePresenter;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> list () {
-        BaseResponse<List<QuestionResponse>> response = quizPresenter.getQuizQuestions();
+    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list (@RequestParam @Validated String authSecureId) {
+        BaseResponse<List<ScheduleResponse>> response = schedulePresenter.getScheduleList(authSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
