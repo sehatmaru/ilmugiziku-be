@@ -16,8 +16,8 @@ import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.*;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
-import static xcode.ilmugiziku.shared.refs.TypeRefs.EMAIL;
-import static xcode.ilmugiziku.shared.refs.TypeRefs.GOOGLE_FB;
+import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.EMAIL;
+import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE_FB;
 
 @Service
 public class AuthService implements AuthPresenter {
@@ -26,12 +26,7 @@ public class AuthService implements AuthPresenter {
    AuthRepository authRepository;
 
    @Override
-   public AuthModel findById(int id) {
-      return authRepository.findById(id);
-   }
-
-   @Override
-   public BaseResponse<LoginResponse> login(String email, String password, int role, int type) {
+   public BaseResponse<LoginResponse> login(String email, String password, int role) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
       LoginResponse loginResponse = new LoginResponse();
 
@@ -45,29 +40,24 @@ public class AuthService implements AuthPresenter {
       }
 
       if (role == ADMIN || role == CONSUMER) {
-         if (type == EMAIL || type == GOOGLE_FB) {
-            if (model != null) {
-               if (password.equals(decrypt(model.getPassword()))) {
-                  loginResponse.setEmail(model.getEmail());
-                  loginResponse.setName(model.getName());
-                  loginResponse.setSecureId(model.getSecureId());
-                  loginResponse.setType(model.getType());
-                  loginResponse.setRole(model.getRole());
+         if (model != null) {
+            if (password.equals(decrypt(model.getPassword()))) {
+               loginResponse.setEmail(model.getEmail());
+               loginResponse.setName(model.getName());
+               loginResponse.setSecureId(model.getSecureId());
+               loginResponse.setType(model.getType());
+               loginResponse.setRole(model.getRole());
 
-                  response.setStatusCode(SUCCESS_CODE);
-                  response.setMessage(SUCCESS_MESSAGE);
-                  response.setResult(loginResponse);
-               } else {
-                  response.setStatusCode(NOT_FOUND_CODE);
-                  response.setMessage(AUTH_ERROR_MESSAGE);
-               }
+               response.setStatusCode(SUCCESS_CODE);
+               response.setMessage(SUCCESS_MESSAGE);
+               response.setResult(loginResponse);
             } else {
                response.setStatusCode(NOT_FOUND_CODE);
                response.setMessage(AUTH_ERROR_MESSAGE);
             }
          } else {
-            response.setStatusCode(PARAMS_CODE);
-            response.setMessage(PARAMS_ERROR_MESSAGE);
+            response.setStatusCode(NOT_FOUND_CODE);
+            response.setMessage(AUTH_ERROR_MESSAGE);
          }
       } else {
          response.setStatusCode(PARAMS_CODE);
@@ -83,14 +73,14 @@ public class AuthService implements AuthPresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (request.getRole() == ADMIN || request.getRole() == CONSUMER) {
-         if (request.getType() == EMAIL || request.getType() == GOOGLE_FB) {
+         if (request.getRegistrationType() == EMAIL || request.getRegistrationType() == GOOGLE_FB) {
             try {
                if (authRepository.findByEmail(request.getEmail()) == null) {
                   AuthModel authModel = new AuthModel();
                   authModel.setSecureId(generateSecureId());
                   authModel.setName(request.getName());
                   authModel.setEmail(request.getEmail());
-                  authModel.setType(request.getType());
+                  authModel.setType(request.getRegistrationType());
                   authModel.setRole(request.getRole());
                   authModel.setCreatedAt(new Date());
 

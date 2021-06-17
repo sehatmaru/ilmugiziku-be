@@ -6,9 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Documented
 @Retention(RetentionPolicy.SOURCE)
-public @interface QuestionTypeRefs {
-    int QUIZ = 1;
-    int PRACTICE = 2;
-    int TRY_OUT_UKOM = 3;
-    int TRY_OUT_SKB_GIZI = 4;
+public @interface RegistrationTypeRefs {
+    int EMAIL = 1;
+    int GOOGLE_FB = 2;
 }

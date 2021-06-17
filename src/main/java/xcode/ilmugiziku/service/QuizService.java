@@ -25,11 +25,6 @@ public class QuizService implements QuizPresenter {
    AnswerRepository answerRepository;
 
    @Override
-   public QuestionModel findById(int id) {
-      return questionRepository.findById(id);
-   }
-
-   @Override
    public BaseResponse<List<QuestionResponse>> getQuizQuestions() {
       BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
       List<QuestionResponse> questionResponses = new ArrayList<>();

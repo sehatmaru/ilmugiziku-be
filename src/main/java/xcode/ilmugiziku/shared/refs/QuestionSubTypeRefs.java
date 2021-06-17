@@ -6,7 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 
 @Documented
 @Retention(RetentionPolicy.SOURCE)
-public @interface TypeRefs {
-    int EMAIL = 1;
-    int GOOGLE_FB = 2;
+public @interface QuestionSubTypeRefs {
+    int D3 = 1;
+    int D4 = 2;
+    int S1 = 3;
+    int PFS = 4;
 }

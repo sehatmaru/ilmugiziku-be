@@ -5,7 +5,7 @@ spring:
         password: 'Q)&lFe5LQ#tC'
         url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db?autoReconnect=true
         hikari:
-            max-lifetime: 1800000
+            max-lifetime: 300000
             maximum-pool-size: 10
     jpa:
         hibernate:
