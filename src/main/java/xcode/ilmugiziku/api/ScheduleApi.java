@@ -1,6 +1,5 @@
 package xcode.ilmugiziku.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.QuestionResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
-import xcode.ilmugiziku.presenter.QuizPresenter;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
 
 import java.util.List;
@@ -21,8 +18,11 @@ import java.util.List;
 @RequestMapping(value = "schedule")
 public class ScheduleApi {
 
-    @Autowired
-    SchedulePresenter schedulePresenter;
+    final SchedulePresenter schedulePresenter;
+
+    public ScheduleApi(SchedulePresenter schedulePresenter) {
+        this.schedulePresenter = schedulePresenter;
+    }
 
     @GetMapping("/list")
     ResponseEntity<BaseResponse<List<ScheduleResponse>>> list (@RequestParam @Validated String authSecureId) {

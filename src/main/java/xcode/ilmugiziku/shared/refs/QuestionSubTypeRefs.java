@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 public @interface QuestionSubTypeRefs {
+    int NONE = 0;
     int D3 = 1;
     int D4 = 2;
     int S1 = 3;

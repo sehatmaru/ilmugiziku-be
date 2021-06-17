@@ -1,6 +1,5 @@
 package xcode.ilmugiziku.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
@@ -18,11 +17,13 @@ import static xcode.ilmugiziku.shared.ResponseCode.*;
 @Service
 public class ScheduleService implements SchedulePresenter {
 
-   @Autowired
-   ScheduleRepository scheduleRepository;
+   final ScheduleRepository scheduleRepository;
+   final AuthRepository authRepository;
 
-   @Autowired
-   AuthRepository authRepository;
+   public ScheduleService(ScheduleRepository scheduleRepository, AuthRepository authRepository) {
+      this.scheduleRepository = scheduleRepository;
+      this.authRepository = authRepository;
+   }
 
    @Override
    public BaseResponse<List<ScheduleResponse>> getScheduleList(String authSecureId) {

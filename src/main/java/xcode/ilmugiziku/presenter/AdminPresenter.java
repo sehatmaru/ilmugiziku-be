@@ -9,7 +9,7 @@ public interface AdminPresenter {
 
    BaseResponse<CreateBaseResponse> createQuestion(CreateQuestionRequest request);
 
-   BaseResponse<Boolean> updateQuestion(UpdateQuestionRequest request, String secureId);
+   BaseResponse<Boolean> updateQuestion(UpdateQuestionRequest request);
 
    BaseResponse<Boolean> deleteQuestion(String secureId);
 }

@@ -11,5 +11,6 @@ public class QuestionResponse {
     private String secureId;
     private String content;
     private int questionType;
+    private int questionSubType;
     private List<AnswerResponse> answers;
 }

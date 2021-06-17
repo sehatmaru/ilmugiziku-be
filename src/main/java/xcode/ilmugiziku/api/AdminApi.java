@@ -1,6 +1,5 @@
 package xcode.ilmugiziku.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,11 @@ import xcode.ilmugiziku.presenter.AdminPresenter;
 @RequestMapping(value = "admin")
 public class AdminApi {
 
-    @Autowired
-    AdminPresenter adminPresenter;
+    final AdminPresenter adminPresenter;
+
+    public AdminApi(AdminPresenter adminPresenter) {
+        this.adminPresenter = adminPresenter;
+    }
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (@RequestBody @Validated CreateQuestionRequest body) {
@@ -30,8 +32,8 @@ public class AdminApi {
     }
 
     @PutMapping("/question/update")
-    ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestParam @Validated String questionSecureId, @RequestBody @Validated UpdateQuestionRequest body) {
-        BaseResponse<Boolean> response = adminPresenter.updateQuestion(body, questionSecureId);
+    ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestBody @Validated UpdateQuestionRequest body) {
+        BaseResponse<Boolean> response = adminPresenter.updateQuestion(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

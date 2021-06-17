@@ -30,6 +30,9 @@ public class QuestionModel {
    @Column(name = "question_type")
    private int questionType;
 
+   @Column(name = "question_sub_type")
+   private int questionSubType;
+
    @Column(name = "created_at")
    private Date createdAt;
 
@@ -38,4 +41,5 @@ public class QuestionModel {
 
    @Column(name = "deleted_at")
    private Date deletedAt;
+
 }

@@ -14,4 +14,6 @@ public interface QuestionRepository extends JpaRepository<QuestionModel, String>
    QuestionModel findBySecureId(String secureId);
 
    List<QuestionModel> findByQuestionTypeAndDeletedAtIsNull(int questionType);
+
+   List<QuestionModel> findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(int questionType, int questionSubType);
 }
