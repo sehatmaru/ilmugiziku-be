@@ -11,7 +11,9 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 @Getter
 @Setter
 public class RegisterRequest {
-    private String name;
+    private String firstName;
+    private String lastName;
+    private String gender;
     private String email;
     private String password;
     private int registrationType;

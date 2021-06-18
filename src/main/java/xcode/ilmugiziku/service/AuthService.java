@@ -45,7 +45,9 @@ public class AuthService implements AuthPresenter {
          if (model != null) {
             if (password.equals(decrypt(model.getPassword()))) {
                loginResponse.setEmail(model.getEmail());
-               loginResponse.setName(model.getName());
+               loginResponse.setFirstName(model.getFirstName());
+               loginResponse.setLastName(model.getLastName());
+               loginResponse.setGender(model.getGender());
                loginResponse.setSecureId(model.getSecureId());
                loginResponse.setType(model.getType());
                loginResponse.setRole(model.getRole());
@@ -79,7 +81,9 @@ public class AuthService implements AuthPresenter {
             if (authRepository.findByEmail(request.getEmail()) == null) {
                AuthModel authModel = new AuthModel();
                authModel.setSecureId(generateSecureId());
-               authModel.setName(request.getName());
+               authModel.setFirstName(request.getFirstName());
+               authModel.setLastName(request.getLastName());
+               authModel.setGender(request.getGender());
                authModel.setEmail(request.getEmail());
                authModel.setType(request.getRegistrationType());
                authModel.setRole(request.getRole());
