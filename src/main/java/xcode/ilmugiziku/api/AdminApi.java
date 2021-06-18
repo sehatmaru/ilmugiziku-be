@@ -9,21 +9,21 @@ import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.presenter.AdminPresenter;
+import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 @RestController
 @RequestMapping(value = "admin")
 public class AdminApi {
 
-    final AdminPresenter adminPresenter;
+    final QuestionPresenter questionPresenter;
 
-    public AdminApi(AdminPresenter adminPresenter) {
-        this.adminPresenter = adminPresenter;
+    public AdminApi(QuestionPresenter questionPresenter) {
+        this.questionPresenter = questionPresenter;
     }
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (@RequestBody @Validated CreateQuestionRequest body) {
-        BaseResponse<CreateBaseResponse> response = adminPresenter.createQuestion(body);
+        BaseResponse<CreateBaseResponse> response = questionPresenter.createQuestion(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -33,7 +33,7 @@ public class AdminApi {
 
     @PutMapping("/question/update")
     ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestBody @Validated UpdateQuestionRequest body) {
-        BaseResponse<Boolean> response = adminPresenter.updateQuestion(body);
+        BaseResponse<Boolean> response = questionPresenter.updateQuestion(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -43,7 +43,7 @@ public class AdminApi {
 
     @DeleteMapping("/question/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteQuestion(@RequestParam @Validated String questionSecureId) {
-        BaseResponse<Boolean> response = adminPresenter.deleteQuestion(questionSecureId);
+        BaseResponse<Boolean> response = questionPresenter.deleteQuestion(questionSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
