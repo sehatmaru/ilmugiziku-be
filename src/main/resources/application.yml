@@ -3,7 +3,7 @@ spring:
         driver-class-name: com.mysql.jdbc.Driver
         username: xcodecom_user
         password: 'Q)&lFe5LQ#tC'
-        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db?autoReconnect=true
+        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
         hikari:
             max-lifetime: 300000
             maximum-pool-size: 10
