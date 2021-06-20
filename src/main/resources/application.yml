@@ -1,12 +1,17 @@
+logging:
+    level:
+        com:
+            zaxxer:
+                hikari: TRACE
+                hikari.HikariConfig: DEBUG
 spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
-        username: xcodecom_user
-        password: 'Q)&lFe5LQ#tC'
-        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
         hikari:
             max-lifetime: 600000
-            maximum-pool-size: 10
+        password: Q)&lFe5LQ#tC
+        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
+        username: xcodecom_user
     jpa:
         hibernate:
             ddl-auto: update
