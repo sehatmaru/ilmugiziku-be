@@ -11,6 +11,7 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.presenter.LaboratoryPresenter;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
+import xcode.ilmugiziku.presenter.TheoryPresenter;
 
 @RestController
 @RequestMapping(value = "admin")
@@ -19,11 +20,16 @@ public class AdminApi {
     final QuestionPresenter questionPresenter;
     final SchedulePresenter schedulePresenter;
     final LaboratoryPresenter laboratoryPresenter;
+    final TheoryPresenter theoryPresenter;
 
-    public AdminApi(QuestionPresenter questionPresenter, SchedulePresenter schedulePresenter, LaboratoryPresenter laboratoryPresenter) {
+    public AdminApi(QuestionPresenter questionPresenter,
+                    SchedulePresenter schedulePresenter,
+                    LaboratoryPresenter laboratoryPresenter,
+                    TheoryPresenter theoryPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
+        this.theoryPresenter = theoryPresenter;
     }
 
     @PostMapping("/question/create")
@@ -109,6 +115,36 @@ public class AdminApi {
     @DeleteMapping("/laboratory-value/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(@RequestParam @Validated String laboratoryValueSecureId) {
         BaseResponse<Boolean> response = laboratoryPresenter.deleteLaboratoryValue(laboratoryValueSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/theory/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createTheory (@RequestBody @Validated CreateTheoryRequest body) {
+        BaseResponse<CreateBaseResponse> response = theoryPresenter.createTheory(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/theory/update")
+    ResponseEntity<BaseResponse<Boolean>> updateTheory(@RequestBody @Validated UpdateTheoryRequest body) {
+        BaseResponse<Boolean> response = theoryPresenter.updateTheory(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/theory/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestParam @Validated String theorySecureId) {
+        BaseResponse<Boolean> response = theoryPresenter.deleteTheory(theorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
