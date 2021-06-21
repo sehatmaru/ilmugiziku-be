@@ -5,12 +5,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
-import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
-import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.request.UpdateScheduleRequest;
+import xcode.ilmugiziku.domain.request.*;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.presenter.LaboratoryPresenter;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
 
@@ -19,12 +17,13 @@ import xcode.ilmugiziku.presenter.SchedulePresenter;
 public class AdminApi {
 
     final QuestionPresenter questionPresenter;
-
     final SchedulePresenter schedulePresenter;
+    final LaboratoryPresenter laboratoryPresenter;
 
-    public AdminApi(QuestionPresenter questionPresenter, SchedulePresenter schedulePresenter) {
+    public AdminApi(QuestionPresenter questionPresenter, SchedulePresenter schedulePresenter, LaboratoryPresenter laboratoryPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
+        this.laboratoryPresenter = laboratoryPresenter;
     }
 
     @PostMapping("/question/create")
@@ -80,6 +79,36 @@ public class AdminApi {
     @DeleteMapping("/schedule/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteSchedule(@RequestParam @Validated String scheduleSecureId) {
         BaseResponse<Boolean> response = schedulePresenter.deleteSchedule(scheduleSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/laboratory-value/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createLaboratoryValue (@RequestBody @Validated CreateLaboratoryValueRequest body) {
+        BaseResponse<CreateBaseResponse> response = laboratoryPresenter.createLaboratoryValue(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/laboratory-value/update")
+    ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(@RequestBody @Validated UpdateLaboratoryValueRequest body) {
+        BaseResponse<Boolean> response = laboratoryPresenter.updateLaboratoryValue(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/laboratory-value/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(@RequestParam @Validated String laboratoryValueSecureId) {
+        BaseResponse<Boolean> response = laboratoryPresenter.deleteLaboratoryValue(laboratoryValueSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
