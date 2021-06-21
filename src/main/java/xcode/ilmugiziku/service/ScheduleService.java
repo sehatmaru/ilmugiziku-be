@@ -163,7 +163,36 @@ public class ScheduleService implements SchedulePresenter {
 
    @Override
    public BaseResponse<Boolean> deleteSchedule(String secureId) {
-      return null;
+      BaseResponse<Boolean> response = new BaseResponse<>();
+      ScheduleModel model = new ScheduleModel();
+
+      try {
+         model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+      } catch (Exception e) {
+         response.setStatusCode(FAILED_CODE);
+         response.setMessage(FAILED_MESSAGE);
+      }
+
+      if (model != null) {
+         model.setDeletedAt(new Date());
+
+         try {
+            scheduleRepository.save(model);
+
+            response.setStatusCode(SUCCESS_CODE);
+            response.setMessage(SUCCESS_MESSAGE);
+
+            response.setResult(true);
+         } catch (Exception e){
+            response.setStatusCode(FAILED_CODE);
+            response.setMessage(FAILED_MESSAGE);
+         }
+      } else {
+         response.setStatusCode(NOT_FOUND_CODE);
+         response.setMessage(NOT_FOUND_MESSAGE);
+      }
+
+      return response;
    }
 
    private boolean create(ScheduleModel model) {
