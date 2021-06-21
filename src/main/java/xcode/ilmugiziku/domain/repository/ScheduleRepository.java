@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleModel, String> {
 
-   ScheduleModel findBySecureId(String secureId);
+   ScheduleModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
    List<ScheduleModel> findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(String authSecureId);
 
