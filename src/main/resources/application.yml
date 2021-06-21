@@ -8,7 +8,7 @@ spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
         hikari:
-            max-lifetime: 600000
+            max-lifetime: 300000
         password: Q)&lFe5LQ#tC
         url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
         username: xcodecom_user
