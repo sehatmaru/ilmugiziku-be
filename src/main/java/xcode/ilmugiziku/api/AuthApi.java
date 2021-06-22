@@ -32,8 +32,8 @@ public class AuthApi {
     }
 
     @GetMapping("/login")
-    ResponseEntity<BaseResponse<LoginResponse>> login(@RequestParam @Validated String email, @RequestParam @Validated String password, @RequestParam @Validated int role) {
-        BaseResponse<LoginResponse> response = authPresenter.login(email, password, role);
+    ResponseEntity<BaseResponse<LoginResponse>> login(@RequestParam @Validated String email, @RequestParam @Validated String password) {
+        BaseResponse<LoginResponse> response = authPresenter.login(email, password);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

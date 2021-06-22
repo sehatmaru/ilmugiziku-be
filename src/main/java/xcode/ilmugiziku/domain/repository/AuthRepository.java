@@ -9,7 +9,7 @@ public interface AuthRepository extends JpaRepository<AuthModel, String> {
 
    AuthModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   AuthModel findByEmail(String email);
+   AuthModel findByEmailAndDeletedAtIsNull(String email);
 
    AuthModel findByEmailAndRole(String email, int role);
 

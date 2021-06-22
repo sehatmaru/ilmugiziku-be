@@ -6,7 +6,7 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LoginResponse;
 
 public interface AuthPresenter {
-   BaseResponse<LoginResponse> login(String email, String password, int role);
+   BaseResponse<LoginResponse> login(String email, String password);
 
    BaseResponse<CreateBaseResponse> register(RegisterRequest request);
 }
