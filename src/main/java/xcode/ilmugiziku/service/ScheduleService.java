@@ -82,7 +82,7 @@ public class ScheduleService implements SchedulePresenter {
          model.setSecureId(generateSecureId());
          model.setAuthSecureId(request.getAuthSecureId());
          model.setDescription(request.getDesc());
-         model.setSchedule(new Date());
+         model.setSchedule(request.getSchedule());
          model.setValid(true);
          model.setCreatedAt(new Date());
 

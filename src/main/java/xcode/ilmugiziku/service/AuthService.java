@@ -2,17 +2,22 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
+import xcode.ilmugiziku.domain.model.LaboratoryValueModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.request.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
 import xcode.ilmugiziku.domain.response.LoginResponse;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.*;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
 public class AuthService implements AuthPresenter {
@@ -103,6 +108,38 @@ public class AuthService implements AuthPresenter {
       } else {
          response.setStatusCode(PARAMS_CODE);
          response.setMessage(PARAMS_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<List<LoginResponse>> getUserList() {
+      BaseResponse<List<LoginResponse>> response = new BaseResponse<>();
+      List<LoginResponse> loginResponses = new ArrayList<>();
+
+      try {
+         List<AuthModel> models = authRepository.findByRoleAndDeletedAtIsNull(CONSUMER);
+
+         for (AuthModel model : models) {
+            LoginResponse value = new LoginResponse();
+            value.setSecureId(model.getSecureId());
+            value.setFirstName(model.getFirstName());
+            value.setLastName(model.getLastName());
+            value.setEmail(model.getEmail());
+            value.setGender(model.getGender());
+            value.setType(model.getType());
+            value.setRole(model.getRole());
+
+            loginResponses.add(value);
+         }
+
+         response.setStatusCode(SUCCESS_CODE);
+         response.setMessage(SUCCESS_MESSAGE);
+         response.setResult(loginResponses);
+      } catch (Exception e) {
+         response.setStatusCode(FAILED_CODE);
+         response.setMessage(e.toString());
       }
 
       return response;

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.*;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.presenter.LaboratoryPresenter;
-import xcode.ilmugiziku.presenter.QuestionPresenter;
-import xcode.ilmugiziku.presenter.SchedulePresenter;
-import xcode.ilmugiziku.presenter.TheoryPresenter;
+import xcode.ilmugiziku.domain.response.LoginResponse;
+import xcode.ilmugiziku.presenter.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "admin")
@@ -21,15 +21,18 @@ public class AdminApi {
     final SchedulePresenter schedulePresenter;
     final LaboratoryPresenter laboratoryPresenter;
     final TheoryPresenter theoryPresenter;
+    final AuthPresenter authPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
                     LaboratoryPresenter laboratoryPresenter,
-                    TheoryPresenter theoryPresenter) {
+                    TheoryPresenter theoryPresenter,
+                    AuthPresenter authPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
         this.theoryPresenter = theoryPresenter;
+        this.authPresenter = authPresenter;
     }
 
     @PostMapping("/question/create")
@@ -145,6 +148,16 @@ public class AdminApi {
     @DeleteMapping("/theory/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestParam @Validated String theorySecureId) {
         BaseResponse<Boolean> response = theoryPresenter.deleteTheory(theorySecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/consumer/list")
+    ResponseEntity<BaseResponse<List<LoginResponse>>> consumerList() {
+        BaseResponse<List<LoginResponse>> response = authPresenter.getUserList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
