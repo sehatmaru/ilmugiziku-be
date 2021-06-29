@@ -24,6 +24,9 @@ public class ScheduleModel {
    @Column(name = "secure_id")
    private String secureId;
 
+   @Column(name = "description")
+   private String description;
+
    @Column(name = "schedule")
    private Date schedule;
 

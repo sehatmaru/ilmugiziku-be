@@ -2,16 +2,13 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.repository.ScheduleRepository;
-import xcode.ilmugiziku.domain.request.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.ScheduleDateRequest;
 import xcode.ilmugiziku.domain.request.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
 
@@ -80,28 +77,22 @@ public class ScheduleService implements SchedulePresenter {
    public BaseResponse<Boolean> createSchedule(CreateScheduleRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (request.validate()) {
-         if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
-            for (Date schedule : request.getDates()) {
-               ScheduleModel model = new ScheduleModel();
-               model.setSecureId(generateSecureId());
-               model.setAuthSecureId(request.getAuthSecureId());
-               model.setSchedule(schedule);
-               model.setValid(true);
-               model.setCreatedAt(new Date());
+      if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
+         ScheduleModel model = new ScheduleModel();
+         model.setSecureId(generateSecureId());
+         model.setAuthSecureId(request.getAuthSecureId());
+         model.setDescription(request.getDesc());
+         model.setSchedule(new Date());
+         model.setValid(true);
+         model.setCreatedAt(new Date());
 
-               if (!create(model)) {
-                  response.setStatusCode(FAILED_CODE);
-                  response.setMessage(FAILED_MESSAGE);
-               }
-            }
-         } else {
-            response.setStatusCode(NOT_FOUND_CODE);
-            response.setMessage(NOT_FOUND_MESSAGE);
+         if (!create(model)) {
+            response.setStatusCode(FAILED_CODE);
+            response.setMessage(FAILED_MESSAGE);
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setStatusCode(NOT_FOUND_CODE);
+         response.setMessage(NOT_FOUND_MESSAGE);
       }
 
       return response;
