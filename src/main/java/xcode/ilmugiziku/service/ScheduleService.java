@@ -59,6 +59,7 @@ public class ScheduleService implements SchedulePresenter {
             ScheduleResponse schedule = new ScheduleResponse();
             schedule.setSchedule(model.getSchedule());
             schedule.setSecureId(model.getSecureId());
+            schedule.setDesc(model.getDescription());
 
             lists.add(schedule);
          }

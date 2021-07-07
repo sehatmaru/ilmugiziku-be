@@ -10,5 +10,6 @@ import java.util.List;
 @Setter
 public class ScheduleResponse {
     private String secureId;
+    private String desc;
     private Date schedule;
 }
