@@ -9,6 +9,7 @@ import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.ScheduleDateRequest;
 import xcode.ilmugiziku.domain.request.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
+import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
 
@@ -74,8 +75,9 @@ public class ScheduleService implements SchedulePresenter {
    }
 
    @Override
-   public BaseResponse<Boolean> createSchedule(CreateScheduleRequest request) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
+   public BaseResponse<CreateBaseResponse> createSchedule(CreateScheduleRequest request) {
+      BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
+      CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
          ScheduleModel model = new ScheduleModel();
@@ -89,6 +91,9 @@ public class ScheduleService implements SchedulePresenter {
          if (!create(model)) {
             response.setStatusCode(FAILED_CODE);
             response.setMessage(FAILED_MESSAGE);
+         } else {
+            createResponse.setSecureId(model.getSecureId());
+            response.setResult(createResponse);
          }
       } else {
          response.setStatusCode(NOT_FOUND_CODE);

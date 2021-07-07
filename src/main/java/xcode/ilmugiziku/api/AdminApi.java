@@ -66,8 +66,8 @@ public class AdminApi {
     }
 
     @PostMapping("/schedule/create")
-    ResponseEntity<BaseResponse<Boolean>> createSchedule (@RequestBody @Validated CreateScheduleRequest body) {
-        BaseResponse<Boolean> response = schedulePresenter.createSchedule(body);
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createSchedule (@RequestBody @Validated CreateScheduleRequest body) {
+        BaseResponse<CreateBaseResponse> response = schedulePresenter.createSchedule(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
