@@ -86,7 +86,6 @@ public class ScheduleService implements SchedulePresenter {
          model.setAuthSecureId(request.getAuthSecureId());
          model.setDescription(request.getDesc());
          model.setSchedule(request.getSchedule());
-         model.setValid(true);
          model.setCreatedAt(new Date());
 
          if (!create(model)) {
@@ -121,7 +120,7 @@ public class ScheduleService implements SchedulePresenter {
 
                if (model != null) {
                   model.setSchedule(schedule.getDate());
-                  model.setValid(schedule.isValid());
+                  model.setDescription(schedule.getDesc());
                   model.setUpdatedAt(new Date());
 
                   try {
@@ -137,6 +136,7 @@ public class ScheduleService implements SchedulePresenter {
                   ScheduleModel sch = new ScheduleModel();
                   sch.setSecureId(generateSecureId());
                   sch.setSchedule(schedule.getDate());
+                  sch.setDescription(schedule.getDesc());
                   sch.setAuthSecureId(request.getAuthSecureId());
                   sch.setCreatedAt(new Date());
 

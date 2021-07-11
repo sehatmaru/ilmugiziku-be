@@ -33,9 +33,6 @@ public class ScheduleModel {
    @Column(name = "auth_secure_id")
    private String authSecureId;
 
-   @Column(name = "valid")
-   private boolean valid;
-
    @Column(name = "created_at")
    private Date createdAt;
 

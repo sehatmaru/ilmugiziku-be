@@ -2,12 +2,10 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.model.LaboratoryValueModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.request.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
 import xcode.ilmugiziku.domain.response.LoginResponse;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 

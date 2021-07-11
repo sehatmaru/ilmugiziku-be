@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 public class ScheduleDateRequest {
     private String scheduleSecureId;
-    private boolean valid;
+    private String desc;
     private Date date;
 
     public ScheduleDateRequest() {
