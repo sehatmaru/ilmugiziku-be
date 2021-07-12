@@ -8,5 +8,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface RegistrationTypeRefs {
     int EMAIL = 1;
-    int GOOGLE_FB = 2;
+    int GOOGLE = 2;
 }

@@ -3,6 +3,7 @@ package xcode.ilmugiziku.service;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
+import xcode.ilmugiziku.domain.request.LoginRequest;
 import xcode.ilmugiziku.domain.request.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.*;
+import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
@@ -27,39 +29,58 @@ public class AuthService implements AuthPresenter {
    }
 
    @Override
-   public BaseResponse<LoginResponse> login(String email, String password) {
+   public BaseResponse<LoginResponse> login(LoginRequest request) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
       LoginResponse loginResponse = new LoginResponse();
 
-      AuthModel model = new AuthModel();
+      if (request.validate()) {
+         AuthModel model = new AuthModel();
 
-      try {
-          model= authRepository.findByEmailAndDeletedAtIsNull(email);
-      } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
-      }
+         try {
+            model= authRepository.findByEmailAndDeletedAtIsNull(request.getEmail());
+         } catch (Exception e) {
+            response.setStatusCode(FAILED_CODE);
+            response.setMessage(e.toString());
+         }
 
-      if (model != null) {
-         if (password.equals(decrypt(model.getPassword()))) {
-            loginResponse.setEmail(model.getEmail());
-            loginResponse.setFirstName(model.getFirstName());
-            loginResponse.setLastName(model.getLastName());
-            loginResponse.setGender(model.getGender());
-            loginResponse.setSecureId(model.getSecureId());
-            loginResponse.setType(model.getType());
-            loginResponse.setRole(model.getRole());
+         if (model != null) {
+            if (request.getType() == GOOGLE) {
+               loginResponse.setEmail(model.getEmail());
+               loginResponse.setFirstName(model.getFirstName());
+               loginResponse.setLastName(model.getLastName());
+               loginResponse.setGender(model.getGender());
+               loginResponse.setSecureId(model.getSecureId());
+               loginResponse.setType(model.getType());
+               loginResponse.setRole(model.getRole());
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-            response.setResult(loginResponse);
+               response.setStatusCode(SUCCESS_CODE);
+               response.setMessage(SUCCESS_MESSAGE);
+               response.setResult(loginResponse);
+            } else {
+               if (model.getPassword().equals(encrypt(request.getPassword()))) {
+                  loginResponse.setEmail(model.getEmail());
+                  loginResponse.setFirstName(model.getFirstName());
+                  loginResponse.setLastName(model.getLastName());
+                  loginResponse.setGender(model.getGender());
+                  loginResponse.setSecureId(model.getSecureId());
+                  loginResponse.setType(model.getType());
+                  loginResponse.setRole(model.getRole());
+
+                  response.setStatusCode(SUCCESS_CODE);
+                  response.setMessage(SUCCESS_MESSAGE);
+                  response.setResult(loginResponse);
+               } else {
+                  response.setStatusCode(NOT_FOUND_CODE);
+                  response.setMessage(AUTH_ERROR_MESSAGE);
+               }
+            }
          } else {
             response.setStatusCode(NOT_FOUND_CODE);
             response.setMessage(AUTH_ERROR_MESSAGE);
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(AUTH_ERROR_MESSAGE);
+         response.setStatusCode(PARAMS_CODE);
+         response.setMessage(PARAMS_ERROR_MESSAGE);
       }
 
       return response;

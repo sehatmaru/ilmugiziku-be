@@ -3,8 +3,7 @@ package xcode.ilmugiziku.domain.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.EMAIL;
-import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE_FB;
+import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
@@ -25,7 +24,7 @@ public class RegisterRequest {
     public boolean validate() {
         boolean result = role == ADMIN || role == CONSUMER;
 
-        if (registrationType != EMAIL && registrationType != GOOGLE_FB) {
+        if (registrationType != EMAIL && registrationType != GOOGLE) {
             result = false;
         }
 
