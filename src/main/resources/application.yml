@@ -9,9 +9,9 @@ spring:
         driver-class-name: com.mysql.jdbc.Driver
         hikari:
             max-lifetime: 300000
-        password: Q)&lFe5LQ#tC
-        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
-        username: xcodecom_user
+        username: usrx
+        password: Marusam-pc48
+        url: jdbc:mysql://128.199.155.9:3306/xcodev
     jpa:
         hibernate:
             ddl-auto: update
