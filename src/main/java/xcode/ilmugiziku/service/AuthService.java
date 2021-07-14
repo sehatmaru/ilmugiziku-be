@@ -39,8 +39,7 @@ public class AuthService implements AuthPresenter {
          try {
             model= authRepository.findByEmailAndDeletedAtIsNull(request.getEmail());
          } catch (Exception e) {
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(e.toString());
+            response.setFailed(e.toString());
          }
 
          if (model != null) {
@@ -53,9 +52,7 @@ public class AuthService implements AuthPresenter {
                loginResponse.setType(model.getType());
                loginResponse.setRole(model.getRole());
 
-               response.setStatusCode(SUCCESS_CODE);
-               response.setMessage(SUCCESS_MESSAGE);
-               response.setResult(loginResponse);
+               response.setSuccess(loginResponse);
             } else {
                if (model.getPassword().equals(encrypt(request.getPassword()))) {
                   loginResponse.setEmail(model.getEmail());
@@ -66,21 +63,16 @@ public class AuthService implements AuthPresenter {
                   loginResponse.setType(model.getType());
                   loginResponse.setRole(model.getRole());
 
-                  response.setStatusCode(SUCCESS_CODE);
-                  response.setMessage(SUCCESS_MESSAGE);
-                  response.setResult(loginResponse);
+                  response.setSuccess(loginResponse);
                } else {
-                  response.setStatusCode(NOT_FOUND_CODE);
-                  response.setMessage(AUTH_ERROR_MESSAGE);
+                  response.setNotFound(AUTH_ERROR_MESSAGE);
                }
             }
          } else {
-            response.setStatusCode(NOT_FOUND_CODE);
-            response.setMessage(AUTH_ERROR_MESSAGE);
+            response.setNotFound(AUTH_ERROR_MESSAGE);
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -108,25 +100,17 @@ public class AuthService implements AuthPresenter {
                   authModel.setPassword(encrypt(request.getPassword()));
                }
 
+               createResponse.setSecureId(authModel.getSecureId());
 
-               AuthModel saved = authRepository.save(authModel);
-
-               response.setStatusCode(SUCCESS_CODE);
-               response.setMessage(SUCCESS_MESSAGE);
-               createResponse.setSecureId(saved.getSecureId());
-
-               response.setResult(createResponse);
+               response.setSuccess(createResponse);
             } else {
-               response.setStatusCode(EXIST_CODE);
-               response.setMessage(EXIST_MESSAGE);
+               response.setExistData();
             }
          } catch (Exception e) {
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(e.toString());
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -153,12 +137,9 @@ public class AuthService implements AuthPresenter {
             loginResponses.add(value);
          }
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-         response.setResult(loginResponses);
+         response.setSuccess(loginResponses);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
+         response.setFailed(e.toString());
       }
 
       return response;

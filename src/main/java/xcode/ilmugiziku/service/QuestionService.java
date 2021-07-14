@@ -55,12 +55,10 @@ public class QuestionService implements QuestionPresenter {
          if (questionSubType > 0 && questionSubType < 5) {
             response = getQuestions(questionType, questionSubType);
          } else {
-            response.setStatusCode(PARAMS_CODE);
-            response.setMessage(PARAMS_ERROR_MESSAGE);
+            response.setWrongParams();
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -88,18 +86,14 @@ public class QuestionService implements QuestionPresenter {
          try {
             questionRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
             createResponse.setSecureId(questionTempSecureId);
 
-            response.setResult(createResponse);
+            response.setSuccess(createResponse);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -116,8 +110,7 @@ public class QuestionService implements QuestionPresenter {
             try {
                model = answerRepository.findBySecureId(answer.getSecureId());
             } catch (Exception e) {
-               response.setStatusCode(FAILED_CODE);
-               response.setMessage(FAILED_MESSAGE);
+               response.setFailed(e.toString());
             }
 
             model.setContent(answer.getContent());
@@ -127,8 +120,7 @@ public class QuestionService implements QuestionPresenter {
             try {
                answerRepository.save(model);
             } catch (Exception e){
-               response.setStatusCode(FAILED_CODE);
-               response.setMessage(FAILED_MESSAGE);
+               response.setFailed(e.toString());
             }
          }
 
@@ -137,8 +129,7 @@ public class QuestionService implements QuestionPresenter {
          try {
             model = questionRepository.findBySecureId(request.getSecureId());
          } catch (Exception e) {
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
 
          model.setContent(request.getContent());
@@ -149,17 +140,12 @@ public class QuestionService implements QuestionPresenter {
          try {
             questionRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-
-            response.setResult(true);
+            response.setSuccess(true);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -173,8 +159,7 @@ public class QuestionService implements QuestionPresenter {
       try {
          model = questionRepository.findBySecureId(secureId);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       if (model != null) {
@@ -183,17 +168,12 @@ public class QuestionService implements QuestionPresenter {
          try {
             questionRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-
-            response.setResult(true);
+            response.setSuccess(true);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;
@@ -227,8 +207,7 @@ public class QuestionService implements QuestionPresenter {
             models = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
          }
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
+         response.setFailed(e.toString());
       }
 
       if (models != null) {
@@ -244,8 +223,7 @@ public class QuestionService implements QuestionPresenter {
             try {
                answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
             } catch (Exception e) {
-               response.setStatusCode(FAILED_CODE);
-               response.setMessage(e.toString());
+               response.setFailed(e.toString());
             }
 
             List<AnswerResponse> answers = new ArrayList<>();
@@ -263,9 +241,7 @@ public class QuestionService implements QuestionPresenter {
             questionResponses.add(questionResponse);
          }
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-         response.setResult(questionResponses);
+         response.setSuccess(questionResponses);
       }
 
       return response;

@@ -41,8 +41,7 @@ public class ScheduleService implements SchedulePresenter {
       try {
          auth = authRepository.findBySecureIdAndDeletedAtIsNull(authSecureId);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
+         response.setFailed(e.toString());
       }
 
       if (auth != null) {
@@ -51,8 +50,7 @@ public class ScheduleService implements SchedulePresenter {
          try {
             models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(authSecureId);
          } catch (Exception e) {
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(e.toString());
+            response.setFailed(e.toString());
          }
 
          for (ScheduleModel model : models) {
@@ -64,12 +62,9 @@ public class ScheduleService implements SchedulePresenter {
             lists.add(schedule);
          }
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-         response.setResult(lists);
+         response.setSuccess(lists);
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;
@@ -89,15 +84,13 @@ public class ScheduleService implements SchedulePresenter {
          model.setCreatedAt(new Date());
 
          if (!create(model)) {
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed("");
          } else {
             createResponse.setSecureId(model.getSecureId());
-            response.setResult(createResponse);
+            response.setSuccess(createResponse);
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;
@@ -114,8 +107,7 @@ public class ScheduleService implements SchedulePresenter {
                try {
                   model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(schedule.getScheduleSecureId());
                } catch (Exception e) {
-                  response.setStatusCode(FAILED_CODE);
-                  response.setMessage(FAILED_MESSAGE);
+                  response.setFailed(e.toString());
                }
 
                if (model != null) {
@@ -126,11 +118,9 @@ public class ScheduleService implements SchedulePresenter {
                   try {
                      scheduleRepository.save(model);
 
-                     response.setResult(true);
+                     response.setSuccess(true);
                   } catch (Exception e){
-                     response.setStatusCode(FAILED_CODE);
-                     response.setMessage(FAILED_MESSAGE);
-                     response.setResult(false);
+                     response.setFailed(e.toString());
                   }
                } else {
                   ScheduleModel sch = new ScheduleModel();
@@ -141,18 +131,15 @@ public class ScheduleService implements SchedulePresenter {
                   sch.setCreatedAt(new Date());
 
                   if (!create(sch)) {
-                     response.setStatusCode(FAILED_CODE);
-                     response.setMessage(FAILED_MESSAGE);
+                     response.setFailed("");
                   }
                }
             }
          } else {
-            response.setStatusCode(NOT_FOUND_CODE);
-            response.setMessage(NOT_FOUND_MESSAGE);
+            response.setNotFound("");
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -166,8 +153,7 @@ public class ScheduleService implements SchedulePresenter {
       try {
          model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       if (model != null) {
@@ -176,17 +162,12 @@ public class ScheduleService implements SchedulePresenter {
          try {
             scheduleRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-
-            response.setResult(true);
+            response.setSuccess(true);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;

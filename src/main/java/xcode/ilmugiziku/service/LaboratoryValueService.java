@@ -43,12 +43,9 @@ public class LaboratoryValueService implements LaboratoryPresenter {
             laboratoryValueResponses.add(value);
          }
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-         response.setResult(laboratoryValueResponses);
+         response.setSuccess(laboratoryValueResponses);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
+         response.setFailed(e.toString());
       }
 
       return response;
@@ -70,14 +67,11 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       try {
          laboratoryValueRepository.save(model);
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
          createResponse.setSecureId(tempSecureId);
 
-         response.setResult(createResponse);
+         response.setSuccess(createResponse);
       } catch (Exception e){
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       return response;
@@ -86,7 +80,6 @@ public class LaboratoryValueService implements LaboratoryPresenter {
    @Override
    public BaseResponse<Boolean> updateLaboratoryValue(UpdateLaboratoryValueRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
-
       LaboratoryValueModel model = new LaboratoryValueModel();
 
       try {
@@ -103,13 +96,9 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       try {
          laboratoryValueRepository.save(model);
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-
-         response.setResult(true);
+         response.setSuccess(true);
       } catch (Exception e){
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       return response;
@@ -123,8 +112,7 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       try {
          model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(secureId);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       if (model != null) {
@@ -133,17 +121,12 @@ public class LaboratoryValueService implements LaboratoryPresenter {
          try {
             laboratoryValueRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-
-            response.setResult(true);
+            response.setSuccess(true);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;

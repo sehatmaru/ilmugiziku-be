@@ -16,6 +16,8 @@ import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 
 @Service
 public class TheoryService implements TheoryPresenter {
@@ -31,29 +33,32 @@ public class TheoryService implements TheoryPresenter {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
       List<TheoryResponse> responses = new ArrayList<>();
 
-      List<TheoryModel> models = new ArrayList<>();
+      if (theoryType == UKOM || theoryType == SKB_GIZI) {
+         List<TheoryModel> models = new ArrayList<>();
 
-      try {
-         models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
-      } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(e.toString());
-      }
-
-      if (models != null) {
-         for (TheoryModel model : models) {
-            TheoryResponse resp = new TheoryResponse();
-            resp.setSecureId(model.getSecureId());
-            resp.setCompetence(model.getCompetence());
-            resp.setTheoryType(model.getTheoryType());
-            resp.setUri(model.getUri());
-
-            responses.add(resp);
+         try {
+            models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
          }
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-         response.setResult(responses);
+         if (models != null) {
+            for (TheoryModel model : models) {
+               TheoryResponse resp = new TheoryResponse();
+               resp.setSecureId(model.getSecureId());
+               resp.setCompetence(model.getCompetence());
+               resp.setTheoryType(model.getTheoryType());
+               resp.setUri(model.getUri());
+
+               responses.add(resp);
+            }
+
+            response.setStatusCode(SUCCESS_CODE);
+            response.setMessage(SUCCESS_MESSAGE);
+            response.setResult(responses);
+         }
+      } else {
+         response.setWrongParams();
       }
 
       return response;
@@ -77,18 +82,14 @@ public class TheoryService implements TheoryPresenter {
          try {
             theoryRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
             createResponse.setSecureId(tempSecureId);
 
-            response.setResult(createResponse);
+            response.setSuccess(createResponse);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(PARAMS_CODE);
-         response.setMessage(PARAMS_ERROR_MESSAGE);
+         response.setWrongParams();
       }
 
       return response;
@@ -103,8 +104,7 @@ public class TheoryService implements TheoryPresenter {
       try {
          model = theoryRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       model.setCompetence(request.getCompetence());
@@ -115,13 +115,9 @@ public class TheoryService implements TheoryPresenter {
       try {
          theoryRepository.save(model);
 
-         response.setStatusCode(SUCCESS_CODE);
-         response.setMessage(SUCCESS_MESSAGE);
-
-         response.setResult(true);
+         response.setSuccess(true);
       } catch (Exception e){
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       return response;
@@ -135,8 +131,7 @@ public class TheoryService implements TheoryPresenter {
       try {
          model = theoryRepository.findBySecureIdAndDeletedAtIsNull(secureId);
       } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
+         response.setFailed(e.toString());
       }
 
       if (model != null) {
@@ -145,17 +140,12 @@ public class TheoryService implements TheoryPresenter {
          try {
             theoryRepository.save(model);
 
-            response.setStatusCode(SUCCESS_CODE);
-            response.setMessage(SUCCESS_MESSAGE);
-
-            response.setResult(true);
+            response.setSuccess(true);
          } catch (Exception e){
-            response.setStatusCode(FAILED_CODE);
-            response.setMessage(FAILED_MESSAGE);
+            response.setFailed(e.toString());
          }
       } else {
-         response.setStatusCode(NOT_FOUND_CODE);
-         response.setMessage(NOT_FOUND_MESSAGE);
+         response.setNotFound("");
       }
 
       return response;
