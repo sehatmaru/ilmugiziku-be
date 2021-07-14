@@ -45,7 +45,7 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/question/update")
+    @PostMapping("/question/update")
     ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestBody @Validated UpdateQuestionRequest body) {
         BaseResponse<Boolean> response = questionPresenter.updateQuestion(body);
 
@@ -75,7 +75,7 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/schedule/update")
+    @PostMapping("/schedule/update")
     ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestBody @Validated UpdateScheduleRequest body) {
         BaseResponse<Boolean> response = schedulePresenter.updateSchedule(body);
 
@@ -105,7 +105,7 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/laboratory-value/update")
+    @PostMapping("/laboratory-value/update")
     ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(@RequestBody @Validated UpdateLaboratoryValueRequest body) {
         BaseResponse<Boolean> response = laboratoryPresenter.updateLaboratoryValue(body);
 
@@ -135,7 +135,7 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/theory/update")
+    @PostMapping("/theory/update")
     ResponseEntity<BaseResponse<Boolean>> updateTheory(@RequestBody @Validated UpdateTheoryRequest body) {
         BaseResponse<Boolean> response = theoryPresenter.updateTheory(body);
 
