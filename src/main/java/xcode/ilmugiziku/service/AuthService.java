@@ -100,6 +100,8 @@ public class AuthService implements AuthPresenter {
                   authModel.setPassword(encrypt(request.getPassword()));
                }
 
+               authRepository.save(authModel);
+
                createResponse.setSecureId(authModel.getSecureId());
 
                response.setSuccess(createResponse);
