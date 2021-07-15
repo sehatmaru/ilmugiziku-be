@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
-import xcode.ilmugiziku.domain.response.ScheduleResponse;
 import xcode.ilmugiziku.presenter.LaboratoryPresenter;
-import xcode.ilmugiziku.presenter.SchedulePresenter;
 
 import java.util.List;
 
@@ -27,8 +25,8 @@ public class LaboratoryValueApi {
     }
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<LaboratoryValueResponse>>> list () {
-        BaseResponse<List<LaboratoryValueResponse>> response = laboratoryPresenter.getLaboratoryValueList();
+    ResponseEntity<BaseResponse<List<LaboratoryValueResponse>>> list (@RequestParam @Validated String token) {
+        BaseResponse<List<LaboratoryValueResponse>> response = laboratoryPresenter.getLaboratoryValueList(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

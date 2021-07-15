@@ -2,58 +2,59 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AnswerModel;
-import xcode.ilmugiziku.domain.model.LaboratoryValueModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.repository.AnswerRepository;
-import xcode.ilmugiziku.domain.repository.LaboratoryValueRepository;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.request.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.UpdateAnswerRequest;
 import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.response.*;
-import xcode.ilmugiziku.presenter.LaboratoryPresenter;
+import xcode.ilmugiziku.domain.response.AnswerResponse;
+import xcode.ilmugiziku.domain.response.BaseResponse;
+import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.QuestionResponse;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.*;
+import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.*;
 
 @Service
 public class QuestionService implements QuestionPresenter {
 
-   final QuestionRepository questionRepository;
-   final AnswerRepository answerRepository;
-   final LaboratoryValueRepository laboratoryValueRepository;
+   private final AuthTokenService authTokenService;
 
-   public QuestionService(QuestionRepository questionRepository, AnswerRepository answerRepository, LaboratoryValueRepository laboratoryValueRepository) {
+   private final QuestionRepository questionRepository;
+   private final AnswerRepository answerRepository;
+
+   public QuestionService(AuthTokenService authTokenService, QuestionRepository questionRepository, AnswerRepository answerRepository) {
+      this.authTokenService = authTokenService;
       this.questionRepository = questionRepository;
       this.answerRepository = answerRepository;
-      this.laboratoryValueRepository = laboratoryValueRepository;
    }
 
    @Override
-   public BaseResponse<List<QuestionResponse>> getQuizQuestions() {
-      return getQuestions(QUIZ, NONE);
+   public BaseResponse<List<QuestionResponse>> getQuizQuestions(String token) {
+      return getQuestions(token, QUIZ, NONE);
    }
 
    @Override
-   public BaseResponse<List<QuestionResponse>> getPracticeQuestions() {
-      return getQuestions(PRACTICE, NONE);
+   public BaseResponse<List<QuestionResponse>> getPracticeQuestions(String token) {
+      return getQuestions(token, PRACTICE, NONE);
    }
 
    @Override
-   public BaseResponse<List<QuestionResponse>> getTryOutQuestion(int questionType, int questionSubType) {
+   public BaseResponse<List<QuestionResponse>> getTryOutQuestion(String token, int questionType, int questionSubType) {
       BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
 
       if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
          if (questionSubType > 0 && questionSubType < 5) {
-            response = getQuestions(questionType, questionSubType);
+            response = getQuestions(token, questionType, questionSubType);
          } else {
             response.setWrongParams();
          }
@@ -65,7 +66,7 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<CreateBaseResponse> createQuestion(CreateQuestionRequest request) {
+   public BaseResponse<CreateBaseResponse> createQuestion(String token, CreateQuestionRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
@@ -100,7 +101,7 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<Boolean> updateQuestion(UpdateQuestionRequest request) {
+   public BaseResponse<Boolean> updateQuestion(String token, UpdateQuestionRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (request.validate()) {
@@ -152,7 +153,7 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<Boolean> deleteQuestion(String secureId) {
+   public BaseResponse<Boolean> deleteQuestion(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       QuestionModel model = new QuestionModel();
 
@@ -194,54 +195,58 @@ public class QuestionService implements QuestionPresenter {
       }
    }
 
-   private BaseResponse<List<QuestionResponse>> getQuestions(int questionType, int questionSubType) {
+   private BaseResponse<List<QuestionResponse>> getQuestions(String token, int questionType, int questionSubType) {
       BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
       List<QuestionResponse> questionResponses = new ArrayList<>();
 
-      List<QuestionModel> models = new ArrayList<>();
+      if (authTokenService.isValidToken(token)) {
+         List<QuestionModel> models = new ArrayList<>();
 
-      try {
-         if (questionSubType == 0) {
-            models = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
-         } else {
-            models = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
-         }
-      } catch (Exception e) {
-         response.setFailed(e.toString());
-      }
-
-      if (models != null) {
-         for (QuestionModel question : models) {
-            QuestionResponse questionResponse = new QuestionResponse();
-            questionResponse.setSecureId(question.getSecureId());
-            questionResponse.setContent(question.getContent());
-            questionResponse.setQuestionType(question.getQuestionType());
-            questionResponse.setQuestionSubType(questionResponse.getQuestionSubType());
-
-            List<AnswerModel> answerModels = new ArrayList<>();
-
-            try {
-               answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
-            } catch (Exception e) {
-               response.setFailed(e.toString());
+         try {
+            if (questionSubType == 0) {
+               models = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
+            } else {
+               models = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
             }
-
-            List<AnswerResponse> answers = new ArrayList<>();
-            for (AnswerModel answer : answerModels) {
-               AnswerResponse answerResponse = new AnswerResponse();
-               answerResponse.setSecureId(answer.getSecureId());
-               answerResponse.setContent(answer.getContent());
-               answerResponse.setValue(answer.isValue());
-
-               answers.add(answerResponse);
-
-               questionResponse.setAnswers(answers);
-            }
-
-            questionResponses.add(questionResponse);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
          }
 
-         response.setSuccess(questionResponses);
+         if (models != null) {
+            for (QuestionModel question : models) {
+               QuestionResponse questionResponse = new QuestionResponse();
+               questionResponse.setSecureId(question.getSecureId());
+               questionResponse.setContent(question.getContent());
+               questionResponse.setQuestionType(question.getQuestionType());
+               questionResponse.setQuestionSubType(questionResponse.getQuestionSubType());
+
+               List<AnswerModel> answerModels = new ArrayList<>();
+
+               try {
+                  answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
+               } catch (Exception e) {
+                  response.setFailed(e.toString());
+               }
+
+               List<AnswerResponse> answers = new ArrayList<>();
+               for (AnswerModel answer : answerModels) {
+                  AnswerResponse answerResponse = new AnswerResponse();
+                  answerResponse.setSecureId(answer.getSecureId());
+                  answerResponse.setContent(answer.getContent());
+                  answerResponse.setValue(answer.isValue());
+
+                  answers.add(answerResponse);
+
+                  questionResponse.setAnswers(answers);
+               }
+
+               questionResponses.add(questionResponse);
+            }
+
+            response.setSuccess(questionResponses);
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

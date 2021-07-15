@@ -10,8 +10,7 @@ import java.util.List;
 
 public interface AuthPresenter {
    BaseResponse<LoginResponse> login(LoginRequest request);
-
    BaseResponse<CreateBaseResponse> register(RegisterRequest request);
-
-   BaseResponse<List<LoginResponse>> getUserList();
+   BaseResponse<List<LoginResponse>> getUserList(String token);
+   BaseResponse<Boolean> logout(String token);
 }

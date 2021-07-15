@@ -23,151 +23,172 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class ScheduleService implements SchedulePresenter {
 
-   final ScheduleRepository scheduleRepository;
-   final AuthRepository authRepository;
+   private final AuthTokenService authTokenService;
 
-   public ScheduleService(ScheduleRepository scheduleRepository, AuthRepository authRepository) {
+   private final ScheduleRepository scheduleRepository;
+   private final AuthRepository authRepository;
+
+   public ScheduleService(AuthTokenService authTokenService, ScheduleRepository scheduleRepository, AuthRepository authRepository) {
+      this.authTokenService = authTokenService;
       this.scheduleRepository = scheduleRepository;
       this.authRepository = authRepository;
    }
 
    @Override
-   public BaseResponse<List<ScheduleResponse>> getScheduleList(String authSecureId) {
+   public BaseResponse<List<ScheduleResponse>> getScheduleList(String token, String authSecureId) {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
       List<ScheduleResponse> lists = new ArrayList<>();
 
-      AuthModel auth = new AuthModel();
-
-      try {
-         auth = authRepository.findBySecureIdAndDeletedAtIsNull(authSecureId);
-      } catch (Exception e) {
-         response.setFailed(e.toString());
-      }
-
-      if (auth != null) {
-         List<ScheduleModel> models = new ArrayList<>();
+      if (authTokenService.isValidToken(token)) {
+         AuthModel auth = new AuthModel();
 
          try {
-            models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(authSecureId);
+            auth = authRepository.findBySecureIdAndDeletedAtIsNull(authSecureId);
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
 
-         for (ScheduleModel model : models) {
-            ScheduleResponse schedule = new ScheduleResponse();
-            schedule.setSchedule(model.getSchedule());
-            schedule.setSecureId(model.getSecureId());
-            schedule.setDesc(model.getDescription());
+         if (auth != null) {
+            List<ScheduleModel> models = new ArrayList<>();
 
-            lists.add(schedule);
+            try {
+               models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(authSecureId);
+            } catch (Exception e) {
+               response.setFailed(e.toString());
+            }
+
+            for (ScheduleModel model : models) {
+               ScheduleResponse schedule = new ScheduleResponse();
+               schedule.setSchedule(model.getSchedule());
+               schedule.setSecureId(model.getSecureId());
+               schedule.setDesc(model.getDescription());
+
+               lists.add(schedule);
+            }
+
+            response.setSuccess(lists);
+         } else {
+            response.setNotFound("");
          }
-
-         response.setSuccess(lists);
       } else {
-         response.setNotFound("");
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
    }
 
    @Override
-   public BaseResponse<CreateBaseResponse> createSchedule(CreateScheduleRequest request) {
+   public BaseResponse<CreateBaseResponse> createSchedule(String token, CreateScheduleRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
-         ScheduleModel model = new ScheduleModel();
-         model.setSecureId(generateSecureId());
-         model.setAuthSecureId(request.getAuthSecureId());
-         model.setDescription(request.getDesc());
-         model.setSchedule(request.getSchedule());
-         model.setCreatedAt(new Date());
-
-         if (!create(model)) {
-            response.setFailed("");
-         } else {
-            createResponse.setSecureId(model.getSecureId());
-            response.setSuccess(createResponse);
-         }
-      } else {
-         response.setNotFound("");
-      }
-
-      return response;
-   }
-
-   @Override
-   public BaseResponse<Boolean> updateSchedule(UpdateScheduleRequest request) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (request.validate()) {
+      if (authTokenService.isValidToken(token)) {
          if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
-            for (ScheduleDateRequest schedule : request.getSchedules()) {
-               ScheduleModel model = new ScheduleModel();
-               try {
-                  model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(schedule.getScheduleSecureId());
-               } catch (Exception e) {
-                  response.setFailed(e.toString());
-               }
+            ScheduleModel model = new ScheduleModel();
+            model.setSecureId(generateSecureId());
+            model.setAuthSecureId(request.getAuthSecureId());
+            model.setDescription(request.getDesc());
+            model.setSchedule(request.getSchedule());
+            model.setCreatedAt(new Date());
 
-               if (model != null) {
-                  model.setSchedule(schedule.getDate());
-                  model.setDescription(schedule.getDesc());
-                  model.setUpdatedAt(new Date());
-
-                  try {
-                     scheduleRepository.save(model);
-
-                     response.setSuccess(true);
-                  } catch (Exception e){
-                     response.setFailed(e.toString());
-                  }
-               } else {
-                  ScheduleModel sch = new ScheduleModel();
-                  sch.setSecureId(generateSecureId());
-                  sch.setSchedule(schedule.getDate());
-                  sch.setDescription(schedule.getDesc());
-                  sch.setAuthSecureId(request.getAuthSecureId());
-                  sch.setCreatedAt(new Date());
-
-                  if (!create(sch)) {
-                     response.setFailed("");
-                  }
-               }
+            if (create(model)) {
+               createResponse.setSecureId(model.getSecureId());
+               response.setSuccess(createResponse);
+            } else {
+               response.setFailed("");
             }
          } else {
             response.setNotFound("");
          }
       } else {
-         response.setWrongParams();
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
    }
 
    @Override
-   public BaseResponse<Boolean> deleteSchedule(String secureId) {
+   public BaseResponse<Boolean> updateSchedule(String token, UpdateScheduleRequest request) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      if (authTokenService.isValidToken(token)) {
+         if (request.validate()) {
+            if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
+               for (ScheduleDateRequest schedule : request.getSchedules()) {
+                  ScheduleModel model = new ScheduleModel();
+                  try {
+                     model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(schedule.getScheduleSecureId());
+                  } catch (Exception e) {
+                     response.setFailed(e.toString());
+                  }
+
+                  if (model != null) {
+                     model.setSchedule(schedule.getDate());
+                     model.setDescription(schedule.getDesc());
+                     model.setUpdatedAt(new Date());
+
+                     try {
+                        scheduleRepository.save(model);
+
+                        response.setSuccess(true);
+                     } catch (Exception e){
+                        response.setFailed(e.toString());
+                     }
+                  } else {
+                     ScheduleModel sch = new ScheduleModel();
+                     sch.setSecureId(generateSecureId());
+                     sch.setSchedule(schedule.getDate());
+                     sch.setDescription(schedule.getDesc());
+                     sch.setAuthSecureId(request.getAuthSecureId());
+                     sch.setCreatedAt(new Date());
+
+                     if (create(sch)) {
+                        response.setSuccess(true);
+                     } else {
+                        response.setFailed("");
+                     }
+                  }
+               }
+            } else {
+               response.setNotFound("");
+            }
+         } else {
+            response.setWrongParams();
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<Boolean> deleteSchedule(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       ScheduleModel model = new ScheduleModel();
 
-      try {
-         model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-      } catch (Exception e) {
-         response.setFailed(e.toString());
-      }
-
-      if (model != null) {
-         model.setDeletedAt(new Date());
-
+      if (authTokenService.isValidToken(token)) {
          try {
-            scheduleRepository.save(model);
-
-            response.setSuccess(true);
-         } catch (Exception e){
+            model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+         } catch (Exception e) {
             response.setFailed(e.toString());
          }
+
+         if (model != null) {
+            model.setDeletedAt(new Date());
+
+            try {
+               scheduleRepository.save(model);
+
+               response.setSuccess(true);
+            } catch (Exception e){
+               response.setFailed(e.toString());
+            }
+         } else {
+            response.setNotFound("");
+         }
       } else {
-         response.setNotFound("");
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

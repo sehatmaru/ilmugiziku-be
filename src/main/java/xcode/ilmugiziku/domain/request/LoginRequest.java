@@ -16,10 +16,14 @@ public class LoginRequest {
     public LoginRequest() {
     }
 
-    public boolean validate() {
+    public boolean isValid() {
         boolean result = !email.isEmpty();
 
         if (type != EMAIL && type != GOOGLE) {
+            result = false;
+        }
+
+        if (password == null) {
             result = false;
         }
 

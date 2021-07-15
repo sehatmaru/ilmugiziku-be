@@ -45,8 +45,13 @@ public class BaseResponse<T> {
         this.message = PARAMS_ERROR_MESSAGE;
     }
 
-    public void setExistData() {
+    public void setExistData(String message) {
         this.statusCode = EXIST_CODE;
-        this.message = EXIST_MESSAGE;
+
+        if (!message.isEmpty()) {
+            this.message = message;
+        } else {
+            this.message = EXIST_MESSAGE;
+        }
     }
 }

@@ -9,10 +9,10 @@ import xcode.ilmugiziku.domain.response.QuestionResponse;
 import java.util.List;
 
 public interface QuestionPresenter {
-   BaseResponse<List<QuestionResponse>> getQuizQuestions();
-   BaseResponse<List<QuestionResponse>> getPracticeQuestions();
-   BaseResponse<List<QuestionResponse>> getTryOutQuestion(int questionType, int questionSubType);
-   BaseResponse<CreateBaseResponse> createQuestion(CreateQuestionRequest request);
-   BaseResponse<Boolean> updateQuestion(UpdateQuestionRequest request);
-   BaseResponse<Boolean> deleteQuestion(String secureId);
+   BaseResponse<List<QuestionResponse>> getQuizQuestions(String token);
+   BaseResponse<List<QuestionResponse>> getPracticeQuestions(String token);
+   BaseResponse<List<QuestionResponse>> getTryOutQuestion(String token, int questionType, int questionSubType);
+   BaseResponse<CreateBaseResponse> createQuestion(String token, CreateQuestionRequest request);
+   BaseResponse<Boolean> updateQuestion(String token, UpdateQuestionRequest request);
+   BaseResponse<Boolean> deleteQuestion(String token, String secureId);
 }
