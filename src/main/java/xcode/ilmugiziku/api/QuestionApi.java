@@ -13,7 +13,6 @@ import xcode.ilmugiziku.domain.response.QuestionResponse;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 import java.util.List;
-import java.util.Optional;
 
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 
@@ -28,15 +27,15 @@ public class QuestionApi {
     }
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> questionList (@RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+    ResponseEntity<BaseResponse<List<QuestionResponse>>> questionList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
         BaseResponse<List<QuestionResponse>> response;
 
         if (questionType == QUIZ) {
-            response = questionPresenter.getQuizQuestions();
+            response = questionPresenter.getQuizQuestions(token);
         } else if (questionType == PRACTICE) {
-            response = questionPresenter.getPracticeQuestions();
+            response = questionPresenter.getPracticeQuestions(token);
         } else {
-            response = questionPresenter.getTryOutQuestion(questionType, questionSubType);
+            response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
         }
 
         return ResponseEntity

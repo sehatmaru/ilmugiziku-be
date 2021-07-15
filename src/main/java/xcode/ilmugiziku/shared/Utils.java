@@ -6,7 +6,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
     private static final String key = "aesEncryptionKey";
@@ -32,21 +34,8 @@ public class Utils {
         return null;
     }
 
-    public static String decrypt(String encrypted) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(StandardCharsets.UTF_8));
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
-            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
-
-            return new String(original);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
+    public static long getDifferenceDays(Date date1, Date date2) {
+        long diff = date2.getTime() - date1.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
-
 }

@@ -41,6 +41,16 @@ public class AuthApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @PostMapping("/logout")
+    ResponseEntity<BaseResponse<Boolean>> logout(@RequestParam @Validated String token) {
+        BaseResponse<Boolean> response = authPresenter.logout(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 //
 //    @DeleteMapping("/delete")
 //    ResponseEntity<BaseResponse<Integer>> delete(@RequestParam @Validated int id) {
