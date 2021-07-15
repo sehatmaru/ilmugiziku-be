@@ -12,29 +12,23 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "book")
+@Table(name = "laboratory_value")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class LaboratoryValueModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
 
-   @Column(name = "title")
-   private String title;
+   @Column(name = "secure_id")
+   private String secureId;
 
-   @Column(name = "author")
-   private String author;
+   @Column(name = "content")
+   private String content;
 
-   @Column(name = "publication")
-   private String publication;
-
-   @Column(name = "year")
-   private String year;
-
-   @Column(name = "price")
-   private int price;
+   @Column(name = "value")
+   private String value;
 
    @Column(name = "created_at")
    private Date createdAt;

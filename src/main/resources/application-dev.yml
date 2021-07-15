@@ -1,9 +1,17 @@
+logging:
+    level:
+        com:
+            zaxxer:
+                hikari: TRACE
+                hikari.HikariConfig: DEBUG
 spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
-        username: root
-        password: ''
-        url: jdbc:mysql://localhost:3307/bookstore?useSSL=false
+#        hikari:
+#            max-lifetime: 300000
+        username: usrx
+        password: xcodev2021
+        url: jdbc:mysql://165.22.101.150:3306/xcodev?useSSL=false
     jpa:
         hibernate:
             ddl-auto: update
