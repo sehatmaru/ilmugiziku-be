@@ -9,8 +9,8 @@ import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
 import java.util.List;
 
 public interface LaboratoryPresenter {
-   BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList();
-   BaseResponse<CreateBaseResponse> createLaboratoryValue(CreateLaboratoryValueRequest request);
-   BaseResponse<Boolean> updateLaboratoryValue(UpdateLaboratoryValueRequest request);
-   BaseResponse<Boolean> deleteLaboratoryValue(String secureId);
+   BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList(String token);
+   BaseResponse<CreateBaseResponse> createLaboratoryValue(String token, CreateLaboratoryValueRequest request);
+   BaseResponse<Boolean> updateLaboratoryValue(String token, UpdateLaboratoryValueRequest request);
+   BaseResponse<Boolean> deleteLaboratoryValue(String token, String secureId);
 }

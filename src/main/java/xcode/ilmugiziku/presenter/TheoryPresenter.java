@@ -9,8 +9,8 @@ import xcode.ilmugiziku.domain.response.TheoryResponse;
 import java.util.List;
 
 public interface TheoryPresenter {
-   BaseResponse<List<TheoryResponse>> getTheoryList(int theoryType);
-   BaseResponse<CreateBaseResponse> createTheory(CreateTheoryRequest request);
-   BaseResponse<Boolean> updateTheory(UpdateTheoryRequest request);
-   BaseResponse<Boolean> deleteTheory(String secureId);
+   BaseResponse<List<TheoryResponse>> getTheoryList(String token, int theoryType);
+   BaseResponse<CreateBaseResponse> createTheory(String token, CreateTheoryRequest request);
+   BaseResponse<Boolean> updateTheory(String token, UpdateTheoryRequest request);
+   BaseResponse<Boolean> deleteTheory(String token, String secureId);
 }

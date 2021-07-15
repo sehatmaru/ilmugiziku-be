@@ -20,103 +20,90 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class LaboratoryValueService implements LaboratoryPresenter {
 
-   final LaboratoryValueRepository laboratoryValueRepository;
+   private final AuthTokenService authTokenService;
 
-   public LaboratoryValueService(LaboratoryValueRepository laboratoryValueRepository) {
+   private final LaboratoryValueRepository laboratoryValueRepository;
+
+   public LaboratoryValueService(AuthTokenService authTokenService, LaboratoryValueRepository laboratoryValueRepository) {
+      this.authTokenService = authTokenService;
       this.laboratoryValueRepository = laboratoryValueRepository;
    }
 
    @Override
-   public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList() {
+   public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList(String token) {
       BaseResponse<List<LaboratoryValueResponse>> response = new BaseResponse<>();
       List<LaboratoryValueResponse> laboratoryValueResponses = new ArrayList<>();
 
-      try {
-         List<LaboratoryValueModel> models = laboratoryValueRepository.findByDeletedAtIsNull();
+      if (authTokenService.isValidToken(token)) {
+         try {
+            List<LaboratoryValueModel> models = laboratoryValueRepository.findByDeletedAtIsNull();
 
-         for (LaboratoryValueModel model : models) {
-            LaboratoryValueResponse value = new LaboratoryValueResponse();
-            value.setSecureId(model.getSecureId());
-            value.setContent(model.getContent());
-            value.setValue(model.getValue());
+            for (LaboratoryValueModel model : models) {
+               LaboratoryValueResponse value = new LaboratoryValueResponse();
+               value.setSecureId(model.getSecureId());
+               value.setContent(model.getContent());
+               value.setValue(model.getValue());
 
-            laboratoryValueResponses.add(value);
+               laboratoryValueResponses.add(value);
+            }
+
+            response.setSuccess(laboratoryValueResponses);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
          }
-
-         response.setSuccess(laboratoryValueResponses);
-      } catch (Exception e) {
-         response.setFailed(e.toString());
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
    }
 
    @Override
-   public BaseResponse<CreateBaseResponse> createLaboratoryValue(CreateLaboratoryValueRequest request) {
+   public BaseResponse<CreateBaseResponse> createLaboratoryValue(String token, CreateLaboratoryValueRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      String tempSecureId = generateSecureId();
+      if (authTokenService.isValidToken(token)) {
+         String tempSecureId = generateSecureId();
 
-      LaboratoryValueModel model = new LaboratoryValueModel();
-      model.setSecureId(tempSecureId);
-      model.setContent(request.getContent());
-      model.setValue(request.getValue());
-      model.setCreatedAt(new Date());
+         LaboratoryValueModel model = new LaboratoryValueModel();
+         model.setSecureId(tempSecureId);
+         model.setContent(request.getContent());
+         model.setValue(request.getValue());
+         model.setCreatedAt(new Date());
 
-      try {
-         laboratoryValueRepository.save(model);
+         try {
+            laboratoryValueRepository.save(model);
 
-         createResponse.setSecureId(tempSecureId);
+            createResponse.setSecureId(tempSecureId);
 
-         response.setSuccess(createResponse);
-      } catch (Exception e){
-         response.setFailed(e.toString());
+            response.setSuccess(createResponse);
+         } catch (Exception e){
+            response.setFailed(e.toString());
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
    }
 
    @Override
-   public BaseResponse<Boolean> updateLaboratoryValue(UpdateLaboratoryValueRequest request) {
+   public BaseResponse<Boolean> updateLaboratoryValue(String token, UpdateLaboratoryValueRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       LaboratoryValueModel model = new LaboratoryValueModel();
 
-      try {
-         model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
-      } catch (Exception e) {
-         response.setStatusCode(FAILED_CODE);
-         response.setMessage(FAILED_MESSAGE);
-      }
+      if (authTokenService.isValidToken(token)) {
+         try {
+            model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
+         } catch (Exception e) {
+            response.setStatusCode(FAILED_CODE);
+            response.setMessage(FAILED_MESSAGE);
+         }
 
-      model.setContent(request.getContent());
-      model.setValue(request.getValue());
-      model.setUpdatedAt(new Date());
-
-      try {
-         laboratoryValueRepository.save(model);
-
-         response.setSuccess(true);
-      } catch (Exception e){
-         response.setFailed(e.toString());
-      }
-
-      return response;
-   }
-
-   @Override
-   public BaseResponse<Boolean> deleteLaboratoryValue(String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-      LaboratoryValueModel model = new LaboratoryValueModel();
-
-      try {
-         model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-      } catch (Exception e) {
-         response.setFailed(e.toString());
-      }
-
-      if (model != null) {
-         model.setDeletedAt(new Date());
+         model.setContent(request.getContent());
+         model.setValue(request.getValue());
+         model.setUpdatedAt(new Date());
 
          try {
             laboratoryValueRepository.save(model);
@@ -125,8 +112,38 @@ public class LaboratoryValueService implements LaboratoryPresenter {
          } catch (Exception e){
             response.setFailed(e.toString());
          }
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<Boolean> deleteLaboratoryValue(String token, String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+      LaboratoryValueModel model = new LaboratoryValueModel();
+
+      if (authTokenService.isValidToken(token)) {
+         try {
+            model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
+         }
+
+         if (model != null) {
+            model.setDeletedAt(new Date());
+
+            try {
+               laboratoryValueRepository.save(model);
+
+               response.setSuccess(true);
+            } catch (Exception e){
+               response.setFailed(e.toString());
+            }
+         } else {
+            response.setNotFound("");
+         }
       } else {
-         response.setNotFound("");
+         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
