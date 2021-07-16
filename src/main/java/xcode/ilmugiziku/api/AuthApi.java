@@ -43,7 +43,7 @@ public class AuthApi {
     }
 
     @PostMapping("/logout")
-    ResponseEntity<BaseResponse<Boolean>> logout(@RequestHeader @Validated String token) {
+    ResponseEntity<BaseResponse<Boolean>> logout(@RequestParam @Validated String token) {
         BaseResponse<Boolean> response = authPresenter.logout(token);
 
         return ResponseEntity
