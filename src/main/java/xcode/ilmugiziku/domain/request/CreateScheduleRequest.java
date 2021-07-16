@@ -11,6 +11,8 @@ public class CreateScheduleRequest {
     private String authSecureId;
     private String desc;
     private Date schedule;
+    private String startTime;
+    private String endTime;
 
     public CreateScheduleRequest() {
     }

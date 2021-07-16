@@ -62,6 +62,8 @@ public class ScheduleService implements SchedulePresenter {
                schedule.setSchedule(model.getSchedule());
                schedule.setSecureId(model.getSecureId());
                schedule.setDesc(model.getDescription());
+               schedule.setStartTime(model.getStartTime());
+               schedule.setEndTime(model.getEndTime());
 
                lists.add(schedule);
             }
@@ -89,6 +91,8 @@ public class ScheduleService implements SchedulePresenter {
             model.setAuthSecureId(request.getAuthSecureId());
             model.setDescription(request.getDesc());
             model.setSchedule(request.getSchedule());
+            model.setStartTime(request.getStartTime());
+            model.setEndTime(request.getEndTime());
             model.setCreatedAt(new Date());
 
             if (create(model)) {
@@ -125,6 +129,8 @@ public class ScheduleService implements SchedulePresenter {
                   if (model != null) {
                      model.setSchedule(schedule.getDate());
                      model.setDescription(schedule.getDesc());
+                     model.setStartTime(schedule.getStartTime());
+                     model.setEndTime(schedule.getEndTime());
                      model.setUpdatedAt(new Date());
 
                      try {
@@ -139,6 +145,8 @@ public class ScheduleService implements SchedulePresenter {
                      sch.setSecureId(generateSecureId());
                      sch.setSchedule(schedule.getDate());
                      sch.setDescription(schedule.getDesc());
+                     sch.setStartTime(schedule.getStartTime());
+                     sch.setEndTime(schedule.getEndTime());
                      sch.setAuthSecureId(request.getAuthSecureId());
                      sch.setCreatedAt(new Date());
 

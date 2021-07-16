@@ -12,11 +12,13 @@ public class ScheduleDateRequest {
     private String scheduleSecureId;
     private String desc;
     private Date date;
+    private String startTime;
+    private String endTime;
 
     public ScheduleDateRequest() {
     }
 
     public boolean validate() {
-        return date != null;
+        return date != null && startTime != null && endTime != null;
     }
 }

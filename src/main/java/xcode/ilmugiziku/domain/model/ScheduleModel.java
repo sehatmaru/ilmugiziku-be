@@ -30,6 +30,12 @@ public class ScheduleModel {
    @Column(name = "schedule")
    private Date schedule;
 
+   @Column(name = "start_time")
+   private String startTime;
+
+   @Column(name = "end_time")
+   private String endTime;
+
    @Column(name = "auth_secure_id")
    private String authSecureId;
 
