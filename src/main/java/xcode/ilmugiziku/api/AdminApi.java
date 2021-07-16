@@ -36,7 +36,7 @@ public class AdminApi {
     }
 
     @PostMapping("/question/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (@RequestParam @Validated String token, @RequestBody @Validated CreateQuestionRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (@RequestHeader @Validated String token, @RequestBody @Validated CreateQuestionRequest body) {
         BaseResponse<CreateBaseResponse> response = questionPresenter.createQuestion(token, body);
 
         return ResponseEntity
@@ -46,7 +46,7 @@ public class AdminApi {
     }
 
     @PostMapping("/question/update")
-    ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestParam @Validated String token, @RequestBody @Validated UpdateQuestionRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestHeader @Validated String token, @RequestBody @Validated UpdateQuestionRequest body) {
         BaseResponse<Boolean> response = questionPresenter.updateQuestion(token, body);
 
         return ResponseEntity
@@ -56,7 +56,7 @@ public class AdminApi {
     }
 
     @DeleteMapping("/question/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteQuestion(@RequestParam @Validated String token, @RequestParam @Validated String questionSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteQuestion(@RequestHeader @Validated String token, @RequestParam @Validated String questionSecureId) {
         BaseResponse<Boolean> response = questionPresenter.deleteQuestion(token, questionSecureId);
 
         return ResponseEntity
@@ -66,7 +66,7 @@ public class AdminApi {
     }
 
     @PostMapping("/schedule/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createSchedule (@RequestParam @Validated String token, @RequestBody @Validated CreateScheduleRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createSchedule (@RequestHeader @Validated String token, @RequestBody @Validated CreateScheduleRequest body) {
         BaseResponse<CreateBaseResponse> response = schedulePresenter.createSchedule(token, body);
 
         return ResponseEntity
@@ -76,7 +76,7 @@ public class AdminApi {
     }
 
     @PutMapping("/schedule/update")
-    ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestParam @Validated String token, @RequestBody @Validated UpdateScheduleRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestHeader @Validated String token, @RequestBody @Validated UpdateScheduleRequest body) {
         BaseResponse<Boolean> response = schedulePresenter.updateSchedule(token, body);
 
         return ResponseEntity
@@ -86,7 +86,7 @@ public class AdminApi {
     }
 
     @DeleteMapping("/schedule/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteSchedule(@RequestParam @Validated String token, @RequestParam @Validated String scheduleSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteSchedule(@RequestHeader @Validated String token, @RequestParam @Validated String scheduleSecureId) {
         BaseResponse<Boolean> response = schedulePresenter.deleteSchedule(token, scheduleSecureId);
 
         return ResponseEntity
@@ -96,7 +96,7 @@ public class AdminApi {
     }
 
     @PostMapping("/laboratory-value/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createLaboratoryValue (@RequestParam @Validated String token, @RequestBody @Validated CreateLaboratoryValueRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createLaboratoryValue (@RequestHeader @Validated String token, @RequestBody @Validated CreateLaboratoryValueRequest body) {
         BaseResponse<CreateBaseResponse> response = laboratoryPresenter.createLaboratoryValue(token, body);
 
         return ResponseEntity
@@ -106,7 +106,7 @@ public class AdminApi {
     }
 
     @PutMapping("/laboratory-value/update")
-    ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(@RequestParam @Validated String token, @RequestBody @Validated UpdateLaboratoryValueRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(@RequestHeader @Validated String token, @RequestBody @Validated UpdateLaboratoryValueRequest body) {
         BaseResponse<Boolean> response = laboratoryPresenter.updateLaboratoryValue(token, body);
 
         return ResponseEntity
@@ -116,7 +116,7 @@ public class AdminApi {
     }
 
     @DeleteMapping("/laboratory-value/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(@RequestParam @Validated String token, @RequestParam @Validated String laboratoryValueSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(@RequestHeader @Validated String token, @RequestParam @Validated String laboratoryValueSecureId) {
         BaseResponse<Boolean> response = laboratoryPresenter.deleteLaboratoryValue(token, laboratoryValueSecureId);
 
         return ResponseEntity
@@ -126,7 +126,7 @@ public class AdminApi {
     }
 
     @PostMapping("/theory/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createTheory (@RequestParam @Validated String token, @RequestBody @Validated CreateTheoryRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createTheory (@RequestHeader @Validated String token, @RequestBody @Validated CreateTheoryRequest body) {
         BaseResponse<CreateBaseResponse> response = theoryPresenter.createTheory(token, body);
 
         return ResponseEntity
@@ -136,7 +136,7 @@ public class AdminApi {
     }
 
     @PutMapping("/theory/update")
-    ResponseEntity<BaseResponse<Boolean>> updateTheory(@RequestParam @Validated String token, @RequestBody @Validated UpdateTheoryRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateTheory(@RequestHeader @Validated String token, @RequestBody @Validated UpdateTheoryRequest body) {
         BaseResponse<Boolean> response = theoryPresenter.updateTheory(token, body);
 
         return ResponseEntity
@@ -146,7 +146,7 @@ public class AdminApi {
     }
 
     @DeleteMapping("/theory/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestParam @Validated String token, @RequestParam @Validated String theorySecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestHeader @Validated String token, @RequestParam @Validated String theorySecureId) {
         BaseResponse<Boolean> response = theoryPresenter.deleteTheory(token, theorySecureId);
 
         return ResponseEntity
@@ -156,7 +156,7 @@ public class AdminApi {
     }
 
     @GetMapping("/consumer/list")
-    ResponseEntity<BaseResponse<List<LoginResponse>>> consumerList(@RequestParam @Validated String token) {
+    ResponseEntity<BaseResponse<List<LoginResponse>>> consumerList(@RequestHeader @Validated String token) {
         BaseResponse<List<LoginResponse>> response = authPresenter.getUserList(token);
 
         return ResponseEntity
