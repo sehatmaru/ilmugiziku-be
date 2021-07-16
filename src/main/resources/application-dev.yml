@@ -7,11 +7,11 @@ logging:
 spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
-#        hikari:
-#            max-lifetime: 300000
-        username: usrx
-        password: xcodev2021
-        url: jdbc:mysql://165.22.101.150:3306/xcodev?useSSL=false
+        hikari:
+            max-lifetime: 300000
+        password: Q)&lFe5LQ#tC
+        url: jdbc:mysql://xcodev.my.id:3306/xcodecom_db
+        username: xcodecom_user
     jpa:
         hibernate:
             ddl-auto: update
