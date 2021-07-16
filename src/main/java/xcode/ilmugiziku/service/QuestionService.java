@@ -28,14 +28,14 @@ import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 public class QuestionService implements QuestionPresenter {
 
    private final AuthTokenService authTokenService;
+   private final AnswerService answerService;
 
    private final QuestionRepository questionRepository;
-   private final AnswerRepository answerRepository;
 
-   public QuestionService(AuthTokenService authTokenService, QuestionRepository questionRepository, AnswerRepository answerRepository) {
+   public QuestionService(AuthTokenService authTokenService, AnswerService answerService, QuestionRepository questionRepository) {
       this.authTokenService = authTokenService;
       this.questionRepository = questionRepository;
-      this.answerRepository = answerRepository;
+      this.answerService = answerService;
    }
 
    @Override
@@ -109,7 +109,7 @@ public class QuestionService implements QuestionPresenter {
             AnswerModel model = new AnswerModel();
 
             try {
-               model = answerRepository.findBySecureId(answer.getSecureId());
+               model = answerService.getAnswerBySecureId(answer.getSecureId());
             } catch (Exception e) {
                response.setFailed(e.toString());
             }
@@ -119,7 +119,7 @@ public class QuestionService implements QuestionPresenter {
             model.setUpdatedAt(new Date());
 
             try {
-               answerRepository.save(model);
+               answerService.saveByModel(model);
             } catch (Exception e){
                response.setFailed(e.toString());
             }
@@ -189,7 +189,7 @@ public class QuestionService implements QuestionPresenter {
       model.setCreatedAt(new Date());
 
       try {
-         answerRepository.save(model);
+         answerService.saveByModel(model);
       } catch (Exception e){
          System.out.println(e.getMessage());
       }
@@ -223,7 +223,7 @@ public class QuestionService implements QuestionPresenter {
                List<AnswerModel> answerModels = new ArrayList<>();
 
                try {
-                  answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
+                  answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
                } catch (Exception e) {
                   response.setFailed(e.toString());
                }

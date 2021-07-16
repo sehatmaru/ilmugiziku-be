@@ -24,14 +24,14 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 public class ScheduleService implements SchedulePresenter {
 
    private final AuthTokenService authTokenService;
+   private final AuthService authService;
 
    private final ScheduleRepository scheduleRepository;
-   private final AuthRepository authRepository;
 
-   public ScheduleService(AuthTokenService authTokenService, ScheduleRepository scheduleRepository, AuthRepository authRepository) {
+   public ScheduleService(AuthTokenService authTokenService, AuthService authService, ScheduleRepository scheduleRepository) {
       this.authTokenService = authTokenService;
+      this.authService = authService;
       this.scheduleRepository = scheduleRepository;
-      this.authRepository = authRepository;
    }
 
    @Override
@@ -43,7 +43,7 @@ public class ScheduleService implements SchedulePresenter {
          AuthModel auth = new AuthModel();
 
          try {
-            auth = authRepository.findBySecureIdAndDeletedAtIsNull(authSecureId);
+            auth = authService.getActiveAuthBySecureId(authSecureId);
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
@@ -85,7 +85,7 @@ public class ScheduleService implements SchedulePresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
+         if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
             ScheduleModel model = new ScheduleModel();
             model.setSecureId(generateSecureId());
             model.setAuthSecureId(request.getAuthSecureId());
@@ -117,7 +117,7 @@ public class ScheduleService implements SchedulePresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            if (authRepository.findBySecureIdAndDeletedAtIsNull(request.getAuthSecureId()) != null) {
+            if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
                for (ScheduleDateRequest schedule : request.getSchedules()) {
                   ScheduleModel model = new ScheduleModel();
                   try {
