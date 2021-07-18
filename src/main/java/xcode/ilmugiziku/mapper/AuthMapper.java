@@ -43,7 +43,7 @@ public class AuthMapper {
             response.setRole(request.getRole());
             response.setCreatedAt(new Date());
 
-            if (request.getPassword() != null) {
+            if (!request.getPassword().isEmpty()) {
                 response.setPassword(encrypt(request.getPassword()));
             }
 

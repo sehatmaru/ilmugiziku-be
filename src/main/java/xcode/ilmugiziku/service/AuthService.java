@@ -101,13 +101,25 @@ public class AuthService implements AuthPresenter {
       if (request.validate()) {
          try {
             if (authRepository.findByEmailAndDeletedAtIsNull(request.getEmail()) == null) {
+               if (request.getRegistrationType() != GOOGLE) {
+                  if (!request.getPassword().isEmpty()) {
+                     AuthModel model = authMapper.registerRequestToLoginModel(request);
+                     authRepository.save(model);
 
-               AuthModel model = authMapper.registerRequestToLoginModel(request);
-               authRepository.save(model);
+                     createResponse.setSecureId(model.getSecureId());
 
-               createResponse.setSecureId(model.getSecureId());
+                     response.setSuccess(createResponse);
+                  } else {
+                     response.setWrongParams();
+                  }
+               } else {
+                  AuthModel model = authMapper.registerRequestToLoginModel(request);
+                  authRepository.save(model);
 
-               response.setSuccess(createResponse);
+                  createResponse.setSecureId(model.getSecureId());
+
+                  response.setSuccess(createResponse);
+               }
             } else {
                response.setExistData("");
             }
