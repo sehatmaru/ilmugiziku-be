@@ -3,16 +3,16 @@ package xcode.ilmugiziku.service;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
-import xcode.ilmugiziku.domain.repository.AnswerRepository;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.request.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.UpdateAnswerRequest;
 import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.response.AnswerResponse;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.QuestionResponse;
+import xcode.ilmugiziku.mapper.AnswerMapper;
+import xcode.ilmugiziku.mapper.QuestionMapper;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 
@@ -31,6 +30,9 @@ public class QuestionService implements QuestionPresenter {
    private final AnswerService answerService;
 
    private final QuestionRepository questionRepository;
+
+   private final QuestionMapper questionMapper = new QuestionMapper();
+   private final AnswerMapper answerMapper = new AnswerMapper();
 
    public QuestionService(AuthTokenService authTokenService, AnswerService answerService, QuestionRepository questionRepository) {
       this.authTokenService = authTokenService;
@@ -71,23 +73,16 @@ public class QuestionService implements QuestionPresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (request.validate()) {
-         String questionTempSecureId = generateSecureId();
-
-         for (CreateAnswerRequest answer : request.getAnswers()) {
-            createAnswer(answer, questionTempSecureId);
-         }
-
-         QuestionModel model = new QuestionModel();
-         model.setSecureId(questionTempSecureId);
-         model.setContent(request.getContent());
-         model.setQuestionType(request.getQuestionType());
-         model.setQuestionSubType(request.getQuestionSubType());
-         model.setCreatedAt(new Date());
+         QuestionModel model = questionMapper.createRequestToModel(request);
 
          try {
             questionRepository.save(model);
 
-            createResponse.setSecureId(questionTempSecureId);
+            for (CreateAnswerRequest answer : request.getAnswers()) {
+               createAnswer(answer, model.getSecureId());
+            }
+
+            createResponse.setSecureId(model.getSecureId());
 
             response.setSuccess(createResponse);
          } catch (Exception e){
@@ -106,40 +101,19 @@ public class QuestionService implements QuestionPresenter {
 
       if (request.validate()) {
          for (UpdateAnswerRequest answer : request.getAnswers()) {
-            AnswerModel model = new AnswerModel();
-
             try {
-               model = answerService.getAnswerBySecureId(answer.getSecureId());
+               AnswerModel model = answerService.getAnswerBySecureId(answer.getSecureId());
+
+               answerService.save(answerMapper.updateRequestToModel(model, answer));
             } catch (Exception e) {
                response.setFailed(e.toString());
             }
-
-            model.setContent(answer.getContent());
-            model.setValue(answer.isValue());
-            model.setUpdatedAt(new Date());
-
-            try {
-               answerService.saveByModel(model);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
          }
 
-         QuestionModel model = new QuestionModel();
-
          try {
-            model = questionRepository.findBySecureId(request.getSecureId());
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+            QuestionModel model = questionRepository.findBySecureId(request.getSecureId());
 
-         model.setContent(request.getContent());
-         model.setQuestionType(request.getQuestionType());
-         model.setQuestionSubType(request.getQuestionSubType());
-         model.setUpdatedAt(new Date());
-
-         try {
-            questionRepository.save(model);
+            questionRepository.save(questionMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){
@@ -181,15 +155,8 @@ public class QuestionService implements QuestionPresenter {
    }
 
    private void createAnswer(CreateAnswerRequest request, String questionSecureId) {
-      AnswerModel model = new AnswerModel();
-      model.setSecureId(generateSecureId());
-      model.setContent(request.getContent());
-      model.setQuestionSecureId(questionSecureId);
-      model.setValue(request.isValue());
-      model.setCreatedAt(new Date());
-
       try {
-         answerService.saveByModel(model);
+         answerService.save(answerMapper.createRequestToModel(request, questionSecureId));
       } catch (Exception e){
          System.out.println(e.getMessage());
       }
@@ -200,27 +167,22 @@ public class QuestionService implements QuestionPresenter {
       List<QuestionResponse> questionResponses = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
-         List<QuestionModel> models = new ArrayList<>();
+         List<QuestionModel> questionModels = new ArrayList<>();
+         List<AnswerModel> answerModels = new ArrayList<>();
 
          try {
             if (questionSubType == 0) {
-               models = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
+               questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
             } else {
-               models = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
+               questionModels = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
             }
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
 
-         if (models != null) {
-            for (QuestionModel question : models) {
-               QuestionResponse questionResponse = new QuestionResponse();
-               questionResponse.setSecureId(question.getSecureId());
-               questionResponse.setContent(question.getContent());
-               questionResponse.setQuestionType(question.getQuestionType());
-               questionResponse.setQuestionSubType(questionResponse.getQuestionSubType());
-
-               List<AnswerModel> answerModels = new ArrayList<>();
+         if (questionModels != null) {
+            for (QuestionModel question : questionModels) {
+               QuestionResponse questionResponse = questionMapper.modelToResponse(question);
 
                try {
                   answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
@@ -228,17 +190,7 @@ public class QuestionService implements QuestionPresenter {
                   response.setFailed(e.toString());
                }
 
-               List<AnswerResponse> answers = new ArrayList<>();
-               for (AnswerModel answer : answerModels) {
-                  AnswerResponse answerResponse = new AnswerResponse();
-                  answerResponse.setSecureId(answer.getSecureId());
-                  answerResponse.setContent(answer.getContent());
-                  answerResponse.setValue(answer.isValue());
-
-                  answers.add(answerResponse);
-
-                  questionResponse.setAnswers(answers);
-               }
+               questionResponse.setAnswers(answerMapper.modelsToResponses(answerModels));
 
                questionResponses.add(questionResponse);
             }

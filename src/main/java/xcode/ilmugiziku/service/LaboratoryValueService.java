@@ -8,14 +8,13 @@ import xcode.ilmugiziku.domain.request.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
+import xcode.ilmugiziku.mapper.LaboratoryValueMapper;
 import xcode.ilmugiziku.presenter.LaboratoryPresenter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
 public class LaboratoryValueService implements LaboratoryPresenter {
@@ -23,6 +22,8 @@ public class LaboratoryValueService implements LaboratoryPresenter {
    private final AuthTokenService authTokenService;
 
    private final LaboratoryValueRepository laboratoryValueRepository;
+
+   private final LaboratoryValueMapper laboratoryValueMapper = new LaboratoryValueMapper();
 
    public LaboratoryValueService(AuthTokenService authTokenService, LaboratoryValueRepository laboratoryValueRepository) {
       this.authTokenService = authTokenService;
@@ -32,22 +33,12 @@ public class LaboratoryValueService implements LaboratoryPresenter {
    @Override
    public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList(String token) {
       BaseResponse<List<LaboratoryValueResponse>> response = new BaseResponse<>();
-      List<LaboratoryValueResponse> laboratoryValueResponses = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
          try {
             List<LaboratoryValueModel> models = laboratoryValueRepository.findByDeletedAtIsNull();
 
-            for (LaboratoryValueModel model : models) {
-               LaboratoryValueResponse value = new LaboratoryValueResponse();
-               value.setSecureId(model.getSecureId());
-               value.setContent(model.getContent());
-               value.setValue(model.getValue());
-
-               laboratoryValueResponses.add(value);
-            }
-
-            response.setSuccess(laboratoryValueResponses);
+            response.setSuccess(laboratoryValueMapper.modelsToResponses(models));
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
@@ -64,18 +55,12 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         String tempSecureId = generateSecureId();
-
-         LaboratoryValueModel model = new LaboratoryValueModel();
-         model.setSecureId(tempSecureId);
-         model.setContent(request.getContent());
-         model.setValue(request.getValue());
-         model.setCreatedAt(new Date());
+         LaboratoryValueModel model = laboratoryValueMapper.createRequestToModel(request);
 
          try {
             laboratoryValueRepository.save(model);
 
-            createResponse.setSecureId(tempSecureId);
+            createResponse.setSecureId(model.getSecureId());
 
             response.setSuccess(createResponse);
          } catch (Exception e){
@@ -101,12 +86,8 @@ public class LaboratoryValueService implements LaboratoryPresenter {
             response.setMessage(FAILED_MESSAGE);
          }
 
-         model.setContent(request.getContent());
-         model.setValue(request.getValue());
-         model.setUpdatedAt(new Date());
-
          try {
-            laboratoryValueRepository.save(model);
+            laboratoryValueRepository.save(laboratoryValueMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){

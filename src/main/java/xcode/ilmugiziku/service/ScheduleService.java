@@ -3,7 +3,6 @@ package xcode.ilmugiziku.service;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
-import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.repository.ScheduleRepository;
 import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.ScheduleDateRequest;
@@ -11,14 +10,14 @@ import xcode.ilmugiziku.domain.request.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
+import xcode.ilmugiziku.mapper.ScheduleMapper;
 import xcode.ilmugiziku.presenter.SchedulePresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
 public class ScheduleService implements SchedulePresenter {
@@ -27,6 +26,8 @@ public class ScheduleService implements SchedulePresenter {
    private final AuthService authService;
 
    private final ScheduleRepository scheduleRepository;
+
+   private final ScheduleMapper scheduleMapper = new ScheduleMapper();
 
    public ScheduleService(AuthTokenService authTokenService, AuthService authService, ScheduleRepository scheduleRepository) {
       this.authTokenService = authTokenService;
@@ -37,7 +38,6 @@ public class ScheduleService implements SchedulePresenter {
    @Override
    public BaseResponse<List<ScheduleResponse>> getScheduleList(String token, String authSecureId) {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
-      List<ScheduleResponse> lists = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
          AuthModel auth = new AuthModel();
@@ -57,18 +57,7 @@ public class ScheduleService implements SchedulePresenter {
                response.setFailed(e.toString());
             }
 
-            for (ScheduleModel model : models) {
-               ScheduleResponse schedule = new ScheduleResponse();
-               schedule.setSchedule(model.getSchedule());
-               schedule.setSecureId(model.getSecureId());
-               schedule.setDesc(model.getDescription());
-               schedule.setStartTime(model.getStartTime());
-               schedule.setEndTime(model.getEndTime());
-
-               lists.add(schedule);
-            }
-
-            response.setSuccess(lists);
+            response.setSuccess(scheduleMapper.modelsToResponses(models));
          } else {
             response.setNotFound("");
          }
@@ -86,14 +75,7 @@ public class ScheduleService implements SchedulePresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
-            ScheduleModel model = new ScheduleModel();
-            model.setSecureId(generateSecureId());
-            model.setAuthSecureId(request.getAuthSecureId());
-            model.setDescription(request.getDesc());
-            model.setSchedule(request.getSchedule());
-            model.setStartTime(request.getStartTime());
-            model.setEndTime(request.getEndTime());
-            model.setCreatedAt(new Date());
+            ScheduleModel model = scheduleMapper.createRequestToModel(request);
 
             if (create(model)) {
                createResponse.setSecureId(model.getSecureId());
@@ -127,30 +109,15 @@ public class ScheduleService implements SchedulePresenter {
                   }
 
                   if (model != null) {
-                     model.setSchedule(schedule.getDate());
-                     model.setDescription(schedule.getDesc());
-                     model.setStartTime(schedule.getStartTime());
-                     model.setEndTime(schedule.getEndTime());
-                     model.setUpdatedAt(new Date());
-
                      try {
-                        scheduleRepository.save(model);
+                        scheduleRepository.save(scheduleMapper.updateRequestToModel(model, schedule));
 
                         response.setSuccess(true);
                      } catch (Exception e){
                         response.setFailed(e.toString());
                      }
                   } else {
-                     ScheduleModel sch = new ScheduleModel();
-                     sch.setSecureId(generateSecureId());
-                     sch.setSchedule(schedule.getDate());
-                     sch.setDescription(schedule.getDesc());
-                     sch.setStartTime(schedule.getStartTime());
-                     sch.setEndTime(schedule.getEndTime());
-                     sch.setAuthSecureId(request.getAuthSecureId());
-                     sch.setCreatedAt(new Date());
-
-                     if (create(sch)) {
+                     if (create(scheduleMapper.createRequestToModel(schedule, request.getAuthSecureId()))) {
                         response.setSuccess(true);
                      } else {
                         response.setFailed("");

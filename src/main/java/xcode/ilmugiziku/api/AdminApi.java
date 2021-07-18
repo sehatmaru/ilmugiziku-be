@@ -9,6 +9,7 @@ import xcode.ilmugiziku.domain.request.*;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LoginResponse;
+import xcode.ilmugiziku.domain.response.UserResponse;
 import xcode.ilmugiziku.presenter.*;
 
 import java.util.List;
@@ -156,8 +157,8 @@ public class AdminApi {
     }
 
     @GetMapping("/consumer/list")
-    ResponseEntity<BaseResponse<List<LoginResponse>>> consumerList(@RequestParam @Validated String token) {
-        BaseResponse<List<LoginResponse>> response = authPresenter.getUserList(token);
+    ResponseEntity<BaseResponse<List<UserResponse>>> consumerList(@RequestParam @Validated String token) {
+        BaseResponse<List<UserResponse>> response = authPresenter.getUserList(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

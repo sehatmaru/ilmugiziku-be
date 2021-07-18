@@ -29,7 +29,6 @@ public class AuthTokenService {
 
    public String generateAuthToken(String secureId) {
       String token = new AuthTokenGenerator().showString();
-      System.out.println(token);
       AuthTokenModel tokenModel = new AuthTokenModel(token, secureId);
       authTokenRepository.save(tokenModel);
 
