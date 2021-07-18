@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.*;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.LoginResponse;
 import xcode.ilmugiziku.domain.response.UserResponse;
 import xcode.ilmugiziku.presenter.*;
 
@@ -159,6 +158,16 @@ public class AdminApi {
     @GetMapping("/consumer/list")
     ResponseEntity<BaseResponse<List<UserResponse>>> consumerList(@RequestParam @Validated String token) {
         BaseResponse<List<UserResponse>> response = authPresenter.getUserList(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/token/destroy")
+    ResponseEntity<BaseResponse<Boolean>> destroyToken(@RequestParam @Validated String email) {
+        BaseResponse<Boolean> response = authPresenter.destroyToken(email);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

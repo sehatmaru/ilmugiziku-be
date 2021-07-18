@@ -161,9 +161,39 @@ public class AuthService implements AuthPresenter {
       return response;
    }
 
+   @Override
+   public BaseResponse<Boolean> destroyToken(String request) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      if (!request.isEmpty()) {
+         AuthModel model = new AuthModel();
+
+         try {
+            model = authRepository.findByEmailAndDeletedAtIsNull(request);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
+         }
+
+         if (model != null) {
+            AuthTokenModel authTokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
+
+            if (authTokenModel != null) {
+               authTokenService.destroyAuthToken(authTokenModel);
+
+               response.setSuccess(true);
+            }
+         } else {
+            response.setNotFound(AUTH_ERROR_MESSAGE);
+         }
+      } else {
+         response.setWrongParams();
+      }
+
+      return response;
+   }
+
    public AuthModel getActiveAuthBySecureId(String secureId) {
       return authRepository.findBySecureIdAndDeletedAtIsNull(secureId);
    }
-
 
 }

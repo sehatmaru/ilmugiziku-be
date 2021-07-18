@@ -14,4 +14,5 @@ public interface AuthPresenter {
    BaseResponse<CreateBaseResponse> register(RegisterRequest request);
    BaseResponse<List<UserResponse>> getUserList(String token);
    BaseResponse<Boolean> logout(String token);
+   BaseResponse<Boolean> destroyToken(String request);
 }
