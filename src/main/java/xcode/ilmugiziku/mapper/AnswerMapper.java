@@ -4,6 +4,7 @@ import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.request.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.UpdateAnswerRequest;
 import xcode.ilmugiziku.domain.response.AnswerResponse;
+import xcode.ilmugiziku.domain.response.AnswerValueResponse;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,9 +42,35 @@ public class AnswerMapper {
         }
     }
 
-    public AnswerResponse modelToResponse(AnswerModel model) {
+    public AnswerResponse modelToAnswerResponse(AnswerModel model) {
         if (model != null) {
             AnswerResponse response = new AnswerResponse();
+            response.setSecureId(model.getSecureId());
+            response.setContent(model.getContent());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public List<AnswerResponse> modelsToAnswerResponses(List<AnswerModel> models) {
+        if (models != null) {
+            List<AnswerResponse> response = new ArrayList<>();
+
+            for (AnswerModel model : models) {
+                response.add(modelToAnswerResponse(model));
+            }
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public AnswerValueResponse modelToAnswerValueResponse(AnswerModel model) {
+        if (model != null) {
+            AnswerValueResponse response = new AnswerValueResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setValue(model.isValue());
@@ -54,12 +81,12 @@ public class AnswerMapper {
         }
     }
 
-    public List<AnswerResponse> modelsToResponses(List<AnswerModel> models) {
+    public List<AnswerValueResponse> modelsToAnswerValueResponses(List<AnswerModel> models) {
         if (models != null) {
-            List<AnswerResponse> response = new ArrayList<>();
+            List<AnswerValueResponse> response = new ArrayList<>();
 
             for (AnswerModel model : models) {
-                response.add(modelToResponse(model));
+                response.add(modelToAnswerValueResponse(model));
             }
 
             return response;

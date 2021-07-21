@@ -9,6 +9,7 @@ import xcode.ilmugiziku.domain.request.CreateExamRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateExamResponse;
 import xcode.ilmugiziku.domain.response.QuestionResponse;
+import xcode.ilmugiziku.domain.response.QuestionValueResponse;
 import xcode.ilmugiziku.presenter.ExamPresenter;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
@@ -29,17 +30,27 @@ public class ExamApi {
         this.examPresenter = examPresenter;
     }
 
-    @GetMapping("/question/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> questionList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
-        BaseResponse<List<QuestionResponse>> response;
+    @GetMapping("/quiz/list")
+    ResponseEntity<BaseResponse<List<QuestionValueResponse>>> quizList (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+        BaseResponse<List<QuestionValueResponse>> response = new BaseResponse<>();
 
         if (questionType == QUIZ) {
             response = questionPresenter.getQuizQuestions(token);
         } else if (questionType == PRACTICE) {
             response = questionPresenter.getPracticeQuestions(token);
         } else {
-            response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
+            response.setWrongParams();
         }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/try-out/list")
+    ResponseEntity<BaseResponse<List<QuestionResponse>>> tryOutList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+        BaseResponse<List<QuestionResponse>> response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

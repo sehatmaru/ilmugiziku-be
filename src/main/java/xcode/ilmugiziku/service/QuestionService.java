@@ -11,6 +11,7 @@ import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.QuestionResponse;
+import xcode.ilmugiziku.domain.response.QuestionValueResponse;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
@@ -20,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 
 @Service
@@ -41,13 +41,13 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<List<QuestionResponse>> getQuizQuestions(String token) {
-      return getQuestions(token, QUIZ, NONE);
+   public BaseResponse<List<QuestionValueResponse>> getQuizQuestions(String token) {
+      return getQuiz(token, QUIZ);
    }
 
    @Override
-   public BaseResponse<List<QuestionResponse>> getPracticeQuestions(String token) {
-      return getQuestions(token, PRACTICE, NONE);
+   public BaseResponse<List<QuestionValueResponse>> getPracticeQuestions(String token) {
+      return getQuiz(token, PRACTICE);
    }
 
    @Override
@@ -56,7 +56,7 @@ public class QuestionService implements QuestionPresenter {
 
       if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
          if (questionSubType > 0 && questionSubType < 5) {
-            response = getQuestions(token, questionType, questionSubType);
+            response = getTryOut(token, questionType, questionSubType);
          } else {
             response.setWrongParams();
          }
@@ -162,7 +162,7 @@ public class QuestionService implements QuestionPresenter {
       }
    }
 
-   private BaseResponse<List<QuestionResponse>> getQuestions(String token, int questionType, int questionSubType) {
+   private BaseResponse<List<QuestionResponse>> getTryOut(String token, int questionType, int questionSubType) {
       BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
       List<QuestionResponse> questionResponses = new ArrayList<>();
 
@@ -182,7 +182,7 @@ public class QuestionService implements QuestionPresenter {
 
          if (questionModels != null) {
             for (QuestionModel question : questionModels) {
-               QuestionResponse questionResponse = questionMapper.modelToResponse(question);
+               QuestionResponse questionResponse = questionMapper.modelToQuestionResponse(question);
 
                try {
                   answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
@@ -190,7 +190,40 @@ public class QuestionService implements QuestionPresenter {
                   response.setFailed(e.toString());
                }
 
-               questionResponse.setAnswers(answerMapper.modelsToResponses(answerModels));
+               questionResponse.setAnswers(answerMapper.modelsToAnswerResponses(answerModels));
+
+               questionResponses.add(questionResponse);
+            }
+
+            response.setSuccess(questionResponses);
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   private BaseResponse<List<QuestionValueResponse>> getQuiz(String token, int questionType) {
+      BaseResponse<List<QuestionValueResponse>> response = new BaseResponse<>();
+      List<QuestionValueResponse> questionResponses = new ArrayList<>();
+
+      if (authTokenService.isValidToken(token)) {
+         List<AnswerModel> answerModels = new ArrayList<>();
+
+         List<QuestionModel> questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
+
+         if (questionModels != null) {
+            for (QuestionModel question : questionModels) {
+               QuestionValueResponse questionResponse = questionMapper.modelToQuestionValueResponse(question);
+
+               try {
+                  answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
+               } catch (Exception e) {
+                  response.setFailed(e.toString());
+               }
+
+               questionResponse.setAnswers(answerMapper.modelsToAnswerValueResponses(answerModels));
 
                questionResponses.add(questionResponse);
             }

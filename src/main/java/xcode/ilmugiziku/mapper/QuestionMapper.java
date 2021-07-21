@@ -4,6 +4,7 @@ import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.QuestionResponse;
+import xcode.ilmugiziku.domain.response.QuestionValueResponse;
 
 import java.util.Date;
 
@@ -11,9 +12,23 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class QuestionMapper {
 
-    public QuestionResponse modelToResponse(QuestionModel model) {
+    public QuestionResponse modelToQuestionResponse(QuestionModel model) {
         if (model != null) {
             QuestionResponse response = new QuestionResponse();
+            response.setSecureId(model.getSecureId());
+            response.setContent(model.getContent());
+            response.setQuestionType(model.getQuestionType());
+            response.setQuestionSubType(model.getQuestionSubType());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public QuestionValueResponse modelToQuestionValueResponse(QuestionModel model) {
+        if (model != null) {
+            QuestionValueResponse response = new QuestionValueResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setQuestionType(model.getQuestionType());
