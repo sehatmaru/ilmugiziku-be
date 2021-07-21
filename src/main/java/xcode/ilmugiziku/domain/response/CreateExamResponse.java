@@ -8,6 +8,7 @@ import lombok.Setter;
 public class CreateExamResponse {
     private String secureId;
     private int score;
-    private int falseCount;
-    private int correctCount;
+    private int incorrect;
+    private int correct;
+    private int blank;
 }

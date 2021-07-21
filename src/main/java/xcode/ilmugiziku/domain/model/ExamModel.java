@@ -33,6 +33,15 @@ public class ExamModel {
    @Column(name = "score")
    private int score;
 
+   @Column(name = "blank")
+   private int blank;
+
+   @Column(name = "correct")
+   private int correct;
+
+   @Column(name = "incorrect")
+   private int incorrect;
+
    @Column(name = "auth_secure_id")
    private String authSecureId;
 
