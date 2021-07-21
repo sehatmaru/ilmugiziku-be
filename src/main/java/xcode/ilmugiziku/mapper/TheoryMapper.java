@@ -1,8 +1,8 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.TheoryModel;
-import xcode.ilmugiziku.domain.request.CreateTheoryRequest;
-import xcode.ilmugiziku.domain.request.UpdateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
 
 import java.util.ArrayList;

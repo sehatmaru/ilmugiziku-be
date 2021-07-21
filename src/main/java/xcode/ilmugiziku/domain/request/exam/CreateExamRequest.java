@@ -1,7 +1,8 @@
-package xcode.ilmugiziku.domain.request;
+package xcode.ilmugiziku.domain.request.exam;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.request.exam.ExamRequest;
 
 @Getter
 @Setter

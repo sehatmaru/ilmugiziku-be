@@ -1,11 +1,11 @@
 package xcode.ilmugiziku.presenter;
 
-import xcode.ilmugiziku.domain.request.LoginRequest;
-import xcode.ilmugiziku.domain.request.RegisterRequest;
+import xcode.ilmugiziku.domain.request.auth.LoginRequest;
+import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.LoginResponse;
-import xcode.ilmugiziku.domain.response.UserResponse;
+import xcode.ilmugiziku.domain.response.auth.LoginResponse;
+import xcode.ilmugiziku.domain.response.auth.UserResponse;
 
 import java.util.List;
 

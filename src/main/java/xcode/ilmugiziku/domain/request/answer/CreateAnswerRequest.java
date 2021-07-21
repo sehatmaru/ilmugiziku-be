@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.request;
+package xcode.ilmugiziku.domain.request.answer;
 
 import lombok.Getter;
 import lombok.Setter;

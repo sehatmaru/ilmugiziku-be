@@ -1,8 +1,8 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.ExamModel;
-import xcode.ilmugiziku.domain.request.CreateExamRequest;
-import xcode.ilmugiziku.domain.request.ExamRequest;
+import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
+import xcode.ilmugiziku.domain.request.exam.ExamRequest;
 import xcode.ilmugiziku.domain.response.CreateExamResponse;
 
 public class ExamMapper {

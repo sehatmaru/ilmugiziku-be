@@ -1,7 +1,7 @@
 package xcode.ilmugiziku.presenter;
 
-import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
-import xcode.ilmugiziku.domain.request.UpdateScheduleRequest;
+import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
+import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;

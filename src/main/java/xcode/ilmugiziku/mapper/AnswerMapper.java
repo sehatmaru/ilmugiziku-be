@@ -1,10 +1,10 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.AnswerModel;
-import xcode.ilmugiziku.domain.request.CreateAnswerRequest;
-import xcode.ilmugiziku.domain.request.UpdateAnswerRequest;
-import xcode.ilmugiziku.domain.response.AnswerResponse;
-import xcode.ilmugiziku.domain.response.AnswerValueResponse;
+import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
+import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
+import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
+import xcode.ilmugiziku.domain.response.answer.AnswerValueResponse;
 
 import java.util.ArrayList;
 import java.util.Date;

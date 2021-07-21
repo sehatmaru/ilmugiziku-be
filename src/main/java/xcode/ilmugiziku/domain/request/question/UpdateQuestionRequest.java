@@ -1,12 +1,10 @@
-package xcode.ilmugiziku.domain.request;
+package xcode.ilmugiziku.domain.request.question;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 
 import java.util.List;
-
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
 
 @Getter
 @Setter

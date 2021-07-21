@@ -1,9 +1,9 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.request.RegisterRequest;
-import xcode.ilmugiziku.domain.response.LoginResponse;
-import xcode.ilmugiziku.domain.response.UserResponse;
+import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
+import xcode.ilmugiziku.domain.response.auth.LoginResponse;
+import xcode.ilmugiziku.domain.response.auth.UserResponse;
 
 import java.util.ArrayList;
 import java.util.Date;

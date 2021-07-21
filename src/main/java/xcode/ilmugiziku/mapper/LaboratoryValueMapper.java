@@ -1,8 +1,8 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.LaboratoryValueModel;
-import xcode.ilmugiziku.domain.request.CreateLaboratoryValueRequest;
-import xcode.ilmugiziku.domain.request.UpdateLaboratoryValueRequest;
+import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
+import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
 
 import java.util.ArrayList;

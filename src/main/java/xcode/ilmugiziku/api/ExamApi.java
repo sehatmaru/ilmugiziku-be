@@ -5,11 +5,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.request.CreateExamRequest;
+import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateExamResponse;
-import xcode.ilmugiziku.domain.response.QuestionResponse;
-import xcode.ilmugiziku.domain.response.QuestionValueResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
 import xcode.ilmugiziku.presenter.ExamPresenter;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 

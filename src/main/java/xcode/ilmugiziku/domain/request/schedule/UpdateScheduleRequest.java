@@ -1,9 +1,8 @@
-package xcode.ilmugiziku.domain.request;
+package xcode.ilmugiziku.domain.request.schedule;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter

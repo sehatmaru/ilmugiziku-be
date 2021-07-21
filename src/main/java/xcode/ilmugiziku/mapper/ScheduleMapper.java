@@ -1,8 +1,8 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.ScheduleModel;
-import xcode.ilmugiziku.domain.request.CreateScheduleRequest;
-import xcode.ilmugiziku.domain.request.ScheduleDateRequest;
+import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
+import xcode.ilmugiziku.domain.request.schedule.ScheduleDateRequest;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
 
 import java.util.ArrayList;

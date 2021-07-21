@@ -4,12 +4,12 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
-import xcode.ilmugiziku.domain.request.LoginRequest;
-import xcode.ilmugiziku.domain.request.RegisterRequest;
+import xcode.ilmugiziku.domain.request.auth.LoginRequest;
+import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.LoginResponse;
-import xcode.ilmugiziku.domain.response.UserResponse;
+import xcode.ilmugiziku.domain.response.auth.LoginResponse;
+import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.mapper.AuthMapper;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 

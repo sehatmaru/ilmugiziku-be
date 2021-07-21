@@ -1,7 +1,8 @@
-package xcode.ilmugiziku.domain.request;
+package xcode.ilmugiziku.domain.request.question;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
 
 import java.util.List;
 

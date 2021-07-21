@@ -1,10 +1,10 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.QuestionModel;
-import xcode.ilmugiziku.domain.request.CreateQuestionRequest;
-import xcode.ilmugiziku.domain.request.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.response.QuestionResponse;
-import xcode.ilmugiziku.domain.response.QuestionValueResponse;
+import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
+import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
+import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
 
 import java.util.Date;
 
