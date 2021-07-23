@@ -5,18 +5,18 @@ import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
 import xcode.ilmugiziku.domain.response.CreateExamResponse;
 
+import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+
 public class ExamMapper {
     public ExamModel createRequestToModel(CreateExamRequest request, CreateExamResponse response) {
         if (request != null) {
             ExamModel result = new ExamModel();
-            result.setSecureId(result.getSecureId());
+            result.setSecureId(generateSecureId());
             result.setQuestions(arrayToString(request.getExams(), "question"));
             result.setAnswers(arrayToString(request.getExams(), "answer"));
-            result.setScore(response.getScore());
             result.setBlank(response.getBlank());
-            result.setCorrect(response.getCorrect());
-            result.setIncorrect(response.getIncorrect());
             result.setQuestionType(request.getQuestionType());
+            result.setQuestionSubType(request.getQuestionSubType());
             result.setQuestionSubType(request.getQuestionSubType());
 
             return result;
@@ -51,5 +51,25 @@ public class ExamMapper {
         }
 
         return result.toString();
+    }
+
+    public CreateExamResponse generateResponse(ExamRequest[] exams) {
+        CreateExamResponse result = new CreateExamResponse();
+        int blank = 0;
+        int answered = 0;
+
+        for (ExamRequest exam: exams) {
+            if (exam.getAnswersSecureId().isEmpty()) {
+                blank += 1;
+            } else {
+                answered += 1;
+            }
+        }
+
+        result.setSecureId(generateSecureId());
+        result.setAnswered(answered);
+        result.setBlank(blank);
+
+        return result;
     }
 }

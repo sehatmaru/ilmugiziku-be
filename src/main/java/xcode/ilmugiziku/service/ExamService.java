@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.ExamModel;
+import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.repository.ExamRepository;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
@@ -12,8 +13,9 @@ import xcode.ilmugiziku.domain.response.CreateExamResponse;
 import xcode.ilmugiziku.mapper.ExamMapper;
 import xcode.ilmugiziku.presenter.ExamPresenter;
 
+import java.util.Date;
+
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
 public class ExamService implements ExamPresenter {
@@ -21,16 +23,18 @@ public class ExamService implements ExamPresenter {
    private final AuthTokenService authTokenService;
    private final AuthService authService;
    private final AnswerService answerService;
+   private final ScheduleService scheduleService;
 
    private final ExamRepository examRepository;
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public ExamService(AuthTokenService authTokenService, AuthService authService, AnswerService answerService, ExamRepository examRepository) {
+   public ExamService(AuthTokenService authTokenService, AuthService authService, AnswerService answerService, ScheduleService scheduleService, ExamRepository examRepository) {
       this.authTokenService = authTokenService;
       this.authService = authService;
       this.examRepository = examRepository;
       this.answerService = answerService;
+      this.scheduleService = scheduleService;
    }
 
    @Override
@@ -41,19 +45,27 @@ public class ExamService implements ExamPresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            if (authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId()) != null) {
-               CreateExamResponse createResponse = scoreCounter(request.getExams());
+            ScheduleModel schedule = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
 
-               ExamModel model = examMapper.createRequestToModel(request, createResponse);
-               model.setAuthSecureId(authTokenModel.getAuthSecureId());
+            if (authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId()) != null
+                    && schedule.getSecureId() != null) {
+               if (!isExamExist(schedule.getSecureId(), authTokenModel.getAuthSecureId())) {
+                  CreateExamResponse createResponse = examMapper.generateResponse(request.getExams());
 
-               try {
-                  examRepository.save(model);
-               } catch (Exception e) {
-                  response.setFailed("");
+                  ExamModel model = examMapper.createRequestToModel(request, createResponse);
+                  model.setAuthSecureId(authTokenModel.getAuthSecureId());
+                  model.setScheduleSecureId(schedule.getSecureId());
+
+                  try {
+                     examRepository.save(calculateScore(request.getExams(), model));
+                  } catch (Exception e) {
+                     response.setFailed("");
+                  }
+
+                  response.setSuccess(createResponse);
+               } else {
+                  response.setExistData("");
                }
-
-               response.setSuccess(createResponse);
             } else {
                response.setNotFound("");
             }
@@ -67,18 +79,13 @@ public class ExamService implements ExamPresenter {
       return response;
    }
 
-   private CreateExamResponse scoreCounter(ExamRequest[] exams) {
-      CreateExamResponse result = new CreateExamResponse();
-
+   private ExamModel calculateScore(ExamRequest[] exams, ExamModel model) {
       int score = 0;
-      int blank = 0;
       int correct = 0;
       int incorrect = 0;
 
       for (ExamRequest exam: exams) {
-         if (exam.getAnswersSecureId().isEmpty()) {
-            blank += 1;
-         } else {
+         if (!exam.getAnswersSecureId().isEmpty()) {
             boolean res = false;
 
             for (AnswerModel answer: answerService.getAnswerListByQuestionSecureId(exam.getQuestionsSecureId())) {
@@ -102,12 +109,14 @@ public class ExamService implements ExamPresenter {
          score = (int) Math.round(tmp * 100);
       }
 
-      result.setSecureId(generateSecureId());
-      result.setScore(score);
-      result.setBlank(blank);
-      result.setCorrect(correct);
-      result.setIncorrect(incorrect);
+      model.setScore(score);
+      model.setCorrect(correct);
+      model.setIncorrect(incorrect);
 
-      return result;
+      return model;
+   }
+
+   private boolean isExamExist(String schedule, String auth) {
+      return examRepository.findByScheduleSecureIdAndAuthSecureId(schedule, auth) != null;
    }
 }

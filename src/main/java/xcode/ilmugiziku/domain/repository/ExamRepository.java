@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface ExamRepository extends JpaRepository<ExamModel, String> {
 
-   ExamModel findById(int id);
-
    ExamModel findBySecureId(String secureId);
+
+   ExamModel findByScheduleSecureIdAndAuthSecureId(String scheduleSecureId, String authSecureId);
 
    List<ExamModel> findAllByAuthSecureId(String authSecureId);
 }

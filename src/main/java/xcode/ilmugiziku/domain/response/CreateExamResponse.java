@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class CreateExamResponse {
     private String secureId;
-    private int score;
-    private int incorrect;
-    private int correct;
+    private int answered;
     private int blank;
 }

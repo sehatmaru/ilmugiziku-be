@@ -180,4 +180,17 @@ public class ScheduleService implements SchedulePresenter {
 
       return result;
    }
+
+   public ScheduleModel getScheduleByDateAndAuthSecureId(Date date, String authSecureId) {
+      List<ScheduleModel> schedules =  scheduleRepository.findByAuthSecureIdAndDeletedAtIsNull(authSecureId);
+      ScheduleModel model = new ScheduleModel();
+
+      for (ScheduleModel schedule: schedules) {
+         if (date.after(schedule.getStartDate()) && date.before(schedule.getEndDate())) {
+            model = schedule;
+         }
+      }
+
+      return model;
+   }
 }

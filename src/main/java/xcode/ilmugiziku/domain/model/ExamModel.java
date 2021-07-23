@@ -45,6 +45,9 @@ public class ExamModel {
    @Column(name = "auth_secure_id")
    private String authSecureId;
 
+   @Column(name = "schedule_secure_id")
+   private String scheduleSecureId;
+
    @Column(name = "question_type")
    private int questionType;
 
