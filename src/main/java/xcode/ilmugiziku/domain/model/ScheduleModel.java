@@ -27,14 +27,11 @@ public class ScheduleModel {
    @Column(name = "description")
    private String description;
 
-   @Column(name = "schedule")
-   private Date schedule;
+   @Column(name = "start_date")
+   private Date startDate;
 
-   @Column(name = "start_time")
-   private String startTime;
-
-   @Column(name = "end_time")
-   private String endTime;
+   @Column(name = "end_date")
+   private Date endDate;
 
    @Column(name = "auth_secure_id")
    private String authSecureId;

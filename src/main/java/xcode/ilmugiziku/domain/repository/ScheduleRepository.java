@@ -12,7 +12,5 @@ public interface ScheduleRepository extends JpaRepository<ScheduleModel, String>
 
    ScheduleModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<ScheduleModel> findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(String authSecureId);
-
-   ScheduleModel findByScheduleAndAuthSecureIdAndDeletedAtIsNull(Date schedule, String authSecureId);
+   List<ScheduleModel> findByAuthSecureIdAndDeletedAtIsNull(String authSecureId);
 }

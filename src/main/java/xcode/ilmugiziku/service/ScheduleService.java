@@ -52,7 +52,7 @@ public class ScheduleService implements SchedulePresenter {
             List<ScheduleModel> models = new ArrayList<>();
 
             try {
-               models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNullOrderBySchedule(authSecureId);
+               models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNull(authSecureId);
             } catch (Exception e) {
                response.setFailed(e.toString());
             }

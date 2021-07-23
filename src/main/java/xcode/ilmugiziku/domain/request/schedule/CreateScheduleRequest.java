@@ -10,9 +10,8 @@ import java.util.Date;
 public class CreateScheduleRequest {
     private String authSecureId;
     private String desc;
-    private Date schedule;
-    private String startTime;
-    private String endTime;
+    private Date startDate;
+    private Date endDate;
 
     public CreateScheduleRequest() {
     }

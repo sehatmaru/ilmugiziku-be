@@ -11,14 +11,13 @@ import java.util.List;
 public class ScheduleDateRequest {
     private String scheduleSecureId;
     private String desc;
-    private Date date;
-    private String startTime;
-    private String endTime;
+    private Date startDate;
+    private Date endDate;
 
     public ScheduleDateRequest() {
     }
 
     public boolean validate() {
-        return date != null && startTime != null && endTime != null;
+        return startDate != null && endDate != null;
     }
 }

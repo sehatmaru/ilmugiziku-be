@@ -16,11 +16,10 @@ public class ScheduleMapper {
     public ScheduleResponse modelToResponse(ScheduleModel model) {
         if (model != null) {
             ScheduleResponse response = new ScheduleResponse();
-            response.setSchedule(model.getSchedule());
+            response.setStartDate(model.getStartDate());
+            response.setEndDate(model.getEndDate());
             response.setSecureId(model.getSecureId());
             response.setDesc(model.getDescription());
-            response.setStartTime(model.getStartTime());
-            response.setEndTime(model.getEndTime());
 
             return response;
         } else {
@@ -48,9 +47,8 @@ public class ScheduleMapper {
             response.setSecureId(generateSecureId());
             response.setAuthSecureId(request.getAuthSecureId());
             response.setDescription(request.getDesc());
-            response.setSchedule(request.getSchedule());
-            response.setStartTime(request.getStartTime());
-            response.setEndTime(request.getEndTime());
+            response.setStartDate(request.getStartDate());
+            response.setEndDate(request.getEndDate());
             response.setCreatedAt(new Date());
 
             return response;
@@ -63,10 +61,9 @@ public class ScheduleMapper {
         if (request != null) {
             ScheduleModel response = new ScheduleModel();
             response.setSecureId(generateSecureId());
-            response.setSchedule(request.getDate());
             response.setDescription(request.getDesc());
-            response.setStartTime(request.getStartTime());
-            response.setEndTime(request.getEndTime());
+            response.setStartDate(request.getStartDate());
+            response.setEndDate(request.getEndDate());
             response.setAuthSecureId(authSecureId);
             response.setCreatedAt(new Date());
 
@@ -78,10 +75,9 @@ public class ScheduleMapper {
 
     public ScheduleModel updateRequestToModel(ScheduleModel model, ScheduleDateRequest request) {
         if (request != null && model != null) {
-            model.setSchedule(request.getDate());
             model.setDescription(request.getDesc());
-            model.setStartTime(request.getStartTime());
-            model.setEndTime(request.getEndTime());
+            model.setStartDate(request.getStartDate());
+            model.setEndDate(request.getEndDate());
             model.setUpdatedAt(new Date());
 
             return model;

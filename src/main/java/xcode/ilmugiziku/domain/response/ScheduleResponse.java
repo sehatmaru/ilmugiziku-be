@@ -11,7 +11,6 @@ import java.util.List;
 public class ScheduleResponse {
     private String secureId;
     private String desc;
-    private Date schedule;
-    private String startTime;
-    private String endTime;
+    private Date startDate;
+    private Date endDate;
 }
