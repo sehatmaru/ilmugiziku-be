@@ -6,8 +6,8 @@ import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
 
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.PRACTICE;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.QUIZ;
+import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
 
 @Getter
 @Setter
@@ -15,6 +15,7 @@ public class CreateQuestionRequest {
     private String content;
     private int questionType;
     private int questionSubType;
+    private String discussion;
     private List<CreateAnswerRequest> answers;
 
     public CreateQuestionRequest() {
@@ -39,7 +40,17 @@ public class CreateQuestionRequest {
             }
         }
 
-        if (questionType != QUIZ && questionType != PRACTICE) {
+        if (questionType < 0 || questionType > 4) {
+            result = false;
+        } else {
+            if (questionType == QUIZ || questionType == PRACTICE) {
+                if (questionSubType != NONE) {
+                    result = false;
+                }
+            }
+        }
+
+        if (content.isEmpty() || discussion.isEmpty()) {
             result = false;
         }
 

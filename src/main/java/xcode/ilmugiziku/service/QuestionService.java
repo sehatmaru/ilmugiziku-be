@@ -11,7 +11,7 @@ import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
@@ -41,12 +41,12 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<List<QuestionValueResponse>> getQuizQuestions(String token) {
+   public BaseResponse<List<QuestionAnswerResponse>> getQuizQuestions(String token) {
       return getQuiz(token, QUIZ);
    }
 
    @Override
-   public BaseResponse<List<QuestionValueResponse>> getPracticeQuestions(String token) {
+   public BaseResponse<List<QuestionAnswerResponse>> getPracticeQuestions(String token) {
       return getQuiz(token, PRACTICE);
    }
 
@@ -204,9 +204,9 @@ public class QuestionService implements QuestionPresenter {
       return response;
    }
 
-   private BaseResponse<List<QuestionValueResponse>> getQuiz(String token, int questionType) {
-      BaseResponse<List<QuestionValueResponse>> response = new BaseResponse<>();
-      List<QuestionValueResponse> questionResponses = new ArrayList<>();
+   private BaseResponse<List<QuestionAnswerResponse>> getQuiz(String token, int questionType) {
+      BaseResponse<List<QuestionAnswerResponse>> response = new BaseResponse<>();
+      List<QuestionAnswerResponse> questionResponses = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
          List<AnswerModel> answerModels = new ArrayList<>();
@@ -215,7 +215,7 @@ public class QuestionService implements QuestionPresenter {
 
          if (questionModels != null) {
             for (QuestionModel question : questionModels) {
-               QuestionValueResponse questionResponse = questionMapper.modelToQuestionValueResponse(question);
+               QuestionAnswerResponse questionResponse = questionMapper.modelToQuestionValueResponse(question);
 
                try {
                   answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());

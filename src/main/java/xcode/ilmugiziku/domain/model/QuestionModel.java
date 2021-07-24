@@ -33,6 +33,9 @@ public class QuestionModel {
    @Column(name = "question_sub_type")
    private int questionSubType;
 
+   @Column(name = "discussion")
+   private String discussion;
+
    @Column(name = "created_at")
    private Date createdAt;
 

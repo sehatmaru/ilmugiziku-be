@@ -4,7 +4,7 @@ import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 
 import java.util.Date;
 
@@ -26,13 +26,14 @@ public class QuestionMapper {
         }
     }
 
-    public QuestionValueResponse modelToQuestionValueResponse(QuestionModel model) {
+    public QuestionAnswerResponse modelToQuestionValueResponse(QuestionModel model) {
         if (model != null) {
-            QuestionValueResponse response = new QuestionValueResponse();
+            QuestionAnswerResponse response = new QuestionAnswerResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setQuestionType(model.getQuestionType());
             response.setQuestionSubType(model.getQuestionSubType());
+            response.setDiscussion(model.getDiscussion());
 
             return response;
         } else {
@@ -42,14 +43,15 @@ public class QuestionMapper {
 
     public QuestionModel createRequestToModel(CreateQuestionRequest request) {
         if (request != null) {
-            QuestionModel response = new QuestionModel();
-            response.setSecureId(generateSecureId());
-            response.setContent(request.getContent());
-            response.setQuestionType(request.getQuestionType());
-            response.setQuestionSubType(request.getQuestionSubType());
-            response.setCreatedAt(new Date());
+            QuestionModel model = new QuestionModel();
+            model.setSecureId(generateSecureId());
+            model.setContent(request.getContent());
+            model.setQuestionType(request.getQuestionType());
+            model.setQuestionSubType(request.getQuestionSubType());
+            model.setDiscussion(request.getDiscussion());
+            model.setCreatedAt(new Date());
 
-            return response;
+            return model;
         } else {
             return null;
         }

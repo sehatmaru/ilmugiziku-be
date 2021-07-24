@@ -13,6 +13,7 @@ public class UpdateQuestionRequest {
     private String content;
     private int questionType;
     private int questionSubType;
+    private String discussion;
     private List<UpdateAnswerRequest> answers;
 
     public UpdateQuestionRequest() {
@@ -50,6 +51,10 @@ public class UpdateQuestionRequest {
         }
 
         if (secureId == null) {
+            result = false;
+        }
+
+        if (content.isEmpty() || discussion.isEmpty()) {
             result = false;
         }
 

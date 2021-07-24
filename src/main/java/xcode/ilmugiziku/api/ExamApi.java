@@ -12,7 +12,7 @@ import xcode.ilmugiziku.domain.response.exam.ExamKeyResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.presenter.ExamPresenter;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
@@ -34,8 +34,8 @@ public class ExamApi {
     }
 
     @GetMapping("/quiz/list")
-    ResponseEntity<BaseResponse<List<QuestionValueResponse>>> getQuizList (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
-        BaseResponse<List<QuestionValueResponse>> response = new BaseResponse<>();
+    ResponseEntity<BaseResponse<List<QuestionAnswerResponse>>> getQuizList (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+        BaseResponse<List<QuestionAnswerResponse>> response = new BaseResponse<>();
 
         if (questionType == QUIZ) {
             response = questionPresenter.getQuizQuestions(token);
