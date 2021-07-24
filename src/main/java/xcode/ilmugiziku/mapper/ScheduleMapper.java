@@ -76,8 +76,8 @@ public class ScheduleMapper {
     public ScheduleModel updateRequestToModel(ScheduleModel model, ScheduleDateRequest request) {
         if (request != null && model != null) {
             model.setDescription(request.getDesc());
-            model.setStartDate(request.getStartDate());
-            model.setEndDate(request.getEndDate());
+            model.setStartDate(setDateTime(request.getStartDate(), 0));
+            model.setEndDate(setDateTime(request.getEndDate(), 23));
             model.setUpdatedAt(new Date());
 
             return model;
