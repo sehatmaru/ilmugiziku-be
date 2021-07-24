@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.Utils.*;
 
 public class ScheduleMapper {
 
@@ -47,8 +47,8 @@ public class ScheduleMapper {
             response.setSecureId(generateSecureId());
             response.setAuthSecureId(request.getAuthSecureId());
             response.setDescription(request.getDesc());
-            response.setStartDate(request.getStartDate());
-            response.setEndDate(request.getEndDate());
+            response.setStartDate(setDateTime(request.getStartDate(), 0));
+            response.setEndDate(setDateTime(request.getEndDate(), 23));
             response.setCreatedAt(new Date());
 
             return response;
