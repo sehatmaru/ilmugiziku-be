@@ -6,8 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
-import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.CreateExamResponse;
+import xcode.ilmugiziku.domain.response.*;
+import xcode.ilmugiziku.domain.response.exam.CreateExamResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamKeyResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionValueResponse;
 import xcode.ilmugiziku.presenter.ExamPresenter;
@@ -31,7 +34,7 @@ public class ExamApi {
     }
 
     @GetMapping("/quiz/list")
-    ResponseEntity<BaseResponse<List<QuestionValueResponse>>> quizList (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+    ResponseEntity<BaseResponse<List<QuestionValueResponse>>> getQuizList (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
         BaseResponse<List<QuestionValueResponse>> response = new BaseResponse<>();
 
         if (questionType == QUIZ) {
@@ -49,7 +52,7 @@ public class ExamApi {
     }
 
     @GetMapping("/try-out/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> tryOutList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+    ResponseEntity<BaseResponse<List<QuestionResponse>>> getTryOutList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
         BaseResponse<List<QuestionResponse>> response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
 
         return ResponseEntity
@@ -61,6 +64,36 @@ public class ExamApi {
     @PostMapping("/submit")
     ResponseEntity<BaseResponse<CreateExamResponse>> submitExam (@RequestParam @Validated String token, @RequestBody @Validated CreateExamRequest request) {
         BaseResponse<CreateExamResponse> response = examPresenter.submitExam(token, request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/result")
+    ResponseEntity<BaseResponse<List<ExamResultResponse>>> getExamResult (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+        BaseResponse<List<ExamResultResponse>> response = examPresenter.getExamResult(token, questionType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/rank")
+    ResponseEntity<BaseResponse<List<ExamRankResponse>>> getExamRank (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+        BaseResponse<List<ExamRankResponse>> response = examPresenter.getExamRank(token, questionType, questionSubType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/key")
+    ResponseEntity<BaseResponse<List<ExamKeyResponse>>> getExamKey (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+        BaseResponse<List<ExamKeyResponse>> response = examPresenter.getExamKey(token, questionType, questionSubType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

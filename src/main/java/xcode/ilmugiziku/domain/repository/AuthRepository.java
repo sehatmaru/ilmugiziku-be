@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface AuthRepository extends JpaRepository<AuthModel, String> {
 
+   AuthModel findBySecureId(String secureId);
+
    AuthModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
    AuthModel findByEmailAndDeletedAtIsNull(String email);

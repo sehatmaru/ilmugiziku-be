@@ -208,4 +208,8 @@ public class AuthService implements AuthPresenter {
       return authRepository.findBySecureIdAndDeletedAtIsNull(secureId);
    }
 
+   public AuthModel getAuthBySecureId(String secureId) {
+      return authRepository.findBySecureId(secureId);
+   }
+
 }

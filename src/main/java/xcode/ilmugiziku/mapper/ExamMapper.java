@@ -3,7 +3,13 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.model.ExamModel;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
-import xcode.ilmugiziku.domain.response.CreateExamResponse;
+import xcode.ilmugiziku.domain.response.exam.CreateExamResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -18,8 +24,64 @@ public class ExamMapper {
             result.setQuestionType(request.getQuestionType());
             result.setQuestionSubType(request.getQuestionSubType());
             result.setQuestionSubType(request.getQuestionSubType());
+            result.setCreatedAt(new Date());
 
             return result;
+        } else {
+            return null;
+        }
+    }
+
+    public ExamResultResponse modelToResultResponse(ExamModel model) {
+        if (model != null) {
+            ExamResultResponse result = new ExamResultResponse();
+            result.setQuestionSubType(model.getQuestionSubType());
+            result.setDate(model.getCreatedAt());
+            result.setCorrect(model.getCorrect());
+            result.setScore(model.getScore());
+            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
+
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    public List<ExamResultResponse> modelsToResultResponses(List<ExamModel> models) {
+        if (models != null) {
+            List<ExamResultResponse> response = new ArrayList<>();
+
+            for (ExamModel model : models) {
+                response.add(modelToResultResponse(model));
+            }
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public ExamRankResponse modelToRankResponse(ExamModel model) {
+        if (model != null) {
+            ExamRankResponse result = new ExamRankResponse();
+            result.setCorrect(model.getCorrect());
+            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
+
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    public List<ExamRankResponse> modelsToRankResponses(List<ExamModel> models) {
+        if (models != null) {
+            List<ExamRankResponse> response = new ArrayList<>();
+
+            for (ExamModel model : models) {
+                response.add(modelToRankResponse(model));
+            }
+
+            return response;
         } else {
             return null;
         }
@@ -51,6 +113,10 @@ public class ExamMapper {
         }
 
         return result.toString();
+    }
+
+    public String[] stringToArray(String requests) {
+        return requests.split(",");
     }
 
     public CreateExamResponse generateResponse(ExamRequest[] exams) {

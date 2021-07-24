@@ -236,4 +236,8 @@ public class QuestionService implements QuestionPresenter {
 
       return response;
    }
+
+   public QuestionModel getQuestionBySecureId(String secureId) {
+      return questionRepository.findBySecureId(secureId);
+   }
 }

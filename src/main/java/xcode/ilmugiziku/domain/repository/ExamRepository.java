@@ -11,7 +11,11 @@ public interface ExamRepository extends JpaRepository<ExamModel, String> {
 
    ExamModel findBySecureId(String secureId);
 
-   ExamModel findByScheduleSecureIdAndAuthSecureId(String scheduleSecureId, String authSecureId);
+   ExamModel findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(String scheduleSecureId, String authSecureId, int questionType, int questionSubType);
+
+   List<ExamModel> findByScheduleSecureIdAndAuthSecureId(String scheduleSecureId, String authSecureId);
+
+   List<ExamModel> findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(String scheduleSecureId, int questionType, int questionSubType);
 
    List<ExamModel> findAllByAuthSecureId(String authSecureId);
 }

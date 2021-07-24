@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.response;
+package xcode.ilmugiziku.domain.response.exam;
 
 import lombok.Getter;
 import lombok.Setter;
