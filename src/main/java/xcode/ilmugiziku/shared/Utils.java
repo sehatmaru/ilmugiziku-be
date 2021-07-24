@@ -50,7 +50,7 @@ public class Utils {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
         } else {
-            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.MINUTE, 58);
             cal.set(Calendar.SECOND, 59);
             cal.set(Calendar.MILLISECOND, 999);
         }
