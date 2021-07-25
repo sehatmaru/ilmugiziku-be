@@ -47,7 +47,7 @@ public class ScheduleMapper {
             response.setSecureId(generateSecureId());
             response.setAuthSecureId(request.getAuthSecureId());
             response.setDescription(request.getDesc());
-            response.setStartDate(setDateTime(request.getStartDate(), 0));
+            response.setStartDate(setDateTime(request.getStartDate(), 7));
             response.setEndDate(setDateTime(request.getEndDate(), 23));
             response.setCreatedAt(new Date());
 
@@ -76,7 +76,7 @@ public class ScheduleMapper {
     public ScheduleModel updateRequestToModel(ScheduleModel model, ScheduleDateRequest request) {
         if (request != null && model != null) {
             model.setDescription(request.getDesc());
-            model.setStartDate(setDateTime(request.getStartDate(), 0));
+            model.setStartDate(setDateTime(request.getStartDate(), 7));
             model.setEndDate(setDateTime(request.getEndDate(), 23));
             model.setUpdatedAt(new Date());
 

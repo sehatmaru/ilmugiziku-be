@@ -45,7 +45,7 @@ public class Utils {
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, hour);
 
-        if (hour == 0) {
+        if (hour == 7) {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
