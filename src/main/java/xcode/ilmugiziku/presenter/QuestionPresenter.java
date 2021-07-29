@@ -12,7 +12,7 @@ import java.util.List;
 public interface QuestionPresenter {
    BaseResponse<List<QuestionAnswerResponse>> getQuizQuestions(String token);
    BaseResponse<List<QuestionAnswerResponse>> getPracticeQuestions(String token);
-   BaseResponse<List<QuestionResponse>> getTryOutQuestion(String token, int questionType, int questionSubType);
+   BaseResponse<QuestionResponse> getTryOutQuestion(String token, int questionType, int questionSubType);
    BaseResponse<CreateBaseResponse> createQuestion(String token, CreateQuestionRequest request);
    BaseResponse<Boolean> updateQuestion(String token, UpdateQuestionRequest request);
    BaseResponse<Boolean> deleteQuestion(String token, String secureId);

@@ -3,7 +3,7 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionExamResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 
 import java.util.Date;
@@ -12,9 +12,9 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class QuestionMapper {
 
-    public QuestionResponse modelToQuestionResponse(QuestionModel model) {
+    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model) {
         if (model != null) {
-            QuestionResponse response = new QuestionResponse();
+            QuestionExamResponse response = new QuestionExamResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setQuestionType(model.getQuestionType());

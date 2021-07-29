@@ -52,8 +52,8 @@ public class ExamApi {
     }
 
     @GetMapping("/try-out/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> getTryOutList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
-        BaseResponse<List<QuestionResponse>> response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
+    ResponseEntity<BaseResponse<QuestionResponse>> getTryOutList (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
+        BaseResponse<QuestionResponse> response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
