@@ -12,7 +12,5 @@ public class QuestionAnswerResponse {
     private String secureId;
     private String content;
     private String discussion;
-    private int questionType;
-    private int questionSubType;
     private List<AnswerValueResponse> answers;
 }

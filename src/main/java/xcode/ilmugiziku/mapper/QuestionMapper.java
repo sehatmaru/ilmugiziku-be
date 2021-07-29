@@ -17,8 +17,6 @@ public class QuestionMapper {
             QuestionExamResponse response = new QuestionExamResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
-            response.setQuestionType(model.getQuestionType());
-            response.setQuestionSubType(model.getQuestionSubType());
 
             return response;
         } else {
@@ -31,8 +29,6 @@ public class QuestionMapper {
             QuestionAnswerResponse response = new QuestionAnswerResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
-            response.setQuestionType(model.getQuestionType());
-            response.setQuestionSubType(model.getQuestionSubType());
             response.setDiscussion(model.getDiscussion());
 
             return response;

@@ -66,7 +66,7 @@ public class QuestionService implements QuestionPresenter {
                AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
                ScheduleModel scheduleModel = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
 
-               if (scheduleModel != null) {
+               if (scheduleModel.getSecureId() != null) {
                   questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
 
                   response.setSuccess(getTryOut(questionResponse, questionType, questionSubType));
@@ -196,6 +196,8 @@ public class QuestionService implements QuestionPresenter {
       }
 
       if (questionModels != null) {
+         List<QuestionExamResponse> questionExamResponses = new ArrayList<>();
+
          for (QuestionModel question : questionModels) {
             QuestionExamResponse questionExamResponse = questionMapper.modelToQuestionExamResponse(question);
 
@@ -207,8 +209,10 @@ public class QuestionService implements QuestionPresenter {
 
             questionExamResponse.setAnswers(answerMapper.modelsToAnswerResponses(answerModels));
 
-            questionResponse.getExam().add(questionExamResponse);
+            questionExamResponses.add(questionExamResponse);
          }
+
+         questionResponse.setExam(questionExamResponses);
       }
 
       return questionResponse;
