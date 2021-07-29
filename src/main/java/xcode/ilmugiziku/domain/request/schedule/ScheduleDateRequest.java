@@ -13,11 +13,15 @@ public class ScheduleDateRequest {
     private String desc;
     private Date startDate;
     private Date endDate;
+    private int timeLimit;
 
     public ScheduleDateRequest() {
     }
 
     public boolean validate() {
-        return startDate != null && endDate != null;
+        return timeLimit > 0
+                && startDate.after(new Date())
+                && endDate.after(new Date())
+                && !scheduleSecureId.isEmpty();
     }
 }

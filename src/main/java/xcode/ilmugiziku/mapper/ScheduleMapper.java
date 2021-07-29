@@ -20,6 +20,7 @@ public class ScheduleMapper {
             response.setEndDate(model.getEndDate());
             response.setSecureId(model.getSecureId());
             response.setDesc(model.getDescription());
+            response.setTimeLimit(model.getTimeLimit());
 
             return response;
         } else {
@@ -49,6 +50,7 @@ public class ScheduleMapper {
             response.setDescription(request.getDesc());
             response.setStartDate(setDateTime(request.getStartDate(), 7));
             response.setEndDate(setDateTime(request.getEndDate(), 23));
+            response.setTimeLimit(request.getTimeLimit());
             response.setCreatedAt(new Date());
 
             return response;
@@ -62,9 +64,10 @@ public class ScheduleMapper {
             ScheduleModel response = new ScheduleModel();
             response.setSecureId(generateSecureId());
             response.setDescription(request.getDesc());
-            response.setStartDate(request.getStartDate());
-            response.setEndDate(request.getEndDate());
+            response.setStartDate(setDateTime(request.getStartDate(), 7));
+            response.setEndDate(setDateTime(request.getEndDate(), 23));
             response.setAuthSecureId(authSecureId);
+            response.setTimeLimit(request.getTimeLimit());
             response.setCreatedAt(new Date());
 
             return response;
@@ -78,6 +81,7 @@ public class ScheduleMapper {
             model.setDescription(request.getDesc());
             model.setStartDate(setDateTime(request.getStartDate(), 7));
             model.setEndDate(setDateTime(request.getEndDate(), 23));
+            model.setTimeLimit(request.getTimeLimit());
             model.setUpdatedAt(new Date());
 
             return model;

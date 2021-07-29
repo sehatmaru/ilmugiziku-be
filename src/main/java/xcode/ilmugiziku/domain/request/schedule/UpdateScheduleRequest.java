@@ -23,6 +23,8 @@ public class UpdateScheduleRequest {
             }
         }
 
+        if (authSecureId.isEmpty()) result = false;
+
         return result;
     }
 }

@@ -74,17 +74,21 @@ public class ScheduleService implements SchedulePresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
-            ScheduleModel model = scheduleMapper.createRequestToModel(request);
+         if (request.validate()) {
+            if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
+               ScheduleModel model = scheduleMapper.createRequestToModel(request);
 
-            if (create(model)) {
-               createResponse.setSecureId(model.getSecureId());
-               response.setSuccess(createResponse);
+               if (create(model)) {
+                  createResponse.setSecureId(model.getSecureId());
+                  response.setSuccess(createResponse);
+               } else {
+                  response.setFailed("");
+               }
             } else {
-               response.setFailed("");
+               response.setNotFound("");
             }
          } else {
-            response.setNotFound("");
+            response.setWrongParams();
          }
       } else {
          response.setFailed(TOKEN_ERROR_MESSAGE);
