@@ -8,7 +8,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class CreateScheduleRequest {
-    private String authSecureId;
     private String desc;
     private Date startDate;
     private Date endDate;
@@ -20,7 +19,6 @@ public class CreateScheduleRequest {
     public boolean validate() {
         return timeLimit > 0
                 && startDate.after(new Date())
-                && endDate.after(new Date())
-                && !authSecureId.isEmpty();
+                && endDate.after(startDate);
     }
 }

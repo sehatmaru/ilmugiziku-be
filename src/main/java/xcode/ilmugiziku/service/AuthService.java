@@ -18,6 +18,7 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
 import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
@@ -210,6 +211,10 @@ public class AuthService implements AuthPresenter {
 
    public AuthModel getAuthBySecureId(String secureId) {
       return authRepository.findBySecureId(secureId);
+   }
+
+   public boolean isRoleAdmin(String secureId) {
+      return authRepository.findBySecureIdAndDeletedAtIsNull(secureId).getRole() == ADMIN;
    }
 
 }

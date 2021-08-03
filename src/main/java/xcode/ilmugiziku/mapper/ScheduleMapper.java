@@ -2,7 +2,7 @@ package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
-import xcode.ilmugiziku.domain.request.schedule.ScheduleDateRequest;
+import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
 
 import java.util.ArrayList;
@@ -46,7 +46,6 @@ public class ScheduleMapper {
         if (request != null) {
             ScheduleModel response = new ScheduleModel();
             response.setSecureId(generateSecureId());
-            response.setAuthSecureId(request.getAuthSecureId());
             response.setDescription(request.getDesc());
             response.setStartDate(setDateTime(request.getStartDate(), 7));
             response.setEndDate(setDateTime(request.getEndDate(), 23));
@@ -59,24 +58,7 @@ public class ScheduleMapper {
         }
     }
 
-    public ScheduleModel createRequestToModel(ScheduleDateRequest request, String authSecureId) {
-        if (request != null) {
-            ScheduleModel response = new ScheduleModel();
-            response.setSecureId(generateSecureId());
-            response.setDescription(request.getDesc());
-            response.setStartDate(setDateTime(request.getStartDate(), 7));
-            response.setEndDate(setDateTime(request.getEndDate(), 23));
-            response.setAuthSecureId(authSecureId);
-            response.setTimeLimit(request.getTimeLimit());
-            response.setCreatedAt(new Date());
-
-            return response;
-        } else {
-            return null;
-        }
-    }
-
-    public ScheduleModel updateRequestToModel(ScheduleModel model, ScheduleDateRequest request) {
+    public ScheduleModel updateRequestToModel(ScheduleModel model, UpdateScheduleRequest request) {
         if (request != null && model != null) {
             model.setDescription(request.getDesc());
             model.setStartDate(setDateTime(request.getStartDate(), 7));

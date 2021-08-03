@@ -54,10 +54,9 @@ public class ExamService implements ExamPresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            ScheduleModel schedule = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
+            ScheduleModel schedule = scheduleService.getScheduleByDate(new Date());
 
-            if (authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId()) != null
-                    && schedule.getSecureId() != null) {
+            if (authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId()) != null) {
                if (!isExamExist(schedule.getSecureId(), authTokenModel.getAuthSecureId(), request.getQuestionType(), request.getQuestionSubType())) {
                   CreateExamResponse createResponse = examMapper.generateResponse(request.getExams());
 
@@ -131,7 +130,7 @@ public class ExamService implements ExamPresenter {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
+         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
          List<ExamModel> exams = examRepository.findByScheduleSecureIdAndAuthSecureId(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId());
 
          if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null) {
@@ -151,8 +150,7 @@ public class ExamService implements ExamPresenter {
       BaseResponse<List<ExamRankResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
+         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
          List<ExamModel> exams = examRepository.findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(scheduleModel.getSecureId(), questionType, questionSubType);
 
          if (scheduleModel.getSecureId() != null) {
@@ -181,7 +179,7 @@ public class ExamService implements ExamPresenter {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
+         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
          ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, questionSubType);
 
          if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null && exam.getSecureId() != null) {

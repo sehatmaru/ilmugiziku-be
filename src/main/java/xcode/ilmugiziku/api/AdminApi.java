@@ -83,8 +83,8 @@ public class AdminApi {
     }
 
     @PutMapping("/schedule/update")
-    ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestParam @Validated String token, @RequestBody @Validated UpdateScheduleRequest body) {
-        BaseResponse<Boolean> response = schedulePresenter.updateSchedule(token, body);
+    ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestParam @Validated String token, @RequestParam @Validated String scheduleSecureId, @RequestBody @Validated UpdateScheduleRequest body) {
+        BaseResponse<Boolean> response = schedulePresenter.updateSchedule(token, scheduleSecureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

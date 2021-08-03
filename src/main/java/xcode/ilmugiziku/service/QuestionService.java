@@ -1,10 +1,7 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AnswerModel;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
-import xcode.ilmugiziku.domain.model.QuestionModel;
-import xcode.ilmugiziku.domain.model.ScheduleModel;
+import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
@@ -30,6 +27,7 @@ import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 public class QuestionService implements QuestionPresenter {
 
    private final AuthTokenService authTokenService;
+   private final AuthService authService;
    private final AnswerService answerService;
    private final ScheduleService scheduleService;
 
@@ -38,11 +36,12 @@ public class QuestionService implements QuestionPresenter {
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
 
-   public QuestionService(AuthTokenService authTokenService, AnswerService answerService, ScheduleService scheduleService, QuestionRepository questionRepository) {
+   public QuestionService(AuthTokenService authTokenService, AnswerService answerService, ScheduleService scheduleService, QuestionRepository questionRepository, AuthService authService) {
       this.authTokenService = authTokenService;
       this.questionRepository = questionRepository;
       this.answerService = answerService;
       this.scheduleService = scheduleService;
+      this.authService = authService;
    }
 
    @Override
@@ -64,14 +63,19 @@ public class QuestionService implements QuestionPresenter {
          if (questionSubType > 0 && questionSubType < 5) {
             if (authTokenService.isValidToken(token)) {
                AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-               ScheduleModel scheduleModel = scheduleService.getScheduleByDateAndAuthSecureId(new Date(), authTokenModel.getAuthSecureId());
 
-               if (scheduleModel.getSecureId() != null) {
-                  questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
-
+               if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
                   response.setSuccess(getTryOut(questionResponse, questionType, questionSubType));
                } else {
-                  response.setWrongParams();
+                  ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+
+                  if (scheduleModel.getSecureId() != null) {
+                     questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
+
+                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType));
+                  } else {
+                     response.setWrongParams();
+                  }
                }
             } else {
                response.setFailed(TOKEN_ERROR_MESSAGE);

@@ -1,11 +1,9 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.repository.ScheduleRepository;
 import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
-import xcode.ilmugiziku.domain.request.schedule.ScheduleDateRequest;
 import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
@@ -23,44 +21,30 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 public class ScheduleService implements SchedulePresenter {
 
    private final AuthTokenService authTokenService;
-   private final AuthService authService;
 
    private final ScheduleRepository scheduleRepository;
 
    private final ScheduleMapper scheduleMapper = new ScheduleMapper();
 
-   public ScheduleService(AuthTokenService authTokenService, AuthService authService, ScheduleRepository scheduleRepository) {
+   public ScheduleService(AuthTokenService authTokenService, ScheduleRepository scheduleRepository) {
       this.authTokenService = authTokenService;
-      this.authService = authService;
       this.scheduleRepository = scheduleRepository;
    }
 
    @Override
-   public BaseResponse<List<ScheduleResponse>> getScheduleList(String token, String authSecureId) {
+   public BaseResponse<List<ScheduleResponse>> getScheduleList(String token) {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         AuthModel auth = new AuthModel();
+         List<ScheduleModel> models = new ArrayList<>();
 
          try {
-            auth = authService.getActiveAuthBySecureId(authSecureId);
+            models = scheduleRepository.findByDeletedAtIsNull();
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
 
-         if (auth != null) {
-            List<ScheduleModel> models = new ArrayList<>();
-
-            try {
-               models = scheduleRepository.findByAuthSecureIdAndDeletedAtIsNull(authSecureId);
-            } catch (Exception e) {
-               response.setFailed(e.toString());
-            }
-
-            response.setSuccess(scheduleMapper.modelsToResponses(models));
-         } else {
-            response.setNotFound("");
-         }
+         response.setSuccess(scheduleMapper.modelsToResponses(models));
       } else {
          response.setFailed(TOKEN_ERROR_MESSAGE);
       }
@@ -75,7 +59,9 @@ public class ScheduleService implements SchedulePresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
+            if (isScheduleExist("", request.getStartDate(), request.getEndDate())){
+               response.setExistData("");
+            } else {
                ScheduleModel model = scheduleMapper.createRequestToModel(request);
 
                if (create(model)) {
@@ -84,8 +70,6 @@ public class ScheduleService implements SchedulePresenter {
                } else {
                   response.setFailed("");
                }
-            } else {
-               response.setNotFound("");
             }
          } else {
             response.setWrongParams();
@@ -98,38 +82,27 @@ public class ScheduleService implements SchedulePresenter {
    }
 
    @Override
-   public BaseResponse<Boolean> updateSchedule(String token, UpdateScheduleRequest request) {
+   public BaseResponse<Boolean> updateSchedule(String token, String scheduleSecureId, UpdateScheduleRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            if (authService.getActiveAuthBySecureId(request.getAuthSecureId()) != null) {
-               for (ScheduleDateRequest schedule : request.getSchedules()) {
-                  ScheduleModel model = new ScheduleModel();
+            ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(scheduleSecureId);
+
+            if (isScheduleExist(scheduleSecureId, request.getStartDate(), request.getEndDate())) {
+               response.setExistData("");
+            } else {
+               if (model != null) {
                   try {
-                     model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(schedule.getScheduleSecureId());
-                  } catch (Exception e) {
+                     scheduleRepository.save(scheduleMapper.updateRequestToModel(model, request));
+
+                     response.setSuccess(true);
+                  } catch (Exception e){
                      response.setFailed(e.toString());
                   }
-
-                  if (model != null) {
-                     try {
-                        scheduleRepository.save(scheduleMapper.updateRequestToModel(model, schedule));
-
-                        response.setSuccess(true);
-                     } catch (Exception e){
-                        response.setFailed(e.toString());
-                     }
-                  } else {
-                     if (create(scheduleMapper.createRequestToModel(schedule, request.getAuthSecureId()))) {
-                        response.setSuccess(true);
-                     } else {
-                        response.setFailed("");
-                     }
-                  }
+               } else {
+                  response.setNotFound("");
                }
-            } else {
-               response.setNotFound("");
             }
          } else {
             response.setWrongParams();
@@ -185,8 +158,8 @@ public class ScheduleService implements SchedulePresenter {
       return result;
    }
 
-   public ScheduleModel getScheduleByDateAndAuthSecureId(Date date, String authSecureId) {
-      List<ScheduleModel> schedules =  scheduleRepository.findByAuthSecureIdAndDeletedAtIsNull(authSecureId);
+   public ScheduleModel getScheduleByDate(Date date) {
+      List<ScheduleModel> schedules =  scheduleRepository.findByDeletedAtIsNull();
       ScheduleModel model = new ScheduleModel();
 
       for (ScheduleModel schedule: schedules) {
@@ -196,5 +169,43 @@ public class ScheduleService implements SchedulePresenter {
       }
 
       return model;
+   }
+
+   public boolean isScheduleExist(String secureId, Date startDate, Date endDate) {
+      boolean result = false;
+
+      List<ScheduleModel> schedules = scheduleRepository.findByDeletedAtIsNull();
+
+      for (ScheduleModel model : schedules) {
+         if (!secureId.isEmpty()) {
+            if (!model.getSecureId().equals(secureId)) {
+               if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
+                  result = true;
+               }
+
+               if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
+                  result = true;
+               }
+
+               if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
+                  result = true;
+               }
+            }
+         } else {
+            if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
+               result = true;
+            }
+
+            if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
+               result = true;
+            }
+
+            if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
+               result = true;
+            }
+         }
+      }
+
+      return result;
    }
 }

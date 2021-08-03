@@ -33,9 +33,6 @@ public class ScheduleModel {
    @Column(name = "end_date")
    private Date endDate;
 
-   @Column(name = "auth_secure_id")
-   private String authSecureId;
-
    @Column(name = "time_limit")
    private int timeLimit;
 
