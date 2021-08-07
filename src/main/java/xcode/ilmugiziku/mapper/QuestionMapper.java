@@ -9,14 +9,19 @@ import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 
 public class QuestionMapper {
 
-    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model) {
+    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model, int role) {
         if (model != null) {
             QuestionExamResponse response = new QuestionExamResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
+
+            if (role == ADMIN) {
+                response.setDiscussion(model.getDiscussion());
+            }
 
             return response;
         } else {

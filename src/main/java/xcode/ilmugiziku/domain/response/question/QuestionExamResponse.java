@@ -12,4 +12,5 @@ public class QuestionExamResponse {
     private String secureId;
     private String content;
     private List<AnswerResponse> answers;
+    private String discussion;
 }

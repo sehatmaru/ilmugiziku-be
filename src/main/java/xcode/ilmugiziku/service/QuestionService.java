@@ -22,6 +22,8 @@ import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
 public class QuestionService implements QuestionPresenter {
@@ -65,14 +67,14 @@ public class QuestionService implements QuestionPresenter {
                AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
 
                if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
-                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType));
+                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN));
                } else {
                   ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
                   if (scheduleModel.getSecureId() != null) {
                      questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
 
-                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType));
+                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER));
                   } else {
                      response.setWrongParams();
                   }
@@ -185,7 +187,7 @@ public class QuestionService implements QuestionPresenter {
       }
    }
 
-   private QuestionResponse getTryOut(QuestionResponse questionResponse, int questionType, int questionSubType) {
+   private QuestionResponse getTryOut(QuestionResponse questionResponse, int questionType, int questionSubType, int role) {
       List<QuestionModel> questionModels = new ArrayList<>();
       List<AnswerModel> answerModels = new ArrayList<>();
 
@@ -203,7 +205,7 @@ public class QuestionService implements QuestionPresenter {
          List<QuestionExamResponse> questionExamResponses = new ArrayList<>();
 
          for (QuestionModel question : questionModels) {
-            QuestionExamResponse questionExamResponse = questionMapper.modelToQuestionExamResponse(question);
+            QuestionExamResponse questionExamResponse = questionMapper.modelToQuestionExamResponse(question, role);
 
             try {
                answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());

@@ -52,7 +52,7 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/question/update")
+    @PutMapping("/question/update")
     ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestParam @Validated String token, @RequestBody @Validated UpdateQuestionRequest body) {
         BaseResponse<Boolean> response = questionPresenter.updateQuestion(token, body);
 
