@@ -6,6 +6,9 @@ import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
+import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
+
 @Getter
 @Setter
 public class UpdateQuestionRequest {
@@ -46,8 +49,14 @@ public class UpdateQuestionRequest {
             result = false;
         }
 
-        if (questionSubType < 1 || questionSubType > 4) {
-            result = false;
+        if (questionType == QUIZ || questionType == PRACTICE) {
+            if (questionSubType != NONE) {
+                result = false;
+            }
+        } else if (questionType == TRY_OUT_SKB_GIZI || questionType == TRY_OUT_UKOM) {
+            if (questionSubType < 1 || questionSubType > 4) {
+                result = false;
+            }
         }
 
         if (secureId == null) {

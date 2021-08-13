@@ -63,6 +63,7 @@ public class QuestionMapper {
             model.setContent(request.getContent());
             model.setQuestionType(request.getQuestionType());
             model.setQuestionSubType(request.getQuestionSubType());
+            model.setDiscussion(request.getDiscussion());
             model.setUpdatedAt(new Date());
 
             return model;

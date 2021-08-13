@@ -31,12 +31,11 @@ public class AnswerMapper {
 
     public AnswerModel updateRequestToModel(AnswerModel model, UpdateAnswerRequest request) {
         if (model != null && request != null) {
-            AnswerModel response = new AnswerModel();
-            response.setContent(request.getContent());
-            response.setValue(request.isValue());
-            response.setUpdatedAt(new Date());
+            model.setContent(request.getContent());
+            model.setValue(request.isValue());
+            model.setUpdatedAt(new Date());
 
-            return response;
+            return model;
         } else {
             return null;
         }
