@@ -6,10 +6,8 @@ import xcode.ilmugiziku.domain.repository.ExamRepository;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
 import xcode.ilmugiziku.domain.response.*;
-import xcode.ilmugiziku.domain.response.exam.CreateExamResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamKeyResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+import xcode.ilmugiziku.domain.response.exam.*;
+import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.mapper.ExamMapper;
 import xcode.ilmugiziku.presenter.ExamPresenter;
 
@@ -18,6 +16,9 @@ import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.PFS;
+import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
 
 @Service
 public class ExamService implements ExamPresenter {
@@ -201,6 +202,40 @@ public class ExamService implements ExamPresenter {
             }
 
             response.setSuccess(results);
+         } else {
+            response.setNotFound("");
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<List<ExamInformationResponse>> getExamInformation(String token, int questionType) {
+      BaseResponse<List<ExamInformationResponse>> response = new BaseResponse<>();
+      List<ExamInformationResponse> results = new ArrayList<>();
+
+      if (authTokenService.isValidToken(token)) {
+         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+
+         if (scheduleModel.getSecureId() != null) {
+            if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+               for (int i=1; i<PFS+1; i++) {
+                  BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i);
+
+                  results.add(new ExamInformationResponse(
+                          i,
+                          questions.getResult().getExam().size(),
+                          scheduleModel.getTimeLimit()
+                  ));
+               }
+
+               response.setSuccess(results);
+            } else {
+               response.setWrongParams();
+            }
          } else {
             response.setNotFound("");
          }

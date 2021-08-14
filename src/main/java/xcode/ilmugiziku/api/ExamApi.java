@@ -7,10 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.response.*;
-import xcode.ilmugiziku.domain.response.exam.CreateExamResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamKeyResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+import xcode.ilmugiziku.domain.response.exam.*;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.presenter.ExamPresenter;
@@ -94,6 +91,16 @@ public class ExamApi {
     @GetMapping("/key")
     ResponseEntity<BaseResponse<List<ExamKeyResponse>>> getExamKey (@RequestParam @Validated String token, @RequestParam @Validated int questionType, @RequestParam @Validated int questionSubType) {
         BaseResponse<List<ExamKeyResponse>> response = examPresenter.getExamKey(token, questionType, questionSubType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/information")
+    ResponseEntity<BaseResponse<List<ExamInformationResponse>>> getExamInformation (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+        BaseResponse<List<ExamInformationResponse>> response = examPresenter.getExamInformation(token, questionType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
