@@ -65,19 +65,25 @@ public class AuthService implements AuthPresenter {
                }
             } else {
                if (model.getPassword().equals(encrypt(request.getPassword()))) {
-                  AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
-
-                  if (tokenModel == null) {
+                  if (model.getRole() == ADMIN) {
                      String token = authTokenService.generateAuthToken(model.getSecureId());
 
                      response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
                   } else {
-                     if (authTokenService.isStillValidToken(tokenModel)) {
-                        response.setExistData(AUTH_EXIST_MESSAGE);
-                     } else {
-                        String token = authTokenService.refreshToken(tokenModel, model.getSecureId());
+                     AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
+
+                     if (tokenModel == null) {
+                        String token = authTokenService.generateAuthToken(model.getSecureId());
 
                         response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
+                     } else {
+                        if (authTokenService.isStillValidToken(tokenModel)) {
+                           response.setExistData(AUTH_EXIST_MESSAGE);
+                        } else {
+                           String token = authTokenService.refreshToken(tokenModel, model.getSecureId());
+
+                           response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
+                        }
                      }
                   }
                } else {
