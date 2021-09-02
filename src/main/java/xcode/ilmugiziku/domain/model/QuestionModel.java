@@ -36,6 +36,9 @@ public class QuestionModel {
    @Column(name = "discussion")
    private String discussion;
 
+   @Column(name = "label")
+   private String label;
+
    @Column(name = "created_at")
    private Date createdAt;
 

@@ -35,6 +35,7 @@ public class QuestionMapper {
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setDiscussion(model.getDiscussion());
+            response.setLabel(model.getLabel());
 
             return response;
         } else {

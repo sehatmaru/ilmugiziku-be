@@ -12,5 +12,6 @@ public class QuestionAnswerResponse {
     private String secureId;
     private String content;
     private String discussion;
+    private String label;
     private List<AnswerValueResponse> answers;
 }
