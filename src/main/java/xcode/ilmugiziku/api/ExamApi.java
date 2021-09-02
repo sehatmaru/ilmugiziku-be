@@ -107,14 +107,4 @@ public class ExamApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-
-    @GetMapping("/status")
-    ResponseEntity<BaseResponse<List<ExamStatusResponse>>> getExamStatus (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
-        BaseResponse<List<ExamStatusResponse>> response = examPresenter.getExamStatus(token, questionType);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
 }

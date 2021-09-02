@@ -218,40 +218,6 @@ public class ExamService implements ExamPresenter {
       List<ExamInformationResponse> results = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-
-         if (scheduleModel.getSecureId() != null) {
-            if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-               for (int i=1; i<PFS+1; i++) {
-                  BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i);
-
-                  results.add(new ExamInformationResponse(
-                          i,
-                          questions.getResult().getExam().size(),
-                          scheduleModel.getTimeLimit()
-                  ));
-               }
-
-               response.setSuccess(results);
-            } else {
-               response.setWrongParams();
-            }
-         } else {
-            response.setNotFound("");
-         }
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   @Override
-   public BaseResponse<List<ExamStatusResponse>> getExamStatus(String token, int questionType) {
-      BaseResponse<List<ExamStatusResponse>> response = new BaseResponse<>();
-      List<ExamStatusResponse> results = new ArrayList<>();
-
-      if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
          AuthModel authModel = authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId());
          ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -259,11 +225,13 @@ public class ExamService implements ExamPresenter {
          if (scheduleModel.getSecureId() != null && authModel.getSecureId() != null) {
             if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
                for (int i=1; i<PFS+1; i++) {
-                  System.out.println(scheduleModel.getSecureId() + " " + authModel.getSecureId() + " " + questionType + " " + i);
-                  System.out.println(isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i));
-                  results.add(new ExamStatusResponse(
-                          !isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i),
-                          i
+                  BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i);
+
+                  results.add(new ExamInformationResponse(
+                          i,
+                          questions.getResult().getExam().size(),
+                          scheduleModel.getTimeLimit(),
+                          !isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i)
                   ));
                }
 
