@@ -36,6 +36,7 @@ public class QuestionMapper {
             response.setContent(model.getContent());
             response.setDiscussion(model.getDiscussion());
             response.setLabel(model.getLabel());
+            response.setType(model.getType());
 
             return response;
         } else {
@@ -51,6 +52,8 @@ public class QuestionMapper {
             model.setQuestionType(request.getQuestionType());
             model.setQuestionSubType(request.getQuestionSubType());
             model.setDiscussion(request.getDiscussion());
+            model.setLabel(request.getLabel());
+            model.setType(request.getType());
             model.setCreatedAt(new Date());
 
             return model;
@@ -65,6 +68,8 @@ public class QuestionMapper {
             model.setQuestionType(request.getQuestionType());
             model.setQuestionSubType(request.getQuestionSubType());
             model.setDiscussion(request.getDiscussion());
+            model.setLabel(request.getLabel());
+            model.setType(request.getType());
             model.setUpdatedAt(new Date());
 
             return model;

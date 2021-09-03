@@ -13,5 +13,6 @@ public class QuestionAnswerResponse {
     private String content;
     private String discussion;
     private String label;
+    private String type;
     private List<AnswerValueResponse> answers;
 }

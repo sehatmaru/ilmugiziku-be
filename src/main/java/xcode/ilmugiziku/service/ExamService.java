@@ -195,6 +195,7 @@ public class ExamService implements ExamPresenter {
                   if (model.isValue()) {
                      examKeyResponse.setAnswer(model.getContent());
                      examKeyResponse.setQuestion(questionModel.getContent());
+                     examKeyResponse.setDiscussion(questionModel.getDiscussion());
                   }
                }
 

@@ -129,9 +129,6 @@ public class QuestionService implements QuestionPresenter {
             try {
                AnswerModel model = answerService.getAnswerBySecureId(answer.getSecureId());
 
-               System.out.println(model);
-               System.out.println(answerMapper.updateRequestToModel(model, answer));
-
                answerService.save(answerMapper.updateRequestToModel(model, answer));
             } catch (Exception e) {
                response.setFailed(e.toString());

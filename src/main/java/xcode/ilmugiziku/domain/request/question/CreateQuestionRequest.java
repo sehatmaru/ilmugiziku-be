@@ -17,6 +17,7 @@ public class CreateQuestionRequest {
     private int questionSubType;
     private String discussion;
     private String label;
+    private String type;
     private List<CreateAnswerRequest> answers;
 
     public CreateQuestionRequest() {

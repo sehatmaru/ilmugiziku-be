@@ -18,6 +18,7 @@ public class UpdateQuestionRequest {
     private int questionSubType;
     private String discussion;
     private String label;
+    private String type;
     private List<UpdateAnswerRequest> answers;
 
     public UpdateQuestionRequest() {
