@@ -132,7 +132,7 @@ public class ExamService implements ExamPresenter {
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
          ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-         List<ExamModel> exams = examRepository.findByScheduleSecureIdAndAuthSecureId(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId());
+         List<ExamModel> exams = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType);
 
          if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null) {
             response.setSuccess(examMapper.modelsToResultResponses(exams));

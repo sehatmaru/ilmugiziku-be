@@ -15,6 +15,8 @@ public interface ExamRepository extends JpaRepository<ExamModel, String> {
 
    List<ExamModel> findByScheduleSecureIdAndAuthSecureId(String scheduleSecureId, String authSecureId);
 
+   List<ExamModel> findByScheduleSecureIdAndAuthSecureIdAndQuestionType(String scheduleSecureId, String authSecureId, int questionType);
+
    List<ExamModel> findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(String scheduleSecureId, int questionType, int questionSubType);
 
    List<ExamModel> findAllByAuthSecureId(String authSecureId);
