@@ -5,6 +5,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
+import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
@@ -28,17 +30,20 @@ public class AdminApi {
     final SchedulePresenter schedulePresenter;
     final LaboratoryPresenter laboratoryPresenter;
     final TheoryPresenter theoryPresenter;
+    final InstitutePresenter institutePresenter;
     final AuthPresenter authPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
                     LaboratoryPresenter laboratoryPresenter,
                     TheoryPresenter theoryPresenter,
+                    InstitutePresenter institutePresenter,
                     AuthPresenter authPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
         this.theoryPresenter = theoryPresenter;
+        this.institutePresenter = institutePresenter;
         this.authPresenter = authPresenter;
     }
 
@@ -155,6 +160,36 @@ public class AdminApi {
     @DeleteMapping("/theory/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestParam @Validated String token, @RequestParam @Validated String theorySecureId) {
         BaseResponse<Boolean> response = theoryPresenter.deleteTheory(token, theorySecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/institute/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createInstitute (@RequestParam @Validated String token, @RequestBody @Validated CreateInstituteRequest body) {
+        BaseResponse<CreateBaseResponse> response = institutePresenter.createInstitute(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/institute/update")
+    ResponseEntity<BaseResponse<Boolean>> updateInstitute(@RequestParam @Validated String token, @RequestBody @Validated UpdateInstituteRequest body) {
+        BaseResponse<Boolean> response = institutePresenter.updateInstitute(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/institute/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteInstitute(@RequestParam @Validated String token, @RequestParam @Validated String instituteSecureId) {
+        BaseResponse<Boolean> response = institutePresenter.deleteInstitute(token, instituteSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
