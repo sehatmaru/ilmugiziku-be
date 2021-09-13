@@ -17,8 +17,9 @@ public class LaboratoryValueMapper {
         if (model != null) {
             LaboratoryValueResponse response = new LaboratoryValueResponse();
             response.setSecureId(model.getSecureId());
-            response.setContent(model.getContent());
-            response.setValue(model.getValue());
+            response.setMeasure(model.getMeasure());
+            response.setUnit(model.getUnit());
+            response.setReferenceValue(model.getReferenceValue());
 
             return response;
         } else {
@@ -44,8 +45,9 @@ public class LaboratoryValueMapper {
         if (request != null) {
             LaboratoryValueModel response = new LaboratoryValueModel();
             response.setSecureId(generateSecureId());
-            response.setContent(request.getContent());
-            response.setValue(request.getValue());
+            response.setMeasure(request.getMeasure());
+            response.setUnit(request.getUnit());
+            response.setReferenceValue(request.getReferenceValue());
             response.setCreatedAt(new Date());
 
             return response;
@@ -56,8 +58,9 @@ public class LaboratoryValueMapper {
 
     public LaboratoryValueModel updateRequestToModel(LaboratoryValueModel model, UpdateLaboratoryValueRequest request) {
         if (request != null && model != null) {
-            model.setContent(request.getContent());
-            model.setValue(request.getValue());
+            model.setMeasure(request.getMeasure());
+            model.setUnit(request.getUnit());
+            model.setReferenceValue(request.getReferenceValue());
             model.setUpdatedAt(new Date());
 
             return model;

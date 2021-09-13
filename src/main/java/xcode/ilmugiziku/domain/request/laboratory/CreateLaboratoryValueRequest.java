@@ -6,8 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateLaboratoryValueRequest {
-    private String content;
-    private String value;
+    private String measure;
+    private String unit;
+    private String referenceValue;
 
     public CreateLaboratoryValueRequest() {
     }

@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class LaboratoryValueResponse {
     private String secureId;
-    private String content;
-    private String value;
+    private String measure;
+    private String unit;
+    private String referenceValue;
 }

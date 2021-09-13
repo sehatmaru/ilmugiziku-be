@@ -24,11 +24,14 @@ public class LaboratoryValueModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "content")
-   private String content;
+   @Column(name = "measure")
+   private String measure;
 
-   @Column(name = "value")
-   private String value;
+   @Column(name = "unit")
+   private String unit;
+
+   @Column(name = "reference_value")
+   private String referenceValue;
 
    @Column(name = "created_at")
    private Date createdAt;
