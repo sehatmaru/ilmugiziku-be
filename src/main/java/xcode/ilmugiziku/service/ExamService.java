@@ -183,7 +183,7 @@ public class ExamService implements ExamPresenter {
          ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
          ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, questionSubType);
 
-         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null && exam.getSecureId() != null) {
+         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null && exam != null) {
             List<ExamKeyResponse> results = new ArrayList<>();
 
             for (String questionSecureId: examMapper.stringToArray(exam.getQuestions())) {
