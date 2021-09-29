@@ -17,6 +17,7 @@ import xcode.ilmugiziku.mapper.QuestionMapper;
 import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -234,17 +235,24 @@ public class QuestionService implements QuestionPresenter {
          List<QuestionModel> questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
 
          if (questionModels != null) {
-            for (QuestionModel question : questionModels) {
-               QuestionAnswerResponse questionResponse = questionMapper.modelToQuestionValueResponse(question);
+            int n = questionModels.size();
+
+            if (questionType == QUIZ) {
+               Collections.shuffle(questionModels);
+               n = Math.min(questionModels.size(), 20);
+            }
+
+            for (int i=0; i<n; i++) {
+               QuestionModel model = questionModels.get(i);
+               QuestionAnswerResponse questionResponse = questionMapper.modelToQuestionValueResponse(model);
 
                try {
-                  answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
+                  answerModels = answerService.getAnswerListByQuestionSecureId(model.getSecureId());
                } catch (Exception e) {
                   response.setFailed(e.toString());
                }
 
                questionResponse.setAnswers(answerMapper.modelsToAnswerValueResponses(answerModels));
-
                questionResponses.add(questionResponse);
             }
 
