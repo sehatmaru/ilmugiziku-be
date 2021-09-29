@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 public class ExamRankResponse {
     private String fullName;
-    private String email;
     private int correct;
     private int total;
 }

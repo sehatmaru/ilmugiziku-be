@@ -159,7 +159,6 @@ public class ExamService implements ExamPresenter {
 
             for (int i=0; i < exams.size(); i++) {
                AuthModel authModel = authService.getAuthBySecureId(exams.get(i).getAuthSecureId());
-               results.get(i).setEmail(authModel.getEmail());
                results.get(i).setFullName(authModel.getFirstName() + ' ' + authModel.getLastName());
             }
 
