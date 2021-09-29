@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "schedule")
+@Table(name = "video")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleModel {
+public class VideoModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -24,17 +24,14 @@ public class ScheduleModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "description")
-   private String description;
+   @Column(name = "uri")
+   private String uri;
 
-   @Column(name = "start_date")
-   private Date startDate;
+   @Column(name = "question_type")
+   private int questionType;
 
-   @Column(name = "end_date")
-   private Date endDate;
-
-   @Column(name = "time_limit")
-   private int timeLimit;
+   @Column(name = "question_sub_type")
+   private int questionSubType;
 
    @Column(name = "template_secure_id")
    private String templateSecureId;
@@ -47,4 +44,5 @@ public class ScheduleModel {
 
    @Column(name = "deleted_at")
    private Date deletedAt;
+
 }

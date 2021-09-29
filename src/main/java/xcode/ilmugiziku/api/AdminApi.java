@@ -15,6 +15,7 @@ import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
 import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
+import xcode.ilmugiziku.domain.request.video.CreateVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
@@ -32,19 +33,22 @@ public class AdminApi {
     final TheoryPresenter theoryPresenter;
     final InstitutePresenter institutePresenter;
     final AuthPresenter authPresenter;
+    final VideoPresenter videoPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
                     LaboratoryPresenter laboratoryPresenter,
                     TheoryPresenter theoryPresenter,
                     InstitutePresenter institutePresenter,
-                    AuthPresenter authPresenter) {
+                    AuthPresenter authPresenter,
+                    VideoPresenter videoPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
         this.theoryPresenter = theoryPresenter;
         this.institutePresenter = institutePresenter;
         this.authPresenter = authPresenter;
+        this.videoPresenter = videoPresenter;
     }
 
     @PostMapping("/question/create")
@@ -190,6 +194,16 @@ public class AdminApi {
     @DeleteMapping("/institute/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteInstitute(@RequestParam @Validated String token, @RequestParam @Validated String instituteSecureId) {
         BaseResponse<Boolean> response = institutePresenter.deleteInstitute(token, instituteSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/discussion-video/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createDiscussionVideo (@RequestParam @Validated String token, @RequestBody @Validated CreateVideoRequest body) {
+        BaseResponse<CreateBaseResponse> response = videoPresenter.createDiscussionVideo(token, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

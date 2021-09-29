@@ -107,4 +107,14 @@ public class ExamApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/discussion-video")
+    ResponseEntity<BaseResponse<List<ExamVideoResponse>>> getExamDiscussionVideo (@RequestParam @Validated String token, @RequestParam @Validated int questionType) {
+        BaseResponse<List<ExamVideoResponse>> response = examPresenter.getExamVideo(token, questionType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

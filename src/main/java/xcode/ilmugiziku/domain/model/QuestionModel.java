@@ -42,6 +42,9 @@ public class QuestionModel {
    @Column(name = "type")
    private String type;
 
+   @Column(name = "template_secure_id")
+   private String templateSecureId;
+
    @Column(name = "created_at")
    private Date createdAt;
 
