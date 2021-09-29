@@ -28,6 +28,7 @@ public class ExamService implements ExamPresenter {
    private final AnswerService answerService;
    private final ScheduleService scheduleService;
    private final QuestionService questionService;
+   private final VideoService videoService;
 
    private final ExamRepository examRepository;
 
@@ -38,13 +39,15 @@ public class ExamService implements ExamPresenter {
                       AnswerService answerService,
                       ScheduleService scheduleService,
                       QuestionService questionService,
-                      ExamRepository examRepository) {
+                      ExamRepository examRepository,
+                      VideoService videoService) {
       this.authTokenService = authTokenService;
       this.authService = authService;
       this.examRepository = examRepository;
       this.answerService = answerService;
       this.scheduleService = scheduleService;
       this.questionService = questionService;
+      this.videoService = videoService;
    }
 
    @Override
@@ -233,6 +236,41 @@ public class ExamService implements ExamPresenter {
                           scheduleModel.getTimeLimit(),
                           !isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i)
                   ));
+               }
+
+               response.setSuccess(results);
+            } else {
+               response.setWrongParams();
+            }
+         } else {
+            response.setNotFound("");
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<List<ExamVideoResponse>> getExamVideo(String token, int questionType) {
+      BaseResponse<List<ExamVideoResponse>> response = new BaseResponse<>();
+      List<ExamVideoResponse> results = new ArrayList<>();
+
+      if (authTokenService.isValidToken(token)) {
+         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+
+         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null) {
+            if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+               for (int i=1; i<PFS+1; i++) {
+                  ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, i);
+
+                  if (exam != null) {
+                     VideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, scheduleModel.getTemplateSecureId());
+
+                     results.add(new ExamVideoResponse(video.getUri(), i));
+                  }
                }
 
                response.setSuccess(results);
