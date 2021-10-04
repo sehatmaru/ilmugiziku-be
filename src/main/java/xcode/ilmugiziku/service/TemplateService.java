@@ -150,4 +150,8 @@ public class TemplateService implements TemplatePresenter {
 
       return response;
    }
+
+   public TemplateModel getTemplateBySecureId(String secureId) {
+      return templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+   }
 }

@@ -2,6 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
+import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.DiscussionVideoRepository;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
@@ -18,13 +19,15 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 public class DiscussionVideoService implements DiscussionVideoPresenter {
 
    private final AuthTokenService authTokenService;
+   private final TemplateService templateService;
 
    private final DiscussionVideoRepository discussionVideoRepository;
 
    private final DiscussionVideoMapper discussionVideoMapper = new DiscussionVideoMapper();
 
-   public DiscussionVideoService(AuthTokenService authTokenService, DiscussionVideoRepository discussionVideoRepository) {
+   public DiscussionVideoService(AuthTokenService authTokenService, TemplateService templateService, DiscussionVideoRepository discussionVideoRepository) {
       this.authTokenService = authTokenService;
+      this.templateService = templateService;
       this.discussionVideoRepository = discussionVideoRepository;
    }
 
@@ -34,19 +37,25 @@ public class DiscussionVideoService implements DiscussionVideoPresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            try {
-               DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
-               discussionVideoRepository.save(model);
+         TemplateModel templateModel = templateService.getTemplateBySecureId(request.getTemplateSecureId());
 
-               createResponse.setSecureId(model.getSecureId());
+         if (templateModel != null) {
+            if (request.validate()) {
+               try {
+                  DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
+                  discussionVideoRepository.save(model);
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               response.setFailed(e.toString());
+                  createResponse.setSecureId(model.getSecureId());
+
+                  response.setSuccess(createResponse);
+               } catch (Exception e){
+                  response.setFailed(e.toString());
+               }
+            } else {
+               response.setWrongParams();
             }
          } else {
-            response.setWrongParams();
+            response.setNotFound("");
          }
       } else {
          response.setFailed(TOKEN_ERROR_MESSAGE);

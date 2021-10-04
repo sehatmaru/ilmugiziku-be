@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class CreateDiscussionVideoRequest {
     private String uri;
+    private String templateSecureId;
     private int questionType;
     private int questionSubType;
 

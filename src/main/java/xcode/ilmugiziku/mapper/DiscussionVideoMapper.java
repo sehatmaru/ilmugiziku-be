@@ -48,6 +48,7 @@ public class DiscussionVideoMapper {
             model.setQuestionSubType(request.getQuestionSubType());
             model.setQuestionType(request.getQuestionType());
             model.setUri(request.getUri());
+            model.setTemplateSecureId(request.getTemplateSecureId());
             model.setCreatedAt(new Date());
 
             return model;
