@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "video")
+@Table(name = "discussion_video")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class VideoModel {
+public class DiscussionVideoModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;

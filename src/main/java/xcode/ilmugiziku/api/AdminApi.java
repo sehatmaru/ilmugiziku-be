@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
 import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
@@ -15,7 +16,7 @@ import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
 import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
-import xcode.ilmugiziku.domain.request.video.CreateVideoRequest;
+import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
@@ -33,7 +34,7 @@ public class AdminApi {
     final TheoryPresenter theoryPresenter;
     final InstitutePresenter institutePresenter;
     final AuthPresenter authPresenter;
-    final VideoPresenter videoPresenter;
+    final DiscussionVideoPresenter discussionVideoPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -41,14 +42,14 @@ public class AdminApi {
                     TheoryPresenter theoryPresenter,
                     InstitutePresenter institutePresenter,
                     AuthPresenter authPresenter,
-                    VideoPresenter videoPresenter) {
+                    DiscussionVideoPresenter discussionVideoPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
         this.theoryPresenter = theoryPresenter;
         this.institutePresenter = institutePresenter;
         this.authPresenter = authPresenter;
-        this.videoPresenter = videoPresenter;
+        this.discussionVideoPresenter = discussionVideoPresenter;
     }
 
     @PostMapping("/question/create")
@@ -202,8 +203,28 @@ public class AdminApi {
     }
 
     @PostMapping("/discussion-video/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createDiscussionVideo (@RequestParam @Validated String token, @RequestBody @Validated CreateVideoRequest body) {
-        BaseResponse<CreateBaseResponse> response = videoPresenter.createDiscussionVideo(token, body);
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createDiscussionVideo (@RequestParam @Validated String token, @RequestBody @Validated CreateDiscussionVideoRequest body) {
+        BaseResponse<CreateBaseResponse> response = discussionVideoPresenter.createDiscussionVideo(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/discussion-video/update")
+    ResponseEntity<BaseResponse<Boolean>> updateDiscussionVideo(@RequestParam @Validated String token, @RequestBody @Validated UpdateDiscussionVideoRequest body) {
+        BaseResponse<Boolean> response = discussionVideoPresenter.updateDiscussionVideo(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/discussion-video/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteDiscussionVideo(@RequestParam @Validated String token, @RequestParam @Validated String secureId) {
+        BaseResponse<Boolean> response = discussionVideoPresenter.deleteDiscussionVideo(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

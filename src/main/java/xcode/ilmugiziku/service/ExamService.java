@@ -28,7 +28,7 @@ public class ExamService implements ExamPresenter {
    private final AnswerService answerService;
    private final ScheduleService scheduleService;
    private final QuestionService questionService;
-   private final VideoService videoService;
+   private final DiscussionVideoService videoService;
 
    private final ExamRepository examRepository;
 
@@ -40,7 +40,7 @@ public class ExamService implements ExamPresenter {
                       ScheduleService scheduleService,
                       QuestionService questionService,
                       ExamRepository examRepository,
-                      VideoService videoService) {
+                      DiscussionVideoService videoService) {
       this.authTokenService = authTokenService;
       this.authService = authService;
       this.examRepository = examRepository;
@@ -267,7 +267,7 @@ public class ExamService implements ExamPresenter {
                   ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, i);
 
                   if (exam != null) {
-                     VideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, scheduleModel.getTemplateSecureId());
+                     DiscussionVideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, scheduleModel.getTemplateSecureId());
 
                      results.add(new ExamVideoResponse(video.getUri(), i));
                   }

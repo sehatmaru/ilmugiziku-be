@@ -1,16 +1,16 @@
-package xcode.ilmugiziku.domain.request.video;
+package xcode.ilmugiziku.domain.request.discussionvideo;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateVideoRequest {
+public class CreateDiscussionVideoRequest {
     private String uri;
     private int questionType;
     private int questionSubType;
 
-    public CreateVideoRequest() {
+    public CreateDiscussionVideoRequest() {
     }
 
     public boolean validate() {

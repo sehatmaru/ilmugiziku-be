@@ -1,13 +1,14 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.model.VideoModel;
-import xcode.ilmugiziku.domain.request.video.CreateVideoRequest;
+import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
+import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
+import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
 
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
-public class VideoMapper {
+public class DiscussionVideoMapper {
 
 //    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model, int role) {
 //        if (model != null) {
@@ -40,9 +41,9 @@ public class VideoMapper {
 //        }
 //    }
 
-    public VideoModel createRequestToModel(CreateVideoRequest request) {
+    public DiscussionVideoModel createRequestToModel(CreateDiscussionVideoRequest request) {
         if (request != null) {
-            VideoModel model = new VideoModel();
+            DiscussionVideoModel model = new DiscussionVideoModel();
             model.setSecureId(generateSecureId());
             model.setQuestionSubType(request.getQuestionSubType());
             model.setQuestionType(request.getQuestionType());
@@ -55,19 +56,16 @@ public class VideoMapper {
         }
     }
 
-//    public QuestionModel updateRequestToModel(QuestionModel model, UpdateQuestionRequest request) {
-//        if (request != null && model != null) {
-//            model.setContent(request.getContent());
-//            model.setQuestionType(request.getQuestionType());
-//            model.setQuestionSubType(request.getQuestionSubType());
-//            model.setDiscussion(request.getDiscussion());
-//            model.setLabel(request.getLabel());
-//            model.setType(request.getType());
-//            model.setUpdatedAt(new Date());
-//
-//            return model;
-//        } else {
-//            return null;
-//        }
-//    }
+    public DiscussionVideoModel updateRequestToModel(DiscussionVideoModel model, UpdateDiscussionVideoRequest request) {
+        if (request != null && model != null) {
+            model.setUri(request.getUri());
+            model.setQuestionType(request.getQuestionType());
+            model.setQuestionSubType(request.getQuestionSubType());
+            model.setUpdatedAt(new Date());
+
+            return model;
+        } else {
+            return null;
+        }
+    }
 }
