@@ -24,14 +24,17 @@ public class TemplateModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "uri")
-   private String uri;
+   @Column(name = "name")
+   private String name;
+
+   @Column(name = "is_active")
+   private boolean isActive;
+
+   @Column(name = "question_type")
+   private int questionType;
 
    @Column(name = "question_sub_type")
    private int questionSubType;
-
-   @Column(name = "template_secure_id")
-   private String templateSecureId;
 
    @Column(name = "created_at")
    private Date createdAt;

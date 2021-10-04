@@ -14,11 +14,14 @@ import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
 import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
+import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
+import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
 import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.presenter.*;
 
@@ -35,6 +38,7 @@ public class AdminApi {
     final InstitutePresenter institutePresenter;
     final AuthPresenter authPresenter;
     final DiscussionVideoPresenter discussionVideoPresenter;
+    final TemplatePresenter templatePresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -42,7 +46,8 @@ public class AdminApi {
                     TheoryPresenter theoryPresenter,
                     InstitutePresenter institutePresenter,
                     AuthPresenter authPresenter,
-                    DiscussionVideoPresenter discussionVideoPresenter) {
+                    DiscussionVideoPresenter discussionVideoPresenter,
+                    TemplatePresenter templatePresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
@@ -50,10 +55,14 @@ public class AdminApi {
         this.institutePresenter = institutePresenter;
         this.authPresenter = authPresenter;
         this.discussionVideoPresenter = discussionVideoPresenter;
+        this.templatePresenter = templatePresenter;
     }
 
     @PostMapping("/question/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (@RequestParam @Validated String token, @RequestBody @Validated CreateQuestionRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateQuestionRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = questionPresenter.createQuestion(token, body);
 
         return ResponseEntity
@@ -63,7 +72,10 @@ public class AdminApi {
     }
 
     @PutMapping("/question/update")
-    ResponseEntity<BaseResponse<Boolean>> updateQuestion(@RequestParam @Validated String token, @RequestBody @Validated UpdateQuestionRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateQuestion(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateQuestionRequest body
+    ) {
         BaseResponse<Boolean> response = questionPresenter.updateQuestion(token, body);
 
         return ResponseEntity
@@ -73,7 +85,10 @@ public class AdminApi {
     }
 
     @DeleteMapping("/question/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteQuestion(@RequestParam @Validated String token, @RequestParam @Validated String questionSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteQuestion(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String questionSecureId
+    ) {
         BaseResponse<Boolean> response = questionPresenter.deleteQuestion(token, questionSecureId);
 
         return ResponseEntity
@@ -83,7 +98,10 @@ public class AdminApi {
     }
 
     @PostMapping("/schedule/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createSchedule (@RequestParam @Validated String token, @RequestBody @Validated CreateScheduleRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createSchedule(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateScheduleRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = schedulePresenter.createSchedule(token, body);
 
         return ResponseEntity
@@ -93,7 +111,11 @@ public class AdminApi {
     }
 
     @PutMapping("/schedule/update")
-    ResponseEntity<BaseResponse<Boolean>> updateSchedule(@RequestParam @Validated String token, @RequestParam @Validated String scheduleSecureId, @RequestBody @Validated UpdateScheduleRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateSchedule(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String scheduleSecureId,
+            @RequestBody @Validated UpdateScheduleRequest body
+    ) {
         BaseResponse<Boolean> response = schedulePresenter.updateSchedule(token, scheduleSecureId, body);
 
         return ResponseEntity
@@ -103,7 +125,10 @@ public class AdminApi {
     }
 
     @DeleteMapping("/schedule/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteSchedule(@RequestParam @Validated String token, @RequestParam @Validated String scheduleSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteSchedule(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String scheduleSecureId
+    ) {
         BaseResponse<Boolean> response = schedulePresenter.deleteSchedule(token, scheduleSecureId);
 
         return ResponseEntity
@@ -113,7 +138,10 @@ public class AdminApi {
     }
 
     @PostMapping("/laboratory-value/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createLaboratoryValue (@RequestParam @Validated String token, @RequestBody @Validated CreateLaboratoryValueRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createLaboratoryValue(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateLaboratoryValueRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = laboratoryPresenter.createLaboratoryValue(token, body);
 
         return ResponseEntity
@@ -123,7 +151,10 @@ public class AdminApi {
     }
 
     @PutMapping("/laboratory-value/update")
-    ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(@RequestParam @Validated String token, @RequestBody @Validated UpdateLaboratoryValueRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateLaboratoryValue(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateLaboratoryValueRequest body
+    ) {
         BaseResponse<Boolean> response = laboratoryPresenter.updateLaboratoryValue(token, body);
 
         return ResponseEntity
@@ -133,7 +164,10 @@ public class AdminApi {
     }
 
     @DeleteMapping("/laboratory-value/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(@RequestParam @Validated String token, @RequestParam @Validated String laboratoryValueSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteLaboratoryValue(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String laboratoryValueSecureId
+    ) {
         BaseResponse<Boolean> response = laboratoryPresenter.deleteLaboratoryValue(token, laboratoryValueSecureId);
 
         return ResponseEntity
@@ -143,7 +177,10 @@ public class AdminApi {
     }
 
     @PostMapping("/theory/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createTheory (@RequestParam @Validated String token, @RequestBody @Validated CreateTheoryRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createTheory(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateTheoryRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = theoryPresenter.createTheory(token, body);
 
         return ResponseEntity
@@ -153,7 +190,10 @@ public class AdminApi {
     }
 
     @PutMapping("/theory/update")
-    ResponseEntity<BaseResponse<Boolean>> updateTheory(@RequestParam @Validated String token, @RequestBody @Validated UpdateTheoryRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateTheory(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateTheoryRequest body
+    ) {
         BaseResponse<Boolean> response = theoryPresenter.updateTheory(token, body);
 
         return ResponseEntity
@@ -163,7 +203,10 @@ public class AdminApi {
     }
 
     @DeleteMapping("/theory/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteTheory(@RequestParam @Validated String token, @RequestParam @Validated String theorySecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteTheory(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String theorySecureId
+    ) {
         BaseResponse<Boolean> response = theoryPresenter.deleteTheory(token, theorySecureId);
 
         return ResponseEntity
@@ -173,7 +216,10 @@ public class AdminApi {
     }
 
     @PostMapping("/institute/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createInstitute (@RequestParam @Validated String token, @RequestBody @Validated CreateInstituteRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createInstitute(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateInstituteRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = institutePresenter.createInstitute(token, body);
 
         return ResponseEntity
@@ -183,7 +229,10 @@ public class AdminApi {
     }
 
     @PutMapping("/institute/update")
-    ResponseEntity<BaseResponse<Boolean>> updateInstitute(@RequestParam @Validated String token, @RequestBody @Validated UpdateInstituteRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateInstitute(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateInstituteRequest body
+    ) {
         BaseResponse<Boolean> response = institutePresenter.updateInstitute(token, body);
 
         return ResponseEntity
@@ -193,7 +242,10 @@ public class AdminApi {
     }
 
     @DeleteMapping("/institute/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteInstitute(@RequestParam @Validated String token, @RequestParam @Validated String instituteSecureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteInstitute(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String instituteSecureId
+    ) {
         BaseResponse<Boolean> response = institutePresenter.deleteInstitute(token, instituteSecureId);
 
         return ResponseEntity
@@ -203,7 +255,10 @@ public class AdminApi {
     }
 
     @PostMapping("/discussion-video/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createDiscussionVideo (@RequestParam @Validated String token, @RequestBody @Validated CreateDiscussionVideoRequest body) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createDiscussionVideo(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateDiscussionVideoRequest body
+    ) {
         BaseResponse<CreateBaseResponse> response = discussionVideoPresenter.createDiscussionVideo(token, body);
 
         return ResponseEntity
@@ -213,7 +268,10 @@ public class AdminApi {
     }
 
     @PutMapping("/discussion-video/update")
-    ResponseEntity<BaseResponse<Boolean>> updateDiscussionVideo(@RequestParam @Validated String token, @RequestBody @Validated UpdateDiscussionVideoRequest body) {
+    ResponseEntity<BaseResponse<Boolean>> updateDiscussionVideo(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateDiscussionVideoRequest body
+    ) {
         BaseResponse<Boolean> response = discussionVideoPresenter.updateDiscussionVideo(token, body);
 
         return ResponseEntity
@@ -223,7 +281,9 @@ public class AdminApi {
     }
 
     @DeleteMapping("/discussion-video/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteDiscussionVideo(@RequestParam @Validated String token, @RequestParam @Validated String secureId) {
+    ResponseEntity<BaseResponse<Boolean>> deleteDiscussionVideo(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId) {
         BaseResponse<Boolean> response = discussionVideoPresenter.deleteDiscussionVideo(token, secureId);
 
         return ResponseEntity
@@ -232,8 +292,76 @@ public class AdminApi {
                 .body(response);
     }
 
+    @PostMapping("/template-to/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createTemplateTo(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateTemplateRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = templatePresenter.createTemplate(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/template-to/update")
+    ResponseEntity<BaseResponse<Boolean>> updateTemplateTo(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated UpdateTemplateRequest body
+    ) {
+        BaseResponse<Boolean> response = templatePresenter.updateTemplate(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/template-to/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteTemplateTo(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = templatePresenter.deleteTemplate(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/template-to/list")
+    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateToList(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated int questionType,
+            @RequestParam @Validated int questionSubType
+    ) {
+        BaseResponse<List<TemplateResponse>> response = templatePresenter.getTemplateList(token, questionType, questionSubType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/template-to/set")
+    ResponseEntity<BaseResponse<Boolean>> setTemplateToActive(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = templatePresenter.setTemplateActive(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @GetMapping("/consumer/list")
-    ResponseEntity<BaseResponse<List<UserResponse>>> consumerList(@RequestParam @Validated String token) {
+    ResponseEntity<BaseResponse<List<UserResponse>>> consumerList(
+            @RequestParam @Validated String token
+    ) {
         BaseResponse<List<UserResponse>> response = authPresenter.getUserList(token);
 
         return ResponseEntity
@@ -243,7 +371,9 @@ public class AdminApi {
     }
 
     @PostMapping("/token/destroy")
-    ResponseEntity<BaseResponse<Boolean>> destroyToken(@RequestParam @Validated String email) {
+    ResponseEntity<BaseResponse<Boolean>> destroyToken(
+            @RequestParam @Validated String email
+    ) {
         BaseResponse<Boolean> response = authPresenter.destroyToken(email);
 
         return ResponseEntity
