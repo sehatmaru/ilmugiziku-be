@@ -12,6 +12,7 @@ import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
 @Getter
 @Setter
 public class CreateQuestionRequest {
+    private String templateSecureId;
     private String content;
     private int questionType;
     private int questionSubType;

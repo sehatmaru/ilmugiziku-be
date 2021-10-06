@@ -29,6 +29,7 @@ public class ExamService implements ExamPresenter {
    private final ScheduleService scheduleService;
    private final QuestionService questionService;
    private final DiscussionVideoService videoService;
+   private final TemplateService templateService;
 
    private final ExamRepository examRepository;
 
@@ -40,7 +41,8 @@ public class ExamService implements ExamPresenter {
                       ScheduleService scheduleService,
                       QuestionService questionService,
                       ExamRepository examRepository,
-                      DiscussionVideoService videoService) {
+                      DiscussionVideoService videoService,
+                      TemplateService templateService) {
       this.authTokenService = authTokenService;
       this.authService = authService;
       this.examRepository = examRepository;
@@ -48,6 +50,7 @@ public class ExamService implements ExamPresenter {
       this.scheduleService = scheduleService;
       this.questionService = questionService;
       this.videoService = videoService;
+      this.templateService = templateService;
    }
 
    @Override
@@ -228,7 +231,7 @@ public class ExamService implements ExamPresenter {
          if (scheduleModel.getSecureId() != null && authModel.getSecureId() != null) {
             if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
                for (int i=1; i<PFS+1; i++) {
-                  BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i);
+                  BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i, "");
 
                   results.add(new ExamInformationResponse(
                           i,
@@ -265,11 +268,14 @@ public class ExamService implements ExamPresenter {
             if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
                for (int i=1; i<PFS+1; i++) {
                   ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, i);
+                  TemplateModel template = templateService.getActiveTemplate(questionType, i);
 
-                  if (exam != null) {
-                     DiscussionVideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, scheduleModel.getTemplateSecureId());
+                  if (exam != null && template != null) {
+                     DiscussionVideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, template.getSecureId());
 
-                     results.add(new ExamVideoResponse(video.getUri(), i));
+                     if (video != null) {
+                        results.add(new ExamVideoResponse(video.getUri(), i));
+                     }
                   }
                }
 

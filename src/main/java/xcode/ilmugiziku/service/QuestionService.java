@@ -33,18 +33,25 @@ public class QuestionService implements QuestionPresenter {
    private final AuthService authService;
    private final AnswerService answerService;
    private final ScheduleService scheduleService;
+   private final TemplateService templateService;
 
    private final QuestionRepository questionRepository;
 
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
 
-   public QuestionService(AuthTokenService authTokenService, AnswerService answerService, ScheduleService scheduleService, QuestionRepository questionRepository, AuthService authService) {
+   public QuestionService(AuthTokenService authTokenService,
+                          AnswerService answerService,
+                          ScheduleService scheduleService,
+                          QuestionRepository questionRepository,
+                          AuthService authService,
+                          TemplateService templateService) {
       this.authTokenService = authTokenService;
       this.questionRepository = questionRepository;
       this.answerService = answerService;
       this.scheduleService = scheduleService;
       this.authService = authService;
+      this.templateService = templateService;
    }
 
    @Override
@@ -58,7 +65,7 @@ public class QuestionService implements QuestionPresenter {
    }
 
    @Override
-   public BaseResponse<QuestionResponse> getTryOutQuestion(String token, int questionType, int questionSubType) {
+   public BaseResponse<QuestionResponse> getTryOutQuestion(String token, int questionType, int questionSubType, String templateSecureId) {
       BaseResponse<QuestionResponse> response = new BaseResponse<>();
       QuestionResponse questionResponse = new QuestionResponse();
 
@@ -68,14 +75,14 @@ public class QuestionService implements QuestionPresenter {
                AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
 
                if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
-                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN));
+                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
                } else {
                   ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
                   if (scheduleModel.getSecureId() != null) {
                      questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
 
-                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER));
+                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
                   } else {
                      response.setWrongParams();
                   }
@@ -188,7 +195,7 @@ public class QuestionService implements QuestionPresenter {
       }
    }
 
-   private QuestionResponse getTryOut(QuestionResponse questionResponse, int questionType, int questionSubType, int role) {
+   private QuestionResponse getTryOut(QuestionResponse questionResponse, int questionType, int questionSubType, int role, String templateSecureId) {
       List<QuestionModel> questionModels = new ArrayList<>();
       List<AnswerModel> answerModels = new ArrayList<>();
 
@@ -196,7 +203,8 @@ public class QuestionService implements QuestionPresenter {
          if (questionSubType == 0) {
             questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
          } else {
-            questionModels = questionRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
+            TemplateModel model = !templateSecureId.isEmpty() ? templateService.getTemplateBySecureId(templateSecureId) : templateService.getActiveTemplate(questionType, questionSubType);
+            questionModels = questionRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, model.getSecureId());
          }
       } catch (Exception e) {
          System.out.println(e.getMessage());

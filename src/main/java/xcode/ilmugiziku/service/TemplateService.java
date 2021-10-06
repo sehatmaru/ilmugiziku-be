@@ -63,7 +63,7 @@ public class TemplateService implements TemplatePresenter {
          List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(templateModel.getQuestionType(), templateModel.getQuestionSubType());
 
          for (TemplateModel template : list) {
-            template.setActive(template.getSecureId().equals(secureId));
+            template.setUsed(template.getSecureId().equals(secureId));
 
             templateRepository.save(template);
          }
@@ -153,5 +153,18 @@ public class TemplateService implements TemplatePresenter {
 
    public TemplateModel getTemplateBySecureId(String secureId) {
       return templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+   }
+
+   public TemplateModel getActiveTemplate(int questionType, int questionSubType) {
+      TemplateModel result = new TemplateModel();
+      List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
+
+      for (TemplateModel model : list) {
+         if (model.isUsed()) {
+            result = model;
+         }
+      }
+
+      return result;
    }
 }

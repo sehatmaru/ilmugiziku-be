@@ -8,5 +8,5 @@ import lombok.Setter;
 public class TemplateResponse {
     private String secureId;
     private String name;
-    private boolean isActive;
+    private boolean isUsed;
 }

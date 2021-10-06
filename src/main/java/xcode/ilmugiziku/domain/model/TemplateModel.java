@@ -27,8 +27,8 @@ public class TemplateModel {
    @Column(name = "name")
    private String name;
 
-   @Column(name = "is_active")
-   private boolean isActive;
+   @Column(name = "is_used")
+   private boolean isUsed;
 
    @Column(name = "question_type")
    private int questionType;

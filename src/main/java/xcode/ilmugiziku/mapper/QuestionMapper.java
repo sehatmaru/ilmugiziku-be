@@ -48,6 +48,7 @@ public class QuestionMapper {
         if (request != null) {
             QuestionModel model = new QuestionModel();
             model.setSecureId(generateSecureId());
+            model.setTemplateSecureId(request.getTemplateSecureId());
             model.setContent(request.getContent());
             model.setQuestionType(request.getQuestionType());
             model.setQuestionSubType(request.getQuestionSubType());
