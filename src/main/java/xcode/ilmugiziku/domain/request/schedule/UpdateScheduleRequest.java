@@ -11,14 +11,12 @@ public class UpdateScheduleRequest {
     private String desc;
     private Date startDate;
     private Date endDate;
-    private int timeLimit;
 
     public UpdateScheduleRequest() {
     }
 
     public boolean validate() {
-        return timeLimit > 0
-                && startDate.after(new Date())
+        return startDate.after(new Date())
                 && endDate.after(new Date());
     }
 }

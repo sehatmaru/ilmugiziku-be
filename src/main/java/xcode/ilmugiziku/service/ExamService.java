@@ -19,6 +19,8 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.PFS;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
 public class ExamService implements ExamPresenter {
@@ -236,7 +238,7 @@ public class ExamService implements ExamPresenter {
                   results.add(new ExamInformationResponse(
                           i,
                           questions.getResult().getExam().size(),
-                          scheduleModel.getTimeLimit(),
+                          questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI,
                           !isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i)
                   ));
                }

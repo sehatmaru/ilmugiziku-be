@@ -25,6 +25,8 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
 public class QuestionService implements QuestionPresenter {
@@ -32,7 +34,6 @@ public class QuestionService implements QuestionPresenter {
    private final AuthTokenService authTokenService;
    private final AuthService authService;
    private final AnswerService answerService;
-   private final ScheduleService scheduleService;
    private final TemplateService templateService;
 
    private final QuestionRepository questionRepository;
@@ -42,14 +43,12 @@ public class QuestionService implements QuestionPresenter {
 
    public QuestionService(AuthTokenService authTokenService,
                           AnswerService answerService,
-                          ScheduleService scheduleService,
                           QuestionRepository questionRepository,
                           AuthService authService,
                           TemplateService templateService) {
       this.authTokenService = authTokenService;
       this.questionRepository = questionRepository;
       this.answerService = answerService;
-      this.scheduleService = scheduleService;
       this.authService = authService;
       this.templateService = templateService;
    }
@@ -77,15 +76,8 @@ public class QuestionService implements QuestionPresenter {
                if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
                   response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
                } else {
-                  ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-
-                  if (scheduleModel.getSecureId() != null) {
-                     questionResponse.setTimeLimit(scheduleModel.getTimeLimit());
-
-                     response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
-                  } else {
-                     response.setWrongParams();
-                  }
+                  questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI);
+                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
                }
             } else {
                response.setFailed(TOKEN_ERROR_MESSAGE);

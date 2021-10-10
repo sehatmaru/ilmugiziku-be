@@ -33,9 +33,6 @@ public class ScheduleModel {
    @Column(name = "end_date")
    private Date endDate;
 
-   @Column(name = "time_limit")
-   private int timeLimit;
-
    @Column(name = "template_secure_id")
    private String templateSecureId;
 

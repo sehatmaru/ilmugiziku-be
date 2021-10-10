@@ -12,5 +12,4 @@ public class ScheduleResponse {
     private String desc;
     private Date startDate;
     private Date endDate;
-    private int timeLimit;
 }
