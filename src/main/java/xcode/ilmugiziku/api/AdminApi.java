@@ -11,6 +11,8 @@ import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
 import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
+import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
+import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
@@ -44,6 +46,7 @@ public class AdminApi {
     final DiscussionVideoPresenter discussionVideoPresenter;
     final TemplatePresenter templatePresenter;
     final PackageFeaturePresenter packageFeaturePresenter;
+    final PackagePresenter packagePresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -53,7 +56,8 @@ public class AdminApi {
                     AuthPresenter authPresenter,
                     DiscussionVideoPresenter discussionVideoPresenter,
                     TemplatePresenter templatePresenter,
-                    PackageFeaturePresenter packageFeaturePresenter) {
+                    PackageFeaturePresenter packageFeaturePresenter,
+                    PackagePresenter packagePresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
@@ -63,6 +67,7 @@ public class AdminApi {
         this.discussionVideoPresenter = discussionVideoPresenter;
         this.templatePresenter = templatePresenter;
         this.packageFeaturePresenter = packageFeaturePresenter;
+        this.packagePresenter = packagePresenter;
     }
 
     @PostMapping("/question/create")
@@ -365,8 +370,6 @@ public class AdminApi {
                 .body(response);
     }
 
-
-
     @PostMapping("/package-feature/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createPackageFeature(
             @RequestParam @Validated String token,
@@ -412,6 +415,46 @@ public class AdminApi {
             @RequestParam @Validated String token
     ) {
         BaseResponse<List<PackageFeatureResponse>> response = packageFeaturePresenter.getPackageFeatureList(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/package/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreatePackageRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = packagePresenter.createPackage(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/package/update")
+    ResponseEntity<BaseResponse<Boolean>> updatePackage(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId,
+            @RequestBody @Validated UpdatePackageRequest body
+    ) {
+        BaseResponse<Boolean> response = packagePresenter.updatePackage(token, secureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/package/delete")
+    ResponseEntity<BaseResponse<Boolean>> deletePackage(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = packagePresenter.deletePackage(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

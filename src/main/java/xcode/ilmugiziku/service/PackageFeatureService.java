@@ -122,4 +122,8 @@ public class PackageFeatureService implements PackageFeaturePresenter {
 
       return response;
    }
+
+   public PackageFeatureModel getPackageFeatureBySecureId(String secureId) {
+      return packageFeatureRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+   }
 }
