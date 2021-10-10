@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
+import xcode.ilmugiziku.domain.request.exam.XenditRequest;
 import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
 import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
+import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
+import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
@@ -21,6 +24,7 @@ import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.PackageFeatureResponse;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.presenter.*;
@@ -39,6 +43,7 @@ public class AdminApi {
     final AuthPresenter authPresenter;
     final DiscussionVideoPresenter discussionVideoPresenter;
     final TemplatePresenter templatePresenter;
+    final PackageFeaturePresenter packageFeaturePresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -47,7 +52,8 @@ public class AdminApi {
                     InstitutePresenter institutePresenter,
                     AuthPresenter authPresenter,
                     DiscussionVideoPresenter discussionVideoPresenter,
-                    TemplatePresenter templatePresenter) {
+                    TemplatePresenter templatePresenter,
+                    PackageFeaturePresenter packageFeaturePresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
@@ -56,6 +62,7 @@ public class AdminApi {
         this.authPresenter = authPresenter;
         this.discussionVideoPresenter = discussionVideoPresenter;
         this.templatePresenter = templatePresenter;
+        this.packageFeaturePresenter = packageFeaturePresenter;
     }
 
     @PostMapping("/question/create")
@@ -358,6 +365,60 @@ public class AdminApi {
                 .body(response);
     }
 
+
+
+    @PostMapping("/package-feature/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackageFeature(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreatePackageFeatureRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = packageFeaturePresenter.createPackageFeature(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/package-feature/update")
+    ResponseEntity<BaseResponse<Boolean>> updatePackageFeature(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId,
+            @RequestBody @Validated UpdatePackageFeatureRequest body
+    ) {
+        BaseResponse<Boolean> response = packageFeaturePresenter.updatePackageFeature(token, secureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/package-feature/delete")
+    ResponseEntity<BaseResponse<Boolean>> deletePackageFeature(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = packageFeaturePresenter.deletePackageFeature(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/package-feature/list")
+    ResponseEntity<BaseResponse<List<PackageFeatureResponse>>> getPackageFeatureList(
+            @RequestParam @Validated String token
+    ) {
+        BaseResponse<List<PackageFeatureResponse>> response = packageFeaturePresenter.getPackageFeatureList(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @GetMapping("/consumer/list")
     ResponseEntity<BaseResponse<List<UserResponse>>> consumerList(
             @RequestParam @Validated String token
@@ -380,5 +441,16 @@ public class AdminApi {
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
+    }
+
+    /**
+     * on progress/pending
+     * @param request
+     */
+    @PostMapping("/xendit")
+    void xendit(
+            @RequestBody @Validated XenditRequest request
+    ) {
+        System.out.println(request);
     }
 }
