@@ -11,6 +11,8 @@ import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
 import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
+import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
+import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
 import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
 import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
@@ -47,6 +49,7 @@ public class AdminApi {
     final PackageFeaturePresenter packageFeaturePresenter;
     final PackagePresenter packagePresenter;
     final WebinarPresenter webinarPresenter;
+    final LessonPresenter lessonPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -58,7 +61,8 @@ public class AdminApi {
                     TemplatePresenter templatePresenter,
                     PackageFeaturePresenter packageFeaturePresenter,
                     PackagePresenter packagePresenter,
-                    WebinarPresenter webinarPresenter) {
+                    WebinarPresenter webinarPresenter,
+                    LessonPresenter lessonPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
@@ -70,6 +74,7 @@ public class AdminApi {
         this.packageFeaturePresenter = packageFeaturePresenter;
         this.packagePresenter = packagePresenter;
         this.webinarPresenter = webinarPresenter;
+        this.lessonPresenter = lessonPresenter;
     }
 
     @PostMapping("/question/create")
@@ -510,6 +515,59 @@ public class AdminApi {
             @RequestParam @Validated int bimbelType
     ) {
         BaseResponse<List<WebinarResponse>> response = webinarPresenter.getWebinarList(token, bimbelType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/lesson/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createLesson(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateLessonRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = lessonPresenter.createLesson(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/lesson/update")
+    ResponseEntity<BaseResponse<Boolean>> updateLesson(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId,
+            @RequestBody @Validated UpdateLessonRequest body
+    ) {
+        BaseResponse<Boolean> response = lessonPresenter.updateLesson(token, secureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/lesson/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteLesson(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = lessonPresenter.deleteLesson(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/lesson/list")
+    ResponseEntity<BaseResponse<List<LessonResponse>>> getLessonList(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated int bimbelType
+    ) {
+        BaseResponse<List<LessonResponse>> response = lessonPresenter.getLessonList(token, bimbelType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
