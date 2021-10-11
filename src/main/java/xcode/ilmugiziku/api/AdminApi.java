@@ -24,10 +24,9 @@ import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
 import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
-import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.PackageFeatureResponse;
-import xcode.ilmugiziku.domain.response.TemplateResponse;
+import xcode.ilmugiziku.domain.request.webinar.CreateWebinarRequest;
+import xcode.ilmugiziku.domain.request.webinar.UpdateWebinarRequest;
+import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.presenter.*;
 
@@ -47,6 +46,7 @@ public class AdminApi {
     final TemplatePresenter templatePresenter;
     final PackageFeaturePresenter packageFeaturePresenter;
     final PackagePresenter packagePresenter;
+    final WebinarPresenter webinarPresenter;
 
     public AdminApi(QuestionPresenter questionPresenter,
                     SchedulePresenter schedulePresenter,
@@ -57,7 +57,8 @@ public class AdminApi {
                     DiscussionVideoPresenter discussionVideoPresenter,
                     TemplatePresenter templatePresenter,
                     PackageFeaturePresenter packageFeaturePresenter,
-                    PackagePresenter packagePresenter) {
+                    PackagePresenter packagePresenter,
+                    WebinarPresenter webinarPresenter) {
         this.questionPresenter = questionPresenter;
         this.schedulePresenter = schedulePresenter;
         this.laboratoryPresenter = laboratoryPresenter;
@@ -68,6 +69,7 @@ public class AdminApi {
         this.templatePresenter = templatePresenter;
         this.packageFeaturePresenter = packageFeaturePresenter;
         this.packagePresenter = packagePresenter;
+        this.webinarPresenter = webinarPresenter;
     }
 
     @PostMapping("/question/create")
@@ -455,6 +457,59 @@ public class AdminApi {
             @RequestParam @Validated String secureId
     ) {
         BaseResponse<Boolean> response = packagePresenter.deletePackage(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/webinar/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createWebinar(
+            @RequestParam @Validated String token,
+            @RequestBody @Validated CreateWebinarRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = webinarPresenter.createWebinar(token, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/webinar/update")
+    ResponseEntity<BaseResponse<Boolean>> updateWebinar(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId,
+            @RequestBody @Validated UpdateWebinarRequest body
+    ) {
+        BaseResponse<Boolean> response = webinarPresenter.updateWebinar(token, secureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/webinar/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteWebinar(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = webinarPresenter.deleteWebinar(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/webinar/list")
+    ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated int bimbelType
+    ) {
+        BaseResponse<List<WebinarResponse>> response = webinarPresenter.getWebinarList(token, bimbelType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
