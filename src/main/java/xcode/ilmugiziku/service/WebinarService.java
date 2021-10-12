@@ -42,7 +42,7 @@ public class WebinarService implements WebinarPresenter {
             List<WebinarModel> models = new ArrayList<>();
 
             try {
-               models = webinarRepository.findByBimbelTypeAndDeletedAtIsNull(bimbelType);
+               models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
             } catch (Exception e) {
                response.setFailed(e.toString());
             }
@@ -143,5 +143,9 @@ public class WebinarService implements WebinarPresenter {
       }
 
       return response;
+   }
+
+   public List<WebinarModel> getWebinarByBimbelType(int type) {
+      return webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(type);
    }
 }

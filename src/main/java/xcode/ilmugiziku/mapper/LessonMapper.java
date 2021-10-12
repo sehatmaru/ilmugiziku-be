@@ -22,6 +22,7 @@ public class LessonMapper {
             response.setRating(round(model.getRating(), 2));
             response.setTheory(model.getTheory());
             response.setVideoUri(model.getVideoUri());
+            response.setThumbnailUri(model.getThumbnailUri());
 
             return response;
         } else {

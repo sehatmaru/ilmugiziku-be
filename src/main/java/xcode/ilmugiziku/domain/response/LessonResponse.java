@@ -10,6 +10,7 @@ public class LessonResponse {
     private String title;
     private String theory;
     private String videoUri;
+    private String thumbnailUri;
     private double rating;
     private boolean isRated;
 }

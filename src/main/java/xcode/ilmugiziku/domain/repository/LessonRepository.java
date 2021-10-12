@@ -11,5 +11,5 @@ public interface LessonRepository extends JpaRepository<LessonModel, String> {
 
    LessonModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<LessonModel> findByBimbelTypeAndDeletedAtIsNull(int type);
+   List<LessonModel> findAllByBimbelTypeAndDeletedAtIsNull(int type);
 }

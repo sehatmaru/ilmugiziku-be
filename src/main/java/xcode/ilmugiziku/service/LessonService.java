@@ -3,6 +3,7 @@ package xcode.ilmugiziku.service;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.LessonModel;
+import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
@@ -46,7 +47,7 @@ public class LessonService implements LessonPresenter {
             List<LessonModel> models = new ArrayList<>();
 
             try {
-               models = lessonRepository.findByBimbelTypeAndDeletedAtIsNull(bimbelType);
+               models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
             } catch (Exception e) {
                response.setFailed(e.toString());
             }
@@ -160,5 +161,9 @@ public class LessonService implements LessonPresenter {
       model.setRating(rating);
 
       lessonRepository.save(model);
+   }
+
+   public List<LessonModel> getLessonByBimbelType(int type) {
+      return lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(type);
    }
 }

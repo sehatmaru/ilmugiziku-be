@@ -7,7 +7,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
+import xcode.ilmugiziku.domain.response.BimbelResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
+import xcode.ilmugiziku.presenter.BimbelPresenter;
 import xcode.ilmugiziku.presenter.PackagePresenter;
 import xcode.ilmugiziku.presenter.RatingPresenter;
 
@@ -19,10 +21,14 @@ public class BimbelApi {
 
     final PackagePresenter packagePresenter;
     final RatingPresenter ratingPresenter;
+    final BimbelPresenter bimbelPresenter;
 
-    public BimbelApi(PackagePresenter packagePresenter, RatingPresenter ratingPresenter) {
+    public BimbelApi(PackagePresenter packagePresenter,
+                     RatingPresenter ratingPresenter,
+                     BimbelPresenter bimbelPresenter) {
         this.packagePresenter = packagePresenter;
         this.ratingPresenter = ratingPresenter;
+        this.bimbelPresenter = bimbelPresenter;
     }
 
     @GetMapping("/package/list")
@@ -49,4 +55,18 @@ public class BimbelApi {
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
-    }}
+    }
+
+    @GetMapping("/lesson")
+    ResponseEntity<BaseResponse<BimbelResponse>> getBimbelPackage(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated int bimbelType
+    ) {
+        BaseResponse<BimbelResponse> response = bimbelPresenter.getBimbelPackage(token, bimbelType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+}
