@@ -223,4 +223,8 @@ public class AuthService implements AuthPresenter {
       return authRepository.findBySecureIdAndDeletedAtIsNull(secureId).getRole() == ADMIN;
    }
 
+   public void saveAuthModel(AuthModel model) {
+      authRepository.save(model);
+   }
+
 }

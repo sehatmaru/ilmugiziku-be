@@ -13,7 +13,6 @@ import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
-import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
 import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
@@ -311,6 +310,18 @@ public class AdminApi {
                 .body(response);
     }
 
+    @GetMapping("/discussion-video")
+    ResponseEntity<BaseResponse<DiscussionVideoResponse>> getDiscussionVideo(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String templateSecureId) {
+        BaseResponse<DiscussionVideoResponse> response = discussionVideoPresenter.getDiscussionVideo(token, templateSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @PostMapping("/template-to/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createTemplateTo(
             @RequestParam @Validated String token,
@@ -429,19 +440,6 @@ public class AdminApi {
                 .body(response);
     }
 
-//    @PostMapping("/package/create")
-//    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
-//            @RequestParam @Validated String token,
-//            @RequestBody @Validated CreatePackageRequest body
-//    ) {
-//        BaseResponse<CreateBaseResponse> response = packagePresenter.createPackage(token, body);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
-
     @PutMapping("/package/update")
     ResponseEntity<BaseResponse<Boolean>> updatePackage(
             @RequestParam @Validated String token,
@@ -455,19 +453,6 @@ public class AdminApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-
-//    @DeleteMapping("/package/delete")
-//    ResponseEntity<BaseResponse<Boolean>> deletePackage(
-//            @RequestParam @Validated String token,
-//            @RequestParam @Validated String secureId
-//    ) {
-//        BaseResponse<Boolean> response = packagePresenter.deletePackage(token, secureId);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
 
     @PostMapping("/webinar/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createWebinar(

@@ -30,11 +30,17 @@ public class PaymentModel {
    @Column(name = "package_secure_id")
    private String packageSecureId;
 
+   @Column(name = "invoice_id")
+   private String invoiceId;
+
+   @Column(name = "paid_date")
+   private Date paidDate;
+
    @Column(name = "package_type")
    private int packageType;
 
    @Column(name = "payment_status")
-   private int paymentStatus;
+   private String paymentStatus;
 
    @Column(name = "payment_deadline")
    private Date paymentDeadline;

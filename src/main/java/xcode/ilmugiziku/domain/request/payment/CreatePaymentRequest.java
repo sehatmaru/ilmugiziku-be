@@ -9,6 +9,7 @@ import java.util.Date;
 @Setter
 public class CreatePaymentRequest {
     private String packageSecureId;
+    private String invoiceId;
     private int packageType;
     private Date paymentDeadline;
 

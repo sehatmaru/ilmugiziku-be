@@ -8,6 +8,7 @@ import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequ
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.DiscussionVideoResponse;
 import xcode.ilmugiziku.mapper.DiscussionVideoMapper;
 import xcode.ilmugiziku.presenter.DiscussionVideoPresenter;
 
@@ -29,6 +30,31 @@ public class DiscussionVideoService implements DiscussionVideoPresenter {
       this.authTokenService = authTokenService;
       this.templateService = templateService;
       this.discussionVideoRepository = discussionVideoRepository;
+   }
+
+   @Override
+   public BaseResponse<DiscussionVideoResponse> getDiscussionVideo(String token, String templateSecureId) {
+      BaseResponse<DiscussionVideoResponse> response = new BaseResponse<>();
+
+      if (authTokenService.isValidToken(token)) {
+         TemplateModel templateModel = templateService.getTemplateBySecureId(templateSecureId);
+
+         if (templateModel != null) {
+            try {
+               DiscussionVideoModel model = discussionVideoRepository.findByTemplateSecureIdAndDeletedAtIsNull(templateSecureId);
+
+               response.setSuccess(discussionVideoMapper.modelToResponse(model));
+            } catch (Exception e){
+               response.setFailed(e.toString());
+            }
+         } else {
+            response.setNotFound("");
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
    }
 
    @Override

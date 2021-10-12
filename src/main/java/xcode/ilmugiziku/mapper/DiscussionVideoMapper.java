@@ -3,6 +3,7 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
+import xcode.ilmugiziku.domain.response.DiscussionVideoResponse;
 
 import java.util.Date;
 
@@ -10,36 +11,17 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class DiscussionVideoMapper {
 
-//    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model, int role) {
-//        if (model != null) {
-//            QuestionExamResponse response = new QuestionExamResponse();
-//            response.setSecureId(model.getSecureId());
-//            response.setContent(model.getContent());
-//
-//            if (role == ADMIN) {
-//                response.setDiscussion(model.getDiscussion());
-//            }
-//
-//            return response;
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public QuestionAnswerResponse modelToQuestionValueResponse(QuestionModel model) {
-//        if (model != null) {
-//            QuestionAnswerResponse response = new QuestionAnswerResponse();
-//            response.setSecureId(model.getSecureId());
-//            response.setContent(model.getContent());
-//            response.setDiscussion(model.getDiscussion());
-//            response.setLabel(model.getLabel());
-//            response.setType(model.getType());
-//
-//            return response;
-//        } else {
-//            return null;
-//        }
-//    }
+    public DiscussionVideoResponse modelToResponse(DiscussionVideoModel model) {
+        if (model != null) {
+            DiscussionVideoResponse response = new DiscussionVideoResponse();
+            response.setSecureId(model.getSecureId());
+            response.setUri(model.getUri());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
 
     public DiscussionVideoModel createRequestToModel(CreateDiscussionVideoRequest request) {
         if (request != null) {
