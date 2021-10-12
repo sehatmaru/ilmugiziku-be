@@ -10,6 +10,7 @@ import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.presenter.RatingPresenter;
 
+import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
@@ -44,6 +45,7 @@ public class RatingService implements RatingPresenter {
             ratingModel.setAuthSecureId(authTokenModel.getAuthSecureId());
             ratingModel.setLessonSecureId(lessonSecureId);
             ratingModel.setRating(request.getRating());
+            ratingModel.setCreatedAt(new Date());
 
             ratingRepository.save(ratingModel);
 
