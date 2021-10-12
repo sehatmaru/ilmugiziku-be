@@ -69,16 +69,21 @@ public class PaymentService implements PaymentPresenter {
       XenditPaymentResponse result = new XenditPaymentResponse();
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
+      System.out.println(token);
+      System.out.println(request);
+
       if (payment != null && token.equals(XENDIT_TOKEN)) {
          AuthModel authModel = authService.getAuthBySecureId(payment.getAuthSecureId());
 
-         if (request.isSuccessPayment()) {
+         if (request.isPaid()) {
             String packages = authModel.getPackages();
             packages += payment.getPackageType();
 
             authModel.setPackages(packages);
 
             payment.setPaidDate(new Date());
+         } else if (request.isExpired()) {
+            payment.setDeletedAt(new Date());
          }
 
          payment.setPaymentStatus(request.getStatus());

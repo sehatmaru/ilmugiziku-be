@@ -3,7 +3,8 @@ package xcode.ilmugiziku.domain.request.payment;
 import lombok.Getter;
 import lombok.Setter;
 
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.SUCCEEDED;
+import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.EXPIRED;
+import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Getter
 @Setter
@@ -32,7 +33,37 @@ public class XenditPaymentRequest {
     public XenditPaymentRequest() {
     }
 
-    public boolean isSuccessPayment() {
-        return status.equals(SUCCEEDED);
+    public boolean isPaid() {
+        return status.equals(PAID);
+    }
+
+    public boolean isExpired() {
+        return status.equals(EXPIRED);
+    }
+
+    @Override
+    public String toString() {
+        return "XenditPaymentRequest{" +
+                "id='" + id + '\'' +
+                ", external_id='" + external_id + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", is_high=" + is_high +
+                ", payment_method='" + payment_method + '\'' +
+                ", status='" + status + '\'' +
+                ", merchant_name='" + merchant_name + '\'' +
+                ", amount=" + amount +
+                ", paid_amount=" + paid_amount +
+                ", bank_code='" + bank_code + '\'' +
+                ", paid_at='" + paid_at + '\'' +
+                ", payer_email='" + payer_email + '\'' +
+                ", description='" + description + '\'' +
+                ", adjusted_received_amount=" + adjusted_received_amount +
+                ", fees_paid_amount='" + fees_paid_amount + '\'' +
+                ", updated='" + updated + '\'' +
+                ", created='" + created + '\'' +
+                ", currency='" + currency + '\'' +
+                ", payment_channel='" + payment_channel + '\'' +
+                ", payment_destination='" + payment_destination + '\'' +
+                '}';
     }
 }

@@ -7,9 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 public @interface PaymentStatusRefs {
-    String SUCCEEDED = "SUCCEEDED";
+    String PAID = "PAID";
+    String EXPIRED = "EXPIRED";
     String PENDING = "PENDING";
-    String FAILED = "FAILED";
-    String VOIDED = "VOIDED";
-    String REFUNDED = "REFUNDED";
 }
