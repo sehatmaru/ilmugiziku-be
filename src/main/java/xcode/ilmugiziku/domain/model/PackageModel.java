@@ -36,6 +36,9 @@ public class PackageModel {
    @Column(name = "availability")
    private String availability;
 
+   @Column(name = "package_type")
+   private int packageType;
+
    @Column(name = "created_at")
    private Date createdAt;
 

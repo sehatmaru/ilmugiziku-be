@@ -11,5 +11,6 @@ public class PackageResponse {
     private String secureId;
     private String title;
     private int price;
+    private int packageType;
     private List<PackageFeatureResponse> features;
 }

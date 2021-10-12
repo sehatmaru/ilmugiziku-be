@@ -44,6 +44,7 @@ public class PackageMapper {
             response.setTitle(model.getTitle());
             response.setPrice(model.getPrice());
             response.setFeatures(modelToFeatureResponses(model));
+            response.setPackageType(model.getPackageType());
 
             return response;
         } else {
