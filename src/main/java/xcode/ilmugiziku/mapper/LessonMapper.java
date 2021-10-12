@@ -51,6 +51,7 @@ public class LessonMapper {
             response.setBimbelType(request.getBimbelType());
             response.setTheory(request.getTheory());
             response.setVideoUri(request.getVideoUri());
+            response.setThumbnailUri(request.getThumbnailUri());
             response.setRating(0);
             response.setCreatedAt(new Date());
 
@@ -65,6 +66,7 @@ public class LessonMapper {
             model.setTitle(request.getTitle());
             model.setTheory(request.getTheory());
             model.setVideoUri(request.getVideoUri());
+            model.setThumbnailUri(request.getThumbnailUri());
             model.setUpdatedAt(new Date());
 
             return model;

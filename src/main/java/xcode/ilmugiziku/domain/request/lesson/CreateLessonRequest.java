@@ -13,6 +13,7 @@ public class CreateLessonRequest {
     private String title;
     private String theory;
     private String videoUri;
+    private String thumbnailUri;
     private int bimbelType;
 
     public CreateLessonRequest() {

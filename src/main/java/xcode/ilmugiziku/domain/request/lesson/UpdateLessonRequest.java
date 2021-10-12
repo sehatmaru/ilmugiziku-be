@@ -11,6 +11,7 @@ public class UpdateLessonRequest {
     private String title;
     private String theory;
     private String videoUri;
+    private String thumbnailUri;
 
     public UpdateLessonRequest() {
     }

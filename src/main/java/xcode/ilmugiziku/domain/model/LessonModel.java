@@ -27,6 +27,9 @@ public class LessonModel {
    @Column(name = "video_uri")
    private String videoUri;
 
+   @Column(name = "thumbnail_uri")
+   private String thumbnailUri;
+
    @Column(name = "bimbel_type")
    private int bimbelType;
 
