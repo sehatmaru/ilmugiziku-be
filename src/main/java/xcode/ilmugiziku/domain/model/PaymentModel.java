@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "auth")
+@Table(name = "payment")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthModel {
+public class PaymentModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -24,29 +24,23 @@ public class AuthModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "first_name")
-   private String firstName;
+   @Column(name = "auth_secure_id")
+   private String authSecureId;
 
-   @Column(name = "last_name")
-   private String lastName;
+   @Column(name = "package_secure_id")
+   private String packageSecureId;
 
-   @Column(name = "gender")
-   private String gender;
+   @Column(name = "package_type")
+   private int packageType;
 
-   @Column(name = "email")
-   private String email;
+   @Column(name = "payment_status")
+   private int paymentStatus;
 
-   @Column(name = "password")
-   private String password;
+   @Column(name = "payment_deadline")
+   private Date paymentDeadline;
 
-   @Column(name = "type")
-   private int type;
-
-   @Column(name = "packages")
-   private String packages;
-
-   @Column(name = "role")
-   private int role;
+   @Column(name = "expired_date")
+   private Date expiredDate;
 
    @Column(name = "created_at")
    private Date createdAt;
@@ -56,8 +50,4 @@ public class AuthModel {
 
    @Column(name = "deleted_at")
    private Date deletedAt;
-
-   public boolean isPremium() {
-      return packages != null;
-   }
 }

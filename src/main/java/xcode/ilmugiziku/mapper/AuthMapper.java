@@ -24,6 +24,7 @@ public class AuthMapper {
             response.setGender(model.getGender());
             response.setEmail(model.getEmail());
             response.setToken(token);
+            response.setPremium(model.isPremium());
 
             return response;
         } else {

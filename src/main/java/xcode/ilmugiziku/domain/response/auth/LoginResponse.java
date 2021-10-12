@@ -14,4 +14,5 @@ public class LoginResponse {
     private String token;
     private int type;
     private int role;
+    private boolean isPremium;
 }

@@ -429,18 +429,18 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/package/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
-            @RequestParam @Validated String token,
-            @RequestBody @Validated CreatePackageRequest body
-    ) {
-        BaseResponse<CreateBaseResponse> response = packagePresenter.createPackage(token, body);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
+//    @PostMapping("/package/create")
+//    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
+//            @RequestParam @Validated String token,
+//            @RequestBody @Validated CreatePackageRequest body
+//    ) {
+//        BaseResponse<CreateBaseResponse> response = packagePresenter.createPackage(token, body);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(response);
+//    }
 
     @PutMapping("/package/update")
     ResponseEntity<BaseResponse<Boolean>> updatePackage(
@@ -456,18 +456,18 @@ public class AdminApi {
                 .body(response);
     }
 
-    @DeleteMapping("/package/delete")
-    ResponseEntity<BaseResponse<Boolean>> deletePackage(
-            @RequestParam @Validated String token,
-            @RequestParam @Validated String secureId
-    ) {
-        BaseResponse<Boolean> response = packagePresenter.deletePackage(token, secureId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
+//    @DeleteMapping("/package/delete")
+//    ResponseEntity<BaseResponse<Boolean>> deletePackage(
+//            @RequestParam @Validated String token,
+//            @RequestParam @Validated String secureId
+//    ) {
+//        BaseResponse<Boolean> response = packagePresenter.deletePackage(token, secureId);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(response);
+//    }
 
     @PostMapping("/webinar/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createWebinar(
@@ -601,7 +601,6 @@ public class AdminApi {
 
     /**
      * on progress/pending
-     * @param request
      */
     @PostMapping("/xendit")
     void xendit(
