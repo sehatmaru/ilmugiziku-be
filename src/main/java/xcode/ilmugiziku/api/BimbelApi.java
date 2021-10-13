@@ -58,11 +58,24 @@ public class BimbelApi {
     }
 
     @GetMapping("/lesson")
-    ResponseEntity<BaseResponse<BimbelResponse>> getBimbelPackage(
+    ResponseEntity<BaseResponse<BimbelResponse>> getBimbelLesson(
             @RequestParam @Validated String token,
             @RequestParam @Validated int bimbelType
     ) {
         BaseResponse<BimbelResponse> response = bimbelPresenter.getBimbelPackage(token, bimbelType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/package")
+    ResponseEntity<BaseResponse<PackageResponse>> getPackage(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<PackageResponse> response = packagePresenter.getPackage(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

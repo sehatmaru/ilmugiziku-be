@@ -61,6 +61,25 @@ public class PackageService implements PackagePresenter {
    }
 
    @Override
+   public BaseResponse<PackageResponse> getPackage(String token, String secureId) {
+      BaseResponse<PackageResponse> response = new BaseResponse<>();
+
+      if (authTokenService.isValidToken(token)) {
+         PackageModel model = packageRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+         if (model != null) {
+            response.setSuccess(packageMapper.modelToResponse(model));
+         } else {
+            response.setNotFound("");
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
    public BaseResponse<CreateBaseResponse> createPackage(String token, CreatePackageRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
