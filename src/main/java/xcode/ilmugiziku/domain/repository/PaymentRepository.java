@@ -16,4 +16,6 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, String> {
    PaymentModel findByAuthSecureIdAndPackageSecureIdAndDeletedAtIsNull(String auth, String pack);
 
    PaymentModel findByInvoiceIdAndDeletedAtIsNull(String invoice);
+
+   PaymentModel findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(String secureId, int type);
 }

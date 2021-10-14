@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 
@@ -21,6 +22,7 @@ public class PaymentMapper {
             response.setPackageType(request.getPackageType());
             response.setPaymentStatus(PENDING);
             response.setPaymentDeadline(request.getPaymentDeadline());
+            response.setInvoiceId(request.getInvoiceId());
             response.setExpiredDate(expire);
             response.setCreatedAt(new Date());
 

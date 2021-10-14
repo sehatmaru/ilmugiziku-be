@@ -149,4 +149,8 @@ public class PackageService implements PackagePresenter {
 
       return response;
    }
+
+   public PackageModel getPackageByType(int type) {
+      return packageRepository.findByPackageTypeAndDeletedAtIsNull(type);
+   }
 }

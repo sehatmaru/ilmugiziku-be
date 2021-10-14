@@ -2,7 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
@@ -17,12 +17,14 @@ import java.util.Date;
 
 import static xcode.ilmugiziku.shared.Environment.XENDIT_TOKEN;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 
 @Service
 public class PaymentService implements PaymentPresenter {
 
    private final AuthTokenService authTokenService;
    private final AuthService authService;
+   private final PackageService packageService;
 
    private final PaymentRepository paymentRepository;
 
@@ -30,10 +32,12 @@ public class PaymentService implements PaymentPresenter {
 
    public PaymentService(AuthTokenService authTokenService,
                          PaymentRepository paymentRepository,
-                         AuthService authService) {
+                         AuthService authService,
+                         PackageService packageService) {
       this.authTokenService = authTokenService;
       this.paymentRepository = paymentRepository;
       this.authService = authService;
+      this.packageService = packageService;
    }
 
    @Override
@@ -42,11 +46,18 @@ public class PaymentService implements PaymentPresenter {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+         AuthModel authModel = authService.getAuthBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
+         PackageModel packageModel = packageService.getPackageByType(request.getPackageType());
+
+         boolean isUpgrade = request.isUpgradePackage(authModel);
+         int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
 
          try {
             PaymentModel model = paymentMapper.createRequestToModel(request);
-            model.setAuthSecureId(authTokenModel.getAuthSecureId());
+            model.setAuthSecureId(authModel.getSecureId());
+            model.setFee(fee * 6);
+            model.setUpgrade(isUpgrade);
+
             paymentRepository.save(model);
 
             createResponse.setSecureId(model.getSecureId());
@@ -76,12 +87,21 @@ public class PaymentService implements PaymentPresenter {
          AuthModel authModel = authService.getAuthBySecureId(payment.getAuthSecureId());
 
          if (request.isPaid()) {
-            String packages = authModel.getPackages();
-            packages += payment.getPackageType();
+            String packages = authModel.getPackages() != null ? authModel.getPackages() : "";
+            packages += String.valueOf(payment.getPackageType());
 
             authModel.setPackages(packages);
 
             payment.setPaidDate(new Date());
+
+            if (payment.isUpgrade()) {
+               int prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
+               PaymentModel prevPayment = paymentRepository.findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(authModel.getSecureId(), prevType);
+               prevPayment.setDeletedAt(new Date());
+
+               paymentRepository.save(prevPayment);
+               payment.setExpiredDate(prevPayment.getExpiredDate());
+            }
          } else if (request.isExpired()) {
             payment.setDeletedAt(new Date());
          }

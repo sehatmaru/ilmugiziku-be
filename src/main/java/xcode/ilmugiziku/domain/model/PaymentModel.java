@@ -48,6 +48,12 @@ public class PaymentModel {
    @Column(name = "expired_date")
    private Date expiredDate;
 
+   @Column(name = "fee")
+   private int fee;
+
+   @Column(name = "is_upgrade")
+   private boolean isUpgrade;
+
    @Column(name = "created_at")
    private Date createdAt;
 

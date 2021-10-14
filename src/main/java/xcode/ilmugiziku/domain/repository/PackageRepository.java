@@ -11,5 +11,7 @@ public interface PackageRepository extends JpaRepository<PackageModel, String> {
 
    PackageModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
+   PackageModel findByPackageTypeAndDeletedAtIsNull(int type);
+
    List<PackageModel> findByDeletedAtIsNull();
 }

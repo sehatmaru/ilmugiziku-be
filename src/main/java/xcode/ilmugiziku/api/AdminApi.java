@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
-import xcode.ilmugiziku.domain.request.exam.XenditRequest;
 import xcode.ilmugiziku.domain.request.institution.CreateInstituteRequest;
 import xcode.ilmugiziku.domain.request.institution.UpdateInstituteRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
@@ -582,15 +581,5 @@ public class AdminApi {
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
-    }
-
-    /**
-     * on progress/pending
-     */
-    @PostMapping("/xendit")
-    void xendit(
-            @RequestBody @Validated XenditRequest request
-    ) {
-        System.out.println(request);
     }
 }
