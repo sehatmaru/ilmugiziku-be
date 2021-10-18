@@ -66,9 +66,16 @@ public class PackageService implements PackagePresenter {
 
       if (authTokenService.isValidToken(token)) {
          PackageModel model = packageRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+         PackageResponse result = packageMapper.modelToResponse(model);
+
+         for (PackageFeatureResponse feature: result.getFeatures()) {
+            PackageFeatureModel featureModel = packageFeatureService.getPackageFeatureBySecureId(feature.getSecureId());
+
+            feature.setDesc(featureModel.getDescription());
+         }
 
          if (model != null) {
-            response.setSuccess(packageMapper.modelToResponse(model));
+            response.setSuccess(result);
          } else {
             response.setNotFound("");
          }
