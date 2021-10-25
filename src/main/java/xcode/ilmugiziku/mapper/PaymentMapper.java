@@ -1,9 +1,13 @@
 package xcode.ilmugiziku.mapper;
 
+import xcode.ilmugiziku.domain.model.AuthModel;
+import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PENDING;
 
@@ -24,5 +28,45 @@ public class PaymentMapper {
         } else {
             return null;
         }
+    }
+
+    public Map<String, Object> createInvoiceRequest(AuthModel auth, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
+        Map<String, Object> customer = new HashMap<>();
+        customer.put("given_names", auth.getFullName());
+        customer.put("email", auth.getEmail());
+
+        String[] preferences = {"email"};
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("invoice_created", preferences);
+        notification.put("invoice_reminder", preferences);
+        notification.put("invoice_paid", preferences);
+        notification.put("invoice_expired", preferences);
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("name", packageModel.getTitle());
+        item.put("quantity", 6);
+        item.put("price", packageModel.getPrice());
+        Map[] items = new Map[]{item};
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("external_id", secureId);
+        params.put("amount", fee);
+        params.put("currency", "IDR");
+        params.put("payer_email", auth.getEmail());
+        params.put("customer", customer);
+        params.put("customer_notification_preference", notification);
+        params.put("items", items);
+        params.put("should_send_email", true);
+        params.put("description", packageModel.getTitle() + " selama 6 bulan");
+
+        if (!request.getSuccessRedirectUrl().isEmpty()) {
+            params.put("success_redirect_url", request.getSuccessRedirectUrl());
+        }
+
+        if (!request.getFailureRedirectUrl().isEmpty()) {
+            params.put("failure_redirect_url", request.getFailureRedirectUrl());
+        }
+
+        return params;
     }
 }

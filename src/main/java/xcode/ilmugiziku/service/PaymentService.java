@@ -18,11 +18,8 @@ import xcode.ilmugiziku.mapper.PaymentMapper;
 import xcode.ilmugiziku.presenter.PaymentPresenter;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static xcode.ilmugiziku.shared.Environment.XENDIT_API;
-import static xcode.ilmugiziku.shared.Environment.XENDIT_TOKEN;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
@@ -90,17 +87,18 @@ public class PaymentService implements PaymentPresenter {
 
             boolean isUpgrade = request.isUpgradePackage(authModel);
             int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
+            fee *= 6;
 
             try {
                String secureId = generateSecureId();
 
-               CreatePaymentResponse payment = createInvoice(packageModel, authModel, fee, secureId);
+               CreatePaymentResponse payment = createInvoice(authModel, request, packageModel, fee, secureId);
 
                PaymentModel model = paymentMapper.createRequestToModel(request);
                model.setSecureId(secureId);
                model.setPackageSecureId(packageModel.getSecureId());
                model.setAuthSecureId(authModel.getSecureId());
-               model.setFee(fee * 6);
+               model.setFee(fee);
                model.setUpgrade(isUpgrade);
                model.setInvoiceId(payment.getInvoiceId());
                model.setInvoiceUrl(payment.getInvoiceUrl());
@@ -123,16 +121,15 @@ public class PaymentService implements PaymentPresenter {
    }
 
    @Override
-   public BaseResponse<XenditPaymentResponse> xenditCallback(String token, XenditPaymentRequest request) {
+   public BaseResponse<XenditPaymentResponse> xenditCallback(XenditPaymentRequest request) {
       BaseResponse<XenditPaymentResponse> response = new BaseResponse<>();
 
       XenditPaymentResponse result = new XenditPaymentResponse();
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
-      System.out.println(token);
       System.out.println(request);
 
-      if (payment != null && token.equals(XENDIT_TOKEN)) {
+      if (payment != null) {
          AuthModel authModel = authService.getAuthBySecureId(payment.getAuthSecureId());
 
          if (request.isPaid()) {
@@ -176,7 +173,7 @@ public class PaymentService implements PaymentPresenter {
       return response;
    }
 
-   private CreatePaymentResponse createInvoice(PackageModel pack, AuthModel auth, int fee, String secureId) {
+   private CreatePaymentResponse createInvoice(AuthModel auth, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
       CreatePaymentResponse response = new CreatePaymentResponse();
 
       XenditClient xenditClient = new XenditClient.Builder()
@@ -184,14 +181,7 @@ public class PaymentService implements PaymentPresenter {
               .build();
 
       try {
-         Map<String, Object> params = new HashMap<>();
-         params.put("external_id", secureId);
-         params.put("amount", fee);
-         params.put("payer_email", auth.getEmail());
-         params.put("currency", "IDR");
-         params.put("should_send_email", true);
-
-         Invoice invoice = xenditClient.invoice.create(params);
+         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(auth, request, packageModel, fee, secureId));
 
          response.setInvoiceId(invoice.getId());
          response.setInvoiceUrl(invoice.getInvoiceUrl());

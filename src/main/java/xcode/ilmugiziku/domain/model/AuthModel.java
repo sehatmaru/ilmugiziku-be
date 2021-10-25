@@ -60,4 +60,8 @@ public class AuthModel {
    public boolean isPremium() {
       return packages != null;
    }
+
+   public String getFullName() {
+      return firstName + " " + lastName;
+   }
 }

@@ -51,10 +51,9 @@ public class PaymentApi {
 
     @PostMapping("/xendit/callback")
     ResponseEntity<BaseResponse<XenditPaymentResponse>> xenditCallback(
-            @RequestParam(name = "x-callback-token") @Validated String token,
             @RequestBody @Validated XenditPaymentRequest request
     ) {
-        BaseResponse<XenditPaymentResponse> response = paymentPresenter.xenditCallback(token, request);
+        BaseResponse<XenditPaymentResponse> response = paymentPresenter.xenditCallback(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

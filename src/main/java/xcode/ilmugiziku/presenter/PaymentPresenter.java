@@ -10,5 +10,5 @@ import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
 public interface PaymentPresenter {
    BaseResponse<PaymentResponse> detailPayment(String token, int packageType);
    BaseResponse<CreatePaymentResponse> createPayment(String token, CreatePaymentRequest request);
-   BaseResponse<XenditPaymentResponse> xenditCallback(String token, XenditPaymentRequest request);
+   BaseResponse<XenditPaymentResponse> xenditCallback(XenditPaymentRequest request);
 }

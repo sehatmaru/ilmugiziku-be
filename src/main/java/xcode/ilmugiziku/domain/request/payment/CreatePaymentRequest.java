@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import xcode.ilmugiziku.domain.model.AuthModel;
 
-import java.util.Date;
-
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 
@@ -13,6 +11,8 @@ import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 @Setter
 public class CreatePaymentRequest {
     private int packageType;
+    private String successRedirectUrl;
+    private String failureRedirectUrl;
 
     public CreatePaymentRequest() {
     }
