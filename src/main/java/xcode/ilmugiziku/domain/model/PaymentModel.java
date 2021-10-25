@@ -33,6 +33,9 @@ public class PaymentModel {
    @Column(name = "invoice_id")
    private String invoiceId;
 
+   @Column(name = "invoice_url")
+   private String invoiceUrl;
+
    @Column(name = "paid_date")
    private Date paidDate;
 
@@ -43,7 +46,7 @@ public class PaymentModel {
    private String paymentStatus;
 
    @Column(name = "payment_deadline")
-   private Date paymentDeadline;
+   private String paymentDeadline;
 
    @Column(name = "expired_date")
    private Date expiredDate;

@@ -12,12 +12,13 @@ import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 @Getter
 @Setter
 public class CreatePaymentRequest {
-    private String packageSecureId;
-    private String invoiceId;
     private int packageType;
-    private Date paymentDeadline;
 
     public CreatePaymentRequest() {
+    }
+
+    public boolean validate() {
+        return packageType > 0 && packageType < 5;
     }
 
     public boolean isUpgradePackage(AuthModel authModel) {

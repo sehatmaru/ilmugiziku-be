@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.XenditPaymentResponse;
+import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
+import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
+import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
 import xcode.ilmugiziku.presenter.PaymentPresenter;
 
 @RestController
@@ -23,11 +24,24 @@ public class PaymentApi {
     }
 
     @PostMapping("/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> list(
+    ResponseEntity<BaseResponse<CreatePaymentResponse>> list(
             @RequestParam @Validated String token,
             @RequestBody @Validated CreatePaymentRequest request
     ) {
-        BaseResponse<CreateBaseResponse> response = paymentPresenter.createPayment(token, request);
+        BaseResponse<CreatePaymentResponse> response = paymentPresenter.createPayment(token, request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/detail")
+    ResponseEntity<BaseResponse<PaymentResponse>> detail(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated int packageType
+    ) {
+        BaseResponse<PaymentResponse> response = paymentPresenter.detailPayment(token, packageType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
