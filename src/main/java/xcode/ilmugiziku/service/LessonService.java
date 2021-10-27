@@ -1,9 +1,7 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
-import xcode.ilmugiziku.domain.model.LessonModel;
-import xcode.ilmugiziku.domain.model.WebinarModel;
+import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
@@ -146,6 +144,26 @@ public class LessonService implements LessonPresenter {
             } catch (Exception e){
                response.setFailed(e.toString());
             }
+         } else {
+            response.setNotFound("");
+         }
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   @Override
+   public BaseResponse<LessonResponse> getLesson(String token, String secureId) {
+      BaseResponse<LessonResponse> response = new BaseResponse<>();
+
+      if (authTokenService.isValidToken(token)) {
+         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+         LessonResponse result = lessonMapper.modelToResponse(model);
+
+         if (model != null) {
+            response.setSuccess(result);
          } else {
             response.setNotFound("");
          }

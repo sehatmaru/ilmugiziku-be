@@ -7,9 +7,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.BimbelResponse;
+import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
+import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
+import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
 import xcode.ilmugiziku.presenter.BimbelPresenter;
+import xcode.ilmugiziku.presenter.LessonPresenter;
 import xcode.ilmugiziku.presenter.PackagePresenter;
 import xcode.ilmugiziku.presenter.RatingPresenter;
 
@@ -22,13 +25,16 @@ public class BimbelApi {
     final PackagePresenter packagePresenter;
     final RatingPresenter ratingPresenter;
     final BimbelPresenter bimbelPresenter;
+    final LessonPresenter lessonPresenter;
 
     public BimbelApi(PackagePresenter packagePresenter,
                      RatingPresenter ratingPresenter,
-                     BimbelPresenter bimbelPresenter) {
+                     BimbelPresenter bimbelPresenter,
+                     LessonPresenter lessonPresenter) {
         this.packagePresenter = packagePresenter;
         this.ratingPresenter = ratingPresenter;
         this.bimbelPresenter = bimbelPresenter;
+        this.lessonPresenter = lessonPresenter;
     }
 
     @GetMapping("/package/list")
@@ -57,12 +63,25 @@ public class BimbelApi {
                 .body(response);
     }
 
-    @GetMapping("/lesson")
-    ResponseEntity<BaseResponse<BimbelResponse>> getBimbelLesson(
+    @GetMapping("")
+    ResponseEntity<BaseResponse<BimbelResponse>> getBimbel(
             @RequestParam @Validated String token,
             @RequestParam @Validated int bimbelType
     ) {
-        BaseResponse<BimbelResponse> response = bimbelPresenter.getBimbelPackage(token, bimbelType);
+        BaseResponse<BimbelResponse> response = bimbelPresenter.getBimbel(token, bimbelType);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/lesson")
+    ResponseEntity<BaseResponse<LessonResponse>> getLesson(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<LessonResponse> response = lessonPresenter.getLesson(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -76,6 +95,18 @@ public class BimbelApi {
             @RequestParam @Validated String secureId
     ) {
         BaseResponse<PackageResponse> response = packagePresenter.getPackage(token, secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/information")
+    ResponseEntity<BaseResponse<BimbelInformationResponse>> getBimbelInformation(
+            @RequestParam @Validated String token
+    ) {
+        BaseResponse<BimbelInformationResponse> response = bimbelPresenter.getBimbelInformation(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

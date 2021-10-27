@@ -1,7 +1,9 @@
-package xcode.ilmugiziku.domain.response;
+package xcode.ilmugiziku.domain.response.bimbel;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.response.LessonResponse;
+import xcode.ilmugiziku.domain.response.WebinarResponse;
 
 import java.util.ArrayList;
 import java.util.List;

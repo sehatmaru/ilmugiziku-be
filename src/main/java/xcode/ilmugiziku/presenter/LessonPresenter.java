@@ -13,4 +13,5 @@ public interface LessonPresenter {
    BaseResponse<CreateBaseResponse> createLesson(String token, CreateLessonRequest request);
    BaseResponse<Boolean> updateLesson(String token, String secureId, UpdateLessonRequest request);
    BaseResponse<Boolean> deleteLesson(String token, String secureId);
+   BaseResponse<LessonResponse> getLesson(String token, String secureId);
 }

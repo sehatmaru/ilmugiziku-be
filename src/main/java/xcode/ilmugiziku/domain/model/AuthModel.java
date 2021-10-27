@@ -64,4 +64,12 @@ public class AuthModel {
    public String getFullName() {
       return firstName + " " + lastName;
    }
+
+   public boolean isUKOMPackage() {
+      return packages.contains("1") || packages.contains("2");
+   }
+
+   public boolean isSKBPackage() {
+      return packages.contains("3") || packages.contains("4");
+   }
 }
