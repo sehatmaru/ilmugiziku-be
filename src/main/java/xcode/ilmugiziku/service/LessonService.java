@@ -159,8 +159,10 @@ public class LessonService implements LessonPresenter {
       BaseResponse<LessonResponse> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
+         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
          LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
          LessonResponse result = lessonMapper.modelToResponse(model);
+         result.setRated(ratingService.isRatedByAuthSecureId(authTokenModel.getAuthSecureId(), secureId));
 
          if (model != null) {
             response.setSuccess(result);
