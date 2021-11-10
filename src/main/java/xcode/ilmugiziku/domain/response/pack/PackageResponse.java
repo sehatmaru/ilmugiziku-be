@@ -12,5 +12,6 @@ public class PackageResponse {
     private String title;
     private int price;
     private int packageType;
+    private boolean isOpen;
     private List<PackageFeatureResponse> features;
 }

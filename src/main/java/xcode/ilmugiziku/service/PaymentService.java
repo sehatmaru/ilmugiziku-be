@@ -62,7 +62,7 @@ public class PaymentService implements PaymentPresenter {
 
             PaymentResponse payment = new PaymentResponse();
             payment.setUpgrade(isUpgrade);
-            payment.setFee(fee);
+            payment.setFee(fee * 6);
             payment.setPackageName(model.getTitle());
 
             response.setSuccess(payment);

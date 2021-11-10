@@ -72,4 +72,34 @@ public class AuthModel {
    public boolean isSKBPackage() {
       return packages.contains("3") || packages.contains("4");
    }
+
+   public boolean isPaidPackage(int pack) {
+      boolean result;
+
+      if (pack == 1) {
+         if (isUKOMExpert()) {
+            result = true;
+         } else {
+            result = packages.contains(String.valueOf(pack));
+         }
+      } else if (pack == 3) {
+         if (isSKBExpert()) {
+            result = true;
+         } else {
+            result = packages.contains(String.valueOf(pack));
+         }
+      } else {
+         result = packages.contains(String.valueOf(pack));
+      }
+
+      return isPremium() && result;
+   }
+
+   public boolean isUKOMExpert() {
+      return isPremium() && packages.contains("2");
+   }
+
+   public boolean isSKBExpert() {
+      return isPremium() && packages.contains("4");
+   }
 }

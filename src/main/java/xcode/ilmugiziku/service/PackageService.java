@@ -1,6 +1,8 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.model.AuthModel;
+import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.PackageFeatureModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.repository.PackageRepository;
@@ -22,6 +24,7 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 public class PackageService implements PackagePresenter {
 
    private final AuthTokenService authTokenService;
+   private final AuthService authService;
    private final PackageFeatureService packageFeatureService;
 
    private final PackageRepository packageRepository;
@@ -29,9 +32,11 @@ public class PackageService implements PackagePresenter {
    private final PackageMapper packageMapper = new PackageMapper();
 
    public PackageService(AuthTokenService authTokenService,
+                         AuthService authService,
                          PackageRepository packageRepository,
                          PackageFeatureService packageFeatureService) {
       this.authTokenService = authTokenService;
+      this.authService = authService;
       this.packageRepository = packageRepository;
       this.packageFeatureService = packageFeatureService;
    }
@@ -41,10 +46,14 @@ public class PackageService implements PackagePresenter {
       BaseResponse<List<PackageResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
+         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
          List<PackageModel> models = packageRepository.findByDeletedAtIsNull();
          List<PackageResponse> responses = packageMapper.modelsToResponses(models);
 
          for (PackageResponse resp : responses) {
+            resp.setOpen(!authModel.isPaidPackage(resp.getPackageType()));
+
             for (PackageFeatureResponse feature: resp.getFeatures()) {
                PackageFeatureModel model = packageFeatureService.getPackageFeatureBySecureId(feature.getSecureId());
 
