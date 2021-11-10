@@ -113,4 +113,17 @@ public class BimbelApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @PostMapping("/webinar/reminder")
+    ResponseEntity<BaseResponse<Boolean>> sendWebinarReminder(
+            @RequestParam @Validated String token,
+            @RequestParam @Validated String webinarSecureId
+    ) {
+        BaseResponse<Boolean> response = bimbelPresenter.sendWebinarReminder(token, webinarSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

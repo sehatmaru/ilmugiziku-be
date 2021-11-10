@@ -148,4 +148,8 @@ public class WebinarService implements WebinarPresenter {
    public List<WebinarModel> getWebinarByBimbelType(int type) {
       return webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(type);
    }
+
+   public WebinarModel getWebinarBySecureId(String secureId) {
+      return webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+   }
 }
