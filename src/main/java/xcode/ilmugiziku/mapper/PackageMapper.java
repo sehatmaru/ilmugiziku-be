@@ -21,7 +21,7 @@ public class PackageMapper {
             String[] features = stringToArray(model.getFeatures());
             String[] availability = stringToArray(model.getAvailability());
 
-            for (int i=0; i< features.length; i++) {
+            for (int i=0; i < features.length; i++) {
                 PackageFeatureResponse resp = new PackageFeatureResponse(
                         features[i],
                         "",
@@ -121,6 +121,6 @@ public class PackageMapper {
     }
 
     public String[] stringToArray(String requests) {
-        return requests.split(",");
+        return requests.isEmpty() ? new String [0] : requests.split(",");
     }
 }

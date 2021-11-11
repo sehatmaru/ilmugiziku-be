@@ -80,19 +80,19 @@ public class AuthModel {
          if (isUKOMExpert()) {
             result = true;
          } else {
-            result = packages.contains(String.valueOf(pack));
+            result = isPremium() && packages.contains(String.valueOf(pack));
          }
       } else if (pack == 3) {
          if (isSKBExpert()) {
             result = true;
          } else {
-            result = packages.contains(String.valueOf(pack));
+            result = isPremium() && packages.contains(String.valueOf(pack));
          }
       } else {
-         result = packages.contains(String.valueOf(pack));
+         result = isPremium() && packages.contains(String.valueOf(pack));
       }
 
-      return isPremium() && result;
+      return result;
    }
 
    public boolean isUKOMExpert() {
