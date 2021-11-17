@@ -1,8 +1,11 @@
 package xcode.ilmugiziku.service;
 
+import lombok.NonNull;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.request.auth.LoginRequest;
 import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
@@ -13,10 +16,13 @@ import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.mapper.AuthMapper;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 
+import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.UKOM_NEWBIE;
 import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
@@ -25,15 +31,17 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 public class AuthService implements AuthPresenter {
 
    private final AuthTokenService authTokenService;
-   private final BimbelService bimbelService;
+   private final PaymentService paymentService;
 
    private final AuthRepository authRepository;
 
    private final AuthMapper authMapper = new AuthMapper();
 
-   public AuthService(AuthTokenService authTokenService, BimbelService bimbelService, AuthRepository authRepository) {
+   public AuthService(AuthTokenService authTokenService,
+                      @NonNull @Lazy PaymentService paymentService,
+                      AuthRepository authRepository) {
       this.authTokenService = authTokenService;
-      this.bimbelService = bimbelService;
+      this.paymentService = paymentService;
       this.authRepository = authRepository;
    }
 
@@ -53,7 +61,7 @@ public class AuthService implements AuthPresenter {
          if (model != null) {
             if (request.getType() == GOOGLE) {
                AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
-               bimbelService.refreshPremiumPackage(model);
+               refreshPremiumPackage(model);
 
                if (tokenModel == null) {
                   String token = authTokenService.generateAuthToken(model.getSecureId());
@@ -67,7 +75,7 @@ public class AuthService implements AuthPresenter {
                   }
                }
             } else {
-               bimbelService.refreshPremiumPackage(model);
+               refreshPremiumPackage(model);
 
                if (model.getPassword().equals(encrypt(request.getPassword()))) {
                   if (model.getRole() == ADMIN) {
@@ -232,4 +240,41 @@ public class AuthService implements AuthPresenter {
       authRepository.save(model);
    }
 
+   public void refreshPremiumPackage(AuthModel authModel) {
+      if (authModel.isSKBPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isSKBExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authRepository.save(authModel);
+         }
+      }
+
+      if (authModel.isUKOMPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isUKOMExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authRepository.save(authModel);
+         }
+      }
+   }
 }
