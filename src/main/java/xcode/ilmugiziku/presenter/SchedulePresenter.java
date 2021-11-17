@@ -13,4 +13,5 @@ public interface SchedulePresenter {
    BaseResponse<CreateBaseResponse> createSchedule(String token, CreateScheduleRequest request);
    BaseResponse<Boolean> updateSchedule(String token, String scheduleSecureId, UpdateScheduleRequest request);
    BaseResponse<Boolean> deleteSchedule(String token, String secureId);
+   BaseResponse<Boolean> checkSchedule(String token);
 }

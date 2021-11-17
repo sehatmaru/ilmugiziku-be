@@ -33,4 +33,14 @@ public class ScheduleApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/check")
+    ResponseEntity<BaseResponse<Boolean>> check (@RequestParam @Validated String token) {
+        BaseResponse<Boolean> response = schedulePresenter.checkSchedule(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

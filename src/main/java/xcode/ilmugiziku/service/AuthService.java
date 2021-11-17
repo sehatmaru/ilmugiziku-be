@@ -61,7 +61,10 @@ public class AuthService implements AuthPresenter {
          if (model != null) {
             if (request.getType() == GOOGLE) {
                AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
-               refreshPremiumPackage(model);
+
+               if (model.isPremium()) {
+                  refreshPremiumPackage(model);
+               }
 
                if (tokenModel == null) {
                   String token = authTokenService.generateAuthToken(model.getSecureId());
@@ -75,7 +78,9 @@ public class AuthService implements AuthPresenter {
                   }
                }
             } else {
-               refreshPremiumPackage(model);
+               if (model.isPremium()) {
+                  refreshPremiumPackage(model);
+               }
 
                if (model.getPassword().equals(encrypt(request.getPassword()))) {
                   if (model.getRole() == ADMIN) {

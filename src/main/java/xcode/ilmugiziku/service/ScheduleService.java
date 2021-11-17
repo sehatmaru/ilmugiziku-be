@@ -146,6 +146,29 @@ public class ScheduleService implements SchedulePresenter {
       return response;
    }
 
+   @Override
+   public BaseResponse<Boolean> checkSchedule(String token) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      if (authTokenService.isValidToken(token)) {
+         boolean result = false;
+         List<ScheduleModel> models = scheduleRepository.findByDeletedAtIsNull();
+
+         for (ScheduleModel model : models) {
+            if (model.getStartDate().before(new Date()) && model.getEndDate().after(new Date())) {
+               result = true;
+               break;
+            }
+         }
+
+         response.setSuccess(result);
+      } else {
+         response.setFailed(TOKEN_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
    private boolean create(ScheduleModel model) {
       boolean result = true;
 
