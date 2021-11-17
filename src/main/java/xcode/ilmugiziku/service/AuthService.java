@@ -25,13 +25,15 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 public class AuthService implements AuthPresenter {
 
    private final AuthTokenService authTokenService;
+   private final BimbelService bimbelService;
 
    private final AuthRepository authRepository;
 
    private final AuthMapper authMapper = new AuthMapper();
 
-   public AuthService(AuthTokenService authTokenService, AuthRepository authRepository) {
+   public AuthService(AuthTokenService authTokenService, BimbelService bimbelService, AuthRepository authRepository) {
       this.authTokenService = authTokenService;
+      this.bimbelService = bimbelService;
       this.authRepository = authRepository;
    }
 
@@ -51,6 +53,7 @@ public class AuthService implements AuthPresenter {
          if (model != null) {
             if (request.getType() == GOOGLE) {
                AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
+               bimbelService.refreshPremiumPackage(model);
 
                if (tokenModel == null) {
                   String token = authTokenService.generateAuthToken(model.getSecureId());
@@ -64,6 +67,8 @@ public class AuthService implements AuthPresenter {
                   }
                }
             } else {
+               bimbelService.refreshPremiumPackage(model);
+
                if (model.getPassword().equals(encrypt(request.getPassword()))) {
                   if (model.getRole() == ADMIN) {
                      String token = authTokenService.generateAuthToken(model.getSecureId());

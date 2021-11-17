@@ -58,7 +58,7 @@ public class AuthModel {
    private Date deletedAt;
 
    public boolean isPremium() {
-      return packages != null;
+      return packages != null && !packages.isEmpty();
    }
 
    public String getFullName() {

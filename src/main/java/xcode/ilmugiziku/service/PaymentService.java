@@ -24,6 +24,7 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Service
 public class PaymentService implements PaymentPresenter {
@@ -215,5 +216,13 @@ public class PaymentService implements PaymentPresenter {
       }
 
       return result;
+   }
+
+   public PaymentModel getPaidPaymentByAuthSecureIdAndType(String secureId, int type) {
+      return paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(secureId, type, PAID);
+   }
+
+   public void savePaymentModel(PaymentModel paymentModel) {
+      paymentRepository.save(paymentModel);
    }
 }

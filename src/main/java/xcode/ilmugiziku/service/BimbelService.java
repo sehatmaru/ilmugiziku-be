@@ -3,10 +3,7 @@ package xcode.ilmugiziku.service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
-import xcode.ilmugiziku.domain.model.LessonModel;
-import xcode.ilmugiziku.domain.model.WebinarModel;
+import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
@@ -16,11 +13,13 @@ import xcode.ilmugiziku.presenter.BimbelPresenter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 
 @Service
 public class BimbelService implements BimbelPresenter {
@@ -30,6 +29,7 @@ public class BimbelService implements BimbelPresenter {
    private final WebinarService webinarService;
    private final LessonService lessonService;
    private final JavaMailSender javaMailSender;
+   private final PaymentService paymentService;
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final LessonMapper lessonMapper = new LessonMapper();
@@ -38,12 +38,14 @@ public class BimbelService implements BimbelPresenter {
                         AuthService authService,
                         WebinarService webinarService,
                         LessonService lessonService,
-                        JavaMailSender javaMailSender) {
+                        JavaMailSender javaMailSender,
+                        PaymentService paymentService) {
       this.authTokenService = authTokenService;
       this.authService = authService;
       this.webinarService = webinarService;
       this.lessonService = lessonService;
       this.javaMailSender = javaMailSender;
+      this.paymentService = paymentService;
    }
 
    @Override
@@ -83,6 +85,10 @@ public class BimbelService implements BimbelPresenter {
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
          AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+
+         if (authModel.isPremium()) {
+            refreshPremiumPackage(authModel);
+         }
 
          response.setSuccess(new BimbelInformationResponse(authModel.isUKOMPackage(), authModel.isSKBPackage()));
       } else {
@@ -132,5 +138,43 @@ public class BimbelService implements BimbelPresenter {
       }
 
       return response;
+   }
+
+   public void refreshPremiumPackage(AuthModel authModel) {
+      if (authModel.isSKBPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isSKBExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authService.saveAuthModel(authModel);
+         }
+      }
+
+      if (authModel.isUKOMPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isUKOMExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authService.saveAuthModel(authModel);
+         }
+      }
    }
 }
