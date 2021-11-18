@@ -53,18 +53,24 @@ public class BimbelService implements BimbelPresenter {
       BaseResponse<BimbelResponse> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
+         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+
          if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
             BimbelResponse result = new BimbelResponse();
 
-            List<WebinarModel> webinars = webinarService.getWebinarByBimbelType(bimbelType);
             List<LessonModel> lessons = lessonService.getLessonByBimbelType(bimbelType);
-
-            for (WebinarModel webinar: webinars) {
-               result.getWebinars().add(webinarMapper.modelToResponse(webinar));
-            }
 
             for (LessonModel lesson: lessons) {
                result.getLessons().add(lessonMapper.modelToResponse(lesson));
+            }
+
+            if (authModel.isAdmin() || (bimbelType == UKOM && authModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && authModel.isSKBExpert())) {
+               List<WebinarModel> webinars = webinarService.getWebinarByBimbelType(bimbelType);
+
+               for (WebinarModel webinar: webinars) {
+                  result.getWebinars().add(webinarMapper.modelToResponse(webinar));
+               }
             }
 
             response.setSuccess(result);

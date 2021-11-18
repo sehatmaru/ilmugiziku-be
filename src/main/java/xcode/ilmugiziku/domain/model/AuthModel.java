@@ -9,6 +9,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.util.Date;
 
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
+
 @Data
 @Builder
 @Entity
@@ -101,5 +103,9 @@ public class AuthModel {
 
    public boolean isSKBExpert() {
       return isPremium() && packages.contains("4");
+   }
+
+   public boolean isAdmin() {
+      return role == ADMIN;
    }
 }
