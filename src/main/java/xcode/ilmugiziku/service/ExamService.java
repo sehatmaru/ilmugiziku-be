@@ -75,11 +75,10 @@ public class ExamService implements ExamPresenter {
 
                   try {
                      examRepository.save(calculateScore(request.getExams(), model));
+                     response.setSuccess(createResponse);
                   } catch (Exception e) {
                      response.setFailed("");
                   }
-
-                  response.setSuccess(createResponse);
                } else {
                   response.setExistData("");
                }
