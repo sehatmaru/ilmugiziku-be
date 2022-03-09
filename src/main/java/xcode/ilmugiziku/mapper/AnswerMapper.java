@@ -6,11 +6,10 @@ import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
 import xcode.ilmugiziku.domain.response.answer.AnswerValueResponse;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 
 public class AnswerMapper {
 
@@ -53,12 +52,14 @@ public class AnswerMapper {
         }
     }
 
-    public List<AnswerResponse> modelsToAnswerResponses(List<AnswerModel> models) {
+    public List<AnswerResponse> modelsToAnswerResponses(List<AnswerModel> models, int role) {
         if (models != null) {
             List<AnswerResponse> response = new ArrayList<>();
 
-            for (AnswerModel model : models) {
-                response.add(modelToAnswerResponse(model));
+            if (role != ADMIN) Collections.shuffle(models, new Random(System.nanoTime()));
+
+            for (int i=models.size()-1; i>=0; i--) {
+                response.add(modelToAnswerResponse(models.get(i)));
             }
 
             return response;
@@ -83,6 +84,8 @@ public class AnswerMapper {
     public List<AnswerValueResponse> modelsToAnswerValueResponses(List<AnswerModel> models) {
         if (models != null) {
             List<AnswerValueResponse> response = new ArrayList<>();
+
+            Collections.shuffle(models, new Random(System.nanoTime()));
 
             for (AnswerModel model : models) {
                 response.add(modelToAnswerValueResponse(model));

@@ -214,7 +214,7 @@ public class QuestionService implements QuestionPresenter {
                System.out.println(e.getMessage());
             }
 
-            questionExamResponse.setAnswers(answerMapper.modelsToAnswerResponses(answerModels));
+            questionExamResponse.setAnswers(answerMapper.modelsToAnswerResponses(answerModels, role));
 
             questionExamResponses.add(questionExamResponse);
          }

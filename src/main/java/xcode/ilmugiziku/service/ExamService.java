@@ -17,8 +17,7 @@ import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.PFS;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
+import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
@@ -66,7 +65,7 @@ public class ExamService implements ExamPresenter {
             ScheduleModel schedule = scheduleService.getScheduleByDate(new Date());
 
             if (authService.getActiveAuthBySecureId(authTokenModel.getAuthSecureId()) != null) {
-               if (!isExamExist(schedule.getSecureId(), authTokenModel.getAuthSecureId(), request.getQuestionType(), request.getQuestionSubType())) {
+               if (request.getQuestionType() == QUIZ) {
                   CreateExamResponse createResponse = examMapper.generateResponse(request.getExams());
 
                   ExamModel model = examMapper.createRequestToModel(request, createResponse);
@@ -80,7 +79,22 @@ public class ExamService implements ExamPresenter {
                      response.setFailed("");
                   }
                } else {
-                  response.setExistData("");
+                  if (!isExamExist(schedule.getSecureId(), authTokenModel.getAuthSecureId(), request.getQuestionType(), request.getQuestionSubType())) {
+                     CreateExamResponse createResponse = examMapper.generateResponse(request.getExams());
+
+                     ExamModel model = examMapper.createRequestToModel(request, createResponse);
+                     model.setAuthSecureId(authTokenModel.getAuthSecureId());
+                     model.setScheduleSecureId(schedule.getSecureId());
+
+                     try {
+                        examRepository.save(calculateScore(request.getExams(), model));
+                        response.setSuccess(createResponse);
+                     } catch (Exception e) {
+                        response.setFailed("");
+                     }
+                  } else {
+                     response.setExistData("");
+                  }
                }
             } else {
                response.setNotFound("");

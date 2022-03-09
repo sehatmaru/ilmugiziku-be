@@ -68,11 +68,11 @@ public class AuthModel {
    }
 
    public boolean isUKOMPackage() {
-      return packages.contains("1") || packages.contains("2");
+      return packages != null && (packages.contains("1") || packages.contains("2"));
    }
 
    public boolean isSKBPackage() {
-      return packages.contains("3") || packages.contains("4");
+      return packages != null && (packages.contains("3") || packages.contains("4"));
    }
 
    public boolean isPaidPackage(int pack) {
