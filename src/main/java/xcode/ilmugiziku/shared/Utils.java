@@ -12,8 +12,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
-    private static final String key = "aesEncryptionKey";
-    private static final String initVector = "encryptionIntVec";
+    private static final String KEY = "aesEncryptionKey";
+    private static final String INIT_VECTOR = "encryptionIntVec";
 
     public static String generateSecureId() {
         return UUID.randomUUID().toString();
@@ -21,8 +21,8 @@ public class Utils {
 
     public static String encrypt(String value) {
         try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(StandardCharsets.UTF_8));
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+            IvParameterSpec iv = new IvParameterSpec(INIT_VECTOR.getBytes(StandardCharsets.UTF_8));
+            SecretKeySpec secretKeySpec = new SecretKeySpec(KEY.getBytes(StandardCharsets.UTF_8), "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv);
