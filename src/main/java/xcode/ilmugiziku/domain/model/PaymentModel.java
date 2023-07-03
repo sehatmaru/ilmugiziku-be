@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "payment")
+@Table(name = "t_payment")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "exam")
+@Table(name = "t_exam")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

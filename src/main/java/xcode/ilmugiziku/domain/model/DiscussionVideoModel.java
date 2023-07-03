@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "discussion_video")
+@Table(name = "t_discussion_video")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

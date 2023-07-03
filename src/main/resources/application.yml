@@ -10,12 +10,13 @@ spring:
 #        hikari:
 #            max-lifetime: 300000
         username: root
-        password: +J4LMJ75Q)p!
-        url: jdbc:mysql://localhost:3306/xcodev?useSSL=false
+        password: Xcode-123
+        url: jdbc:mysql://127.0.0.1:3306/xcodev?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+#        url: jdbc:mysql://localhost/xcodev?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     mail:
         host: smtp.gmail.com
         port: 587
-        username: devs.ilmugiziku@gmail.com
+        username: xcodeid200@gmail.com
         password: diwfuc-1zirmi-jYttap
         properties:
             mail:
@@ -32,5 +33,7 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL5Dialect
+        show-sql: true
+        generate-ddl: true
     main:
         allow-bean-definition-overriding: true

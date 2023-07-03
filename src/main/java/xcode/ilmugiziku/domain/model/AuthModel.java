@@ -14,7 +14,7 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 @Data
 @Builder
 @Entity
-@Table(name = "auth")
+@Table(name = "t_auth")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
