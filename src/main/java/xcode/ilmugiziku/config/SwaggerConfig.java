@@ -31,9 +31,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         Contact contact = new Contact(
+                "xcode",
                 "",
-                "",
-                "");
+                "xcodeid200@gmail.com");
         return new ApiInfo(
                 "ilmugiziku-apps",
                 "ilmugiziku-apps",

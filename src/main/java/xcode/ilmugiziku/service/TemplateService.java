@@ -140,10 +140,6 @@ public class TemplateService {
       return response;
    }
 
-   public TemplateModel getTemplateBySecureId(String secureId) {
-      return templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-   }
-
    public TemplateModel getActiveTemplate(int questionType, int questionSubType) {
       TemplateModel result = new TemplateModel();
       List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);

@@ -135,11 +135,4 @@ public class WebinarService {
       return response;
    }
 
-   public List<WebinarModel> getWebinarByBimbelType(int type) {
-      return webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(type);
-   }
-
-   public WebinarModel getWebinarBySecureId(String secureId) {
-      return webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-   }
 }

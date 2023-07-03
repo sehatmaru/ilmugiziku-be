@@ -6,7 +6,9 @@ import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.model.TemplateModel;
+import xcode.ilmugiziku.domain.repository.AnswerRepository;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
+import xcode.ilmugiziku.domain.repository.TemplateRepository;
 import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
@@ -36,9 +38,10 @@ public class QuestionService {
 
    @Autowired private AuthTokenService authTokenService;
    @Autowired private AuthService authService;
-   @Autowired private AnswerService answerService;
    @Autowired private TemplateService templateService;
    @Autowired private QuestionRepository questionRepository;
+   @Autowired private AnswerRepository answerRepository;
+   @Autowired private TemplateRepository templateRepository;
 
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
@@ -112,9 +115,9 @@ public class QuestionService {
       if (request.validate()) {
          for (UpdateAnswerRequest answer : request.getAnswers()) {
             try {
-               AnswerModel model = answerService.getAnswerBySecureId(answer.getSecureId());
+               AnswerModel model = answerRepository.findBySecureId(answer.getSecureId());
 
-               answerService.save(answerMapper.updateRequestToModel(model, answer));
+               answerRepository.save(answerMapper.updateRequestToModel(model, answer));
             } catch (Exception e) {
                response.setFailed(e.toString());
             }
@@ -165,7 +168,7 @@ public class QuestionService {
 
    private void createAnswer(CreateAnswerRequest request, String questionSecureId) {
       try {
-         answerService.save(answerMapper.createRequestToModel(request, questionSecureId));
+         answerRepository.save(answerMapper.createRequestToModel(request, questionSecureId));
       } catch (Exception e){
          System.out.println(e.getMessage());
       }
@@ -179,7 +182,7 @@ public class QuestionService {
          if (questionSubType == 0) {
             questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
          } else {
-            TemplateModel model = !templateSecureId.isEmpty() ? templateService.getTemplateBySecureId(templateSecureId) : templateService.getActiveTemplate(questionType, questionSubType);
+            TemplateModel model = !templateSecureId.isEmpty() ? templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId) : templateService.getActiveTemplate(questionType, questionSubType);
             questionModels = questionRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, model.getSecureId());
          }
       } catch (Exception e) {
@@ -193,7 +196,7 @@ public class QuestionService {
             QuestionExamResponse questionExamResponse = questionMapper.modelToQuestionExamResponse(question, role);
 
             try {
-               answerModels = answerService.getAnswerListByQuestionSecureId(question.getSecureId());
+               answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
             } catch (Exception e) {
                System.out.println(e.getMessage());
             }
@@ -231,7 +234,7 @@ public class QuestionService {
                QuestionAnswerResponse questionResponse = questionMapper.modelToQuestionValueResponse(model);
 
                try {
-                  answerModels = answerService.getAnswerListByQuestionSecureId(model.getSecureId());
+                  answerModels = answerRepository.findAllByQuestionSecureId(model.getSecureId());
                } catch (Exception e) {
                   response.setFailed(e.toString());
                }
@@ -249,7 +252,4 @@ public class QuestionService {
       return response;
    }
 
-   public QuestionModel getQuestionBySecureId(String secureId) {
-      return questionRepository.findBySecureId(secureId);
-   }
 }

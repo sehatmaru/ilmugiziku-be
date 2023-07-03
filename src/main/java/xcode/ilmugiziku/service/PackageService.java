@@ -6,6 +6,7 @@ import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.PackageFeatureModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
+import xcode.ilmugiziku.domain.repository.PackageFeatureRepository;
 import xcode.ilmugiziku.domain.repository.PackageRepository;
 import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
 import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
@@ -15,7 +16,6 @@ import xcode.ilmugiziku.domain.response.pack.PackageFeatureResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
 import xcode.ilmugiziku.mapper.PackageMapper;
 
-import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
@@ -25,8 +25,8 @@ public class PackageService {
 
    @Autowired private AuthTokenService authTokenService;
    @Autowired private AuthService authService;
-   @Autowired private PackageFeatureService packageFeatureService;
    @Autowired private PackageRepository packageRepository;
+   @Autowired private PackageFeatureRepository packageFeatureRepository;
 
    private final PackageMapper packageMapper = new PackageMapper();
 
@@ -43,7 +43,7 @@ public class PackageService {
             resp.setOpen(!authModel.isPaidPackage(resp.getPackageType()));
 
             for (PackageFeatureResponse feature: resp.getFeatures()) {
-               PackageFeatureModel model = packageFeatureService.getPackageFeatureBySecureId(feature.getSecureId());
+               PackageFeatureModel model = packageFeatureRepository.findBySecureIdAndDeletedAtIsNull(feature.getSecureId());
 
                feature.setDesc(model.getDescription());
             }
@@ -65,7 +65,7 @@ public class PackageService {
          PackageResponse result = packageMapper.modelToResponse(model);
 
          for (PackageFeatureResponse feature: result.getFeatures()) {
-            PackageFeatureModel featureModel = packageFeatureService.getPackageFeatureBySecureId(feature.getSecureId());
+            PackageFeatureModel featureModel = packageFeatureRepository.findBySecureIdAndDeletedAtIsNull(feature.getSecureId());
 
             feature.setDesc(featureModel.getDescription());
          }
@@ -124,33 +124,4 @@ public class PackageService {
       return response;
    }
 
-   public BaseResponse<Boolean> deletePackage(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         PackageModel model = packageRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
-               packageRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
-         } else {
-            response.setNotFound("");
-         }
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   public PackageModel getPackageByType(int type) {
-      return packageRepository.findByPackageTypeAndDeletedAtIsNull(type);
-   }
 }

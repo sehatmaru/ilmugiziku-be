@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.repository.AuthTokenRepository;
@@ -13,11 +14,7 @@ import static xcode.ilmugiziku.shared.Utils.getDifferenceDays;
 @Service
 public class AuthTokenService {
 
-   final AuthTokenRepository authTokenRepository;
-
-   public AuthTokenService(AuthTokenRepository authTokenRepository) {
-      this.authTokenRepository = authTokenRepository;
-   }
+   @Autowired private AuthTokenRepository authTokenRepository;
 
    public boolean isValidToken(String token) {
       return authTokenRepository.findByToken(token) != null;

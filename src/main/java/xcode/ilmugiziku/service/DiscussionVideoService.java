@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
 import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.DiscussionVideoRepository;
+import xcode.ilmugiziku.domain.repository.TemplateRepository;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -20,8 +21,8 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 public class DiscussionVideoService {
 
    @Autowired private AuthTokenService authTokenService;
-   @Autowired private TemplateService templateService;
    @Autowired private DiscussionVideoRepository discussionVideoRepository;
+   @Autowired private TemplateRepository templateRepository;
 
    private final DiscussionVideoMapper discussionVideoMapper = new DiscussionVideoMapper();
 
@@ -29,7 +30,7 @@ public class DiscussionVideoService {
       BaseResponse<DiscussionVideoResponse> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         TemplateModel templateModel = templateService.getTemplateBySecureId(templateSecureId);
+         TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId);
 
          if (templateModel != null) {
             try {
@@ -54,7 +55,7 @@ public class DiscussionVideoService {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         TemplateModel templateModel = templateService.getTemplateBySecureId(request.getTemplateSecureId());
+         TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getTemplateSecureId());
 
          if (templateModel != null) {
             if (request.validate()) {
@@ -125,10 +126,6 @@ public class DiscussionVideoService {
       }
 
       return response;
-   }
-
-   public DiscussionVideoModel getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(int questionType, int questionSubType, String templateSecureId) {
-      return discussionVideoRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, templateSecureId);
    }
 
 }

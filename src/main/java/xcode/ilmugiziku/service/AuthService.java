@@ -1,12 +1,12 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
+import xcode.ilmugiziku.domain.repository.PaymentRepository;
 import xcode.ilmugiziku.domain.request.auth.LoginRequest;
 import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -21,6 +21,7 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
@@ -29,8 +30,8 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 public class AuthService {
 
    @Autowired private AuthTokenService authTokenService;
-   @Autowired @Lazy private PaymentService paymentService;
    @Autowired private AuthRepository authRepository;
+   @Autowired private PaymentRepository paymentRepository;
 
    private final AuthMapper authMapper = new AuthMapper();
 
@@ -225,25 +226,21 @@ public class AuthService {
       return authRepository.findBySecureIdAndDeletedAtIsNull(secureId).getRole() == ADMIN;
    }
 
-   public void saveAuthModel(AuthModel model) {
-      authRepository.save(model);
-   }
-
    public void refreshPremiumPackage(AuthModel authModel) {
       if (authModel.isSKBPackage()) {
          PaymentModel paymentModel;
 
          if (authModel.isSKBExpert()) {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_EXPERT);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_EXPERT, PAID);
          } else {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_NEWBIE);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
             authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
-            paymentService.savePaymentModel(paymentModel);
+            paymentRepository.save(paymentModel);
             authRepository.save(authModel);
          }
       }
@@ -252,16 +249,16 @@ public class AuthService {
          PaymentModel paymentModel;
 
          if (authModel.isUKOMExpert()) {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_EXPERT);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_EXPERT, PAID);
          } else {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_NEWBIE);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
             authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
-            paymentService.savePaymentModel(paymentModel);
+            paymentRepository.save(paymentModel);
             authRepository.save(authModel);
          }
       }

@@ -171,8 +171,4 @@ public class LessonService {
 
       lessonRepository.save(model);
    }
-
-   public List<LessonModel> getLessonByBimbelType(int type) {
-      return lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(type);
-   }
 }

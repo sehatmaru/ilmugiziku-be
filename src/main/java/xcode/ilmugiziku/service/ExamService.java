@@ -3,7 +3,10 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.*;
+import xcode.ilmugiziku.domain.repository.AnswerRepository;
+import xcode.ilmugiziku.domain.repository.DiscussionVideoRepository;
 import xcode.ilmugiziku.domain.repository.ExamRepository;
+import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -26,12 +29,13 @@ public class ExamService {
 
    @Autowired private AuthTokenService authTokenService;
    @Autowired private AuthService authService;
-   @Autowired private AnswerService answerService;
    @Autowired private ScheduleService scheduleService;
    @Autowired private QuestionService questionService;
-   @Autowired private DiscussionVideoService videoService;
    @Autowired private TemplateService templateService;
    @Autowired private ExamRepository examRepository;
+   @Autowired private AnswerRepository answerRepository;
+   @Autowired private DiscussionVideoRepository discussionVideoRepository;
+   @Autowired private QuestionRepository questionRepository;
 
    private final ExamMapper examMapper = new ExamMapper();
 
@@ -98,7 +102,7 @@ public class ExamService {
          if (!exam.getAnswersSecureId().isEmpty()) {
             boolean res = false;
 
-            for (AnswerModel answer: answerService.getAnswerListByQuestionSecureId(exam.getQuestionsSecureId())) {
+            for (AnswerModel answer: answerRepository.findAllByQuestionSecureId(exam.getQuestionsSecureId())) {
                if (answer.isValue()) {
                   if (answer.getSecureId().equals(exam.getAnswersSecureId())) {
                      res = true;
@@ -185,8 +189,8 @@ public class ExamService {
 
             for (String questionSecureId: examMapper.stringToArray(exam.getQuestions())) {
                ExamKeyResponse examKeyResponse = new ExamKeyResponse();
-               QuestionModel questionModel = questionService.getQuestionBySecureId(questionSecureId);
-               List<AnswerModel> answerModels = answerService.getAnswerListByQuestionSecureId(questionSecureId);
+               QuestionModel questionModel = questionRepository.findBySecureId(questionSecureId);
+               List<AnswerModel> answerModels = answerRepository.findAllByQuestionSecureId(questionSecureId);
 
                for (AnswerModel model: answerModels) {
                   if (model.isValue()) {
@@ -261,7 +265,7 @@ public class ExamService {
                   TemplateModel template = templateService.getActiveTemplate(questionType, i);
 
                   if (exam != null && template != null) {
-                     DiscussionVideoModel video = videoService.getDiscussionVideoByQuestionTypeAndQuestionSubTypeAndTemplateSecureId(questionType, i, template.getSecureId());
+                     DiscussionVideoModel video = discussionVideoRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, i, template.getSecureId());
 
                      if (video != null) {
                         results.add(new ExamVideoResponse(video.getUri(), i));

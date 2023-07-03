@@ -5,6 +5,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.*;
+import xcode.ilmugiziku.domain.repository.AuthRepository;
+import xcode.ilmugiziku.domain.repository.LessonRepository;
+import xcode.ilmugiziku.domain.repository.PaymentRepository;
+import xcode.ilmugiziku.domain.repository.WebinarRepository;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
@@ -20,16 +24,18 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Service
 public class BimbelService {
 
    @Autowired private AuthTokenService authTokenService;
    @Autowired private AuthService authService;
-   @Autowired private WebinarService webinarService;
-   @Autowired private LessonService lessonService;
    @Autowired private JavaMailSender javaMailSender;
-   @Autowired private PaymentService paymentService;
+   @Autowired private AuthRepository authRepository;
+   @Autowired private LessonRepository lessonRepository;
+   @Autowired private PaymentRepository paymentRepository;
+   @Autowired private WebinarRepository webinarRepository;
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final LessonMapper lessonMapper = new LessonMapper();
@@ -44,14 +50,14 @@ public class BimbelService {
          if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
             BimbelResponse result = new BimbelResponse();
 
-            List<LessonModel> lessons = lessonService.getLessonByBimbelType(bimbelType);
+            List<LessonModel> lessons = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
 
             for (LessonModel lesson: lessons) {
                result.getLessons().add(lessonMapper.modelToResponse(lesson));
             }
 
             if (authModel.isAdmin() || (bimbelType == UKOM && authModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && authModel.isSKBExpert())) {
-               List<WebinarModel> webinars = webinarService.getWebinarByBimbelType(bimbelType);
+               List<WebinarModel> webinars = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
 
                for (WebinarModel webinar: webinars) {
                   result.getWebinars().add(webinarMapper.modelToResponse(webinar));
@@ -94,7 +100,7 @@ public class BimbelService {
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
          AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
-         WebinarModel webinarModel = webinarService.getWebinarBySecureId(secureId);
+         WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (webinarModel != null) {
             DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
@@ -134,17 +140,17 @@ public class BimbelService {
          PaymentModel paymentModel;
 
          if (authModel.isSKBExpert()) {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_EXPERT);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_EXPERT, PAID);
          } else {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_NEWBIE);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
             authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
-            paymentService.savePaymentModel(paymentModel);
-            authService.saveAuthModel(authModel);
+            paymentRepository.save(paymentModel);
+            authRepository.save(authModel);
          }
       }
 
@@ -152,17 +158,17 @@ public class BimbelService {
          PaymentModel paymentModel;
 
          if (authModel.isUKOMExpert()) {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_EXPERT);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_EXPERT, PAID);
          } else {
-            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_NEWBIE);
+            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
             authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
-            paymentService.savePaymentModel(paymentModel);
-            authService.saveAuthModel(authModel);
+            paymentRepository.save(paymentModel);
+            authRepository.save(authModel);
          }
       }
    }

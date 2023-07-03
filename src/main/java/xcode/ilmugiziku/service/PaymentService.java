@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
+import xcode.ilmugiziku.domain.repository.AuthRepository;
+import xcode.ilmugiziku.domain.repository.PackageRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
@@ -24,15 +26,15 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Service
 public class PaymentService {
 
    @Autowired private AuthTokenService authTokenService;
    @Autowired private AuthService authService;
-   @Autowired private PackageService packageService;
+   @Autowired private AuthRepository authRepository;
    @Autowired private PaymentRepository paymentRepository;
+   @Autowired private PackageRepository packageRepository;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
@@ -41,13 +43,13 @@ public class PaymentService {
 
       if (authTokenService.isValidToken(token)) {
          AuthModel authModel = authService.getAuthBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
-         PackageModel packageModel = packageService.getPackageByType(packageType);
+         PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
          try {
             boolean isUpgrade = isUpgradePackage(authModel, packageType);
             int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
 
-            PackageModel model = packageService.getPackageByType(packageType);
+            PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
             PaymentResponse payment = new PaymentResponse();
             payment.setUpgrade(isUpgrade);
@@ -71,7 +73,7 @@ public class PaymentService {
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
             AuthModel authModel = authService.getAuthBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
-            PackageModel packageModel = packageService.getPackageByType(request.getPackageType());
+            PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
             boolean isUpgrade = request.isUpgradePackage(authModel);
             int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
@@ -141,7 +143,7 @@ public class PaymentService {
 
          try {
             paymentRepository.save(payment);
-            authService.saveAuthModel(authModel);
+            authRepository.save(authModel);
 
             result.setInvoiceId(request.getId());
             result.setStatus(request.getStatus());
@@ -202,11 +204,4 @@ public class PaymentService {
       return result;
    }
 
-   public PaymentModel getPaidPaymentByAuthSecureIdAndType(String secureId, int type) {
-      return paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(secureId, type, PAID);
-   }
-
-   public void savePaymentModel(PaymentModel paymentModel) {
-      paymentRepository.save(paymentModel);
-   }
 }
