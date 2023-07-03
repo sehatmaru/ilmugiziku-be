@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,24 +12,20 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
-import xcode.ilmugiziku.presenter.PaymentPresenter;
+import xcode.ilmugiziku.service.PaymentService;
 
 @RestController
 @RequestMapping(value = "payment")
 public class PaymentApi {
 
-    final PaymentPresenter paymentPresenter;
-
-    public PaymentApi(PaymentPresenter paymentPresenter) {
-        this.paymentPresenter = paymentPresenter;
-    }
+    @Autowired private PaymentService paymentService;
 
     @PostMapping("/create")
     ResponseEntity<BaseResponse<CreatePaymentResponse>> list(
             @RequestParam @Validated String token,
             @RequestBody @Validated CreatePaymentRequest request
     ) {
-        BaseResponse<CreatePaymentResponse> response = paymentPresenter.createPayment(token, request);
+        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(token, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -41,7 +38,7 @@ public class PaymentApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated int packageType
     ) {
-        BaseResponse<PaymentResponse> response = paymentPresenter.detailPayment(token, packageType);
+        BaseResponse<PaymentResponse> response = paymentService.detailPayment(token, packageType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,7 +50,7 @@ public class PaymentApi {
     ResponseEntity<BaseResponse<XenditPaymentResponse>> xenditCallback(
             @RequestBody @Validated XenditPaymentRequest request
     ) {
-        BaseResponse<XenditPaymentResponse> response = paymentPresenter.xenditCallback(request);
+        BaseResponse<XenditPaymentResponse> response = paymentService.xenditCallback(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.LaboratoryValueModel;
 import xcode.ilmugiziku.domain.repository.LaboratoryValueRepository;
@@ -9,7 +10,6 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
 import xcode.ilmugiziku.mapper.LaboratoryValueMapper;
-import xcode.ilmugiziku.presenter.LaboratoryPresenter;
 
 import java.util.Date;
 import java.util.List;
@@ -17,20 +17,13 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 
 @Service
-public class LaboratoryValueService implements LaboratoryPresenter {
+public class LaboratoryValueService {
 
-   private final AuthTokenService authTokenService;
-
-   private final LaboratoryValueRepository laboratoryValueRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private LaboratoryValueRepository laboratoryValueRepository;
 
    private final LaboratoryValueMapper laboratoryValueMapper = new LaboratoryValueMapper();
 
-   public LaboratoryValueService(AuthTokenService authTokenService, LaboratoryValueRepository laboratoryValueRepository) {
-      this.authTokenService = authTokenService;
-      this.laboratoryValueRepository = laboratoryValueRepository;
-   }
-
-   @Override
    public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList(String token) {
       BaseResponse<List<LaboratoryValueResponse>> response = new BaseResponse<>();
 
@@ -49,7 +42,6 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createLaboratoryValue(String token, CreateLaboratoryValueRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -73,7 +65,6 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateLaboratoryValue(String token, UpdateLaboratoryValueRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       LaboratoryValueModel model = new LaboratoryValueModel();
@@ -98,7 +89,6 @@ public class LaboratoryValueService implements LaboratoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteLaboratoryValue(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       LaboratoryValueModel model = new LaboratoryValueModel();

@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.repository.WebinarRepository;
@@ -9,7 +10,6 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.WebinarResponse;
 import xcode.ilmugiziku.mapper.WebinarMapper;
-import xcode.ilmugiziku.presenter.WebinarPresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,20 +20,13 @@ import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
 @Service
-public class WebinarService implements WebinarPresenter {
+public class WebinarService {
 
-   private final AuthTokenService authTokenService;
-
-   private final WebinarRepository webinarRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private WebinarRepository webinarRepository;
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
 
-   public WebinarService(AuthTokenService authTokenService, WebinarRepository webinarRepository) {
-      this.authTokenService = authTokenService;
-      this.webinarRepository = webinarRepository;
-   }
-
-   @Override
    public BaseResponse<List<WebinarResponse>> getWebinarList(String token, int bimbelType) {
       BaseResponse<List<WebinarResponse>> response = new BaseResponse<>();
 
@@ -58,7 +51,6 @@ public class WebinarService implements WebinarPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createWebinar(String token, CreateWebinarRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -85,7 +77,6 @@ public class WebinarService implements WebinarPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateWebinar(String token, String secureId, UpdateWebinarRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -112,7 +103,6 @@ public class WebinarService implements WebinarPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteWebinar(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

@@ -1,6 +1,6 @@
 package xcode.ilmugiziku.service;
 
-import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
@@ -14,7 +14,6 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.auth.LoginResponse;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.mapper.AuthMapper;
-import xcode.ilmugiziku.presenter.AuthPresenter;
 
 import java.util.Date;
 import java.util.List;
@@ -22,30 +21,19 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.UKOM_NEWBIE;
 import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
-public class AuthService implements AuthPresenter {
+public class AuthService {
 
-   private final AuthTokenService authTokenService;
-   private final PaymentService paymentService;
-
-   private final AuthRepository authRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired @Lazy private PaymentService paymentService;
+   @Autowired private AuthRepository authRepository;
 
    private final AuthMapper authMapper = new AuthMapper();
 
-   public AuthService(AuthTokenService authTokenService,
-                      @NonNull @Lazy PaymentService paymentService,
-                      AuthRepository authRepository) {
-      this.authTokenService = authTokenService;
-      this.paymentService = paymentService;
-      this.authRepository = authRepository;
-   }
-
-   @Override
    public BaseResponse<LoginResponse> login(LoginRequest request) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
 
@@ -118,7 +106,6 @@ public class AuthService implements AuthPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> register(RegisterRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -158,7 +145,6 @@ public class AuthService implements AuthPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<List<UserResponse>> getUserList(String token) {
       BaseResponse<List<UserResponse>> response = new BaseResponse<>();
 
@@ -177,7 +163,6 @@ public class AuthService implements AuthPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> logout(String token) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -198,7 +183,6 @@ public class AuthService implements AuthPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> destroyToken(String request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

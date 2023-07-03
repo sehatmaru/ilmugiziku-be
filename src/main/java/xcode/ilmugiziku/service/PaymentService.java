@@ -3,6 +3,7 @@ package xcode.ilmugiziku.service;
 import com.xendit.XenditClient;
 import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
@@ -15,7 +16,6 @@ import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
 import xcode.ilmugiziku.mapper.PaymentMapper;
-import xcode.ilmugiziku.presenter.PaymentPresenter;
 
 import java.util.Date;
 
@@ -27,27 +27,15 @@ import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Service
-public class PaymentService implements PaymentPresenter {
+public class PaymentService {
 
-   private final AuthTokenService authTokenService;
-   private final AuthService authService;
-   private final PackageService packageService;
-
-   private final PaymentRepository paymentRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private AuthService authService;
+   @Autowired private PackageService packageService;
+   @Autowired private PaymentRepository paymentRepository;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
-   public PaymentService(AuthTokenService authTokenService,
-                         PaymentRepository paymentRepository,
-                         AuthService authService,
-                         PackageService packageService) {
-      this.authTokenService = authTokenService;
-      this.paymentRepository = paymentRepository;
-      this.authService = authService;
-      this.packageService = packageService;
-   }
-
-   @Override
    public BaseResponse<PaymentResponse> detailPayment(String token, int packageType) {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
@@ -77,7 +65,6 @@ public class PaymentService implements PaymentPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreatePaymentResponse> createPayment(String token, CreatePaymentRequest request) {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
@@ -121,14 +108,11 @@ public class PaymentService implements PaymentPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<XenditPaymentResponse> xenditCallback(XenditPaymentRequest request) {
       BaseResponse<XenditPaymentResponse> response = new BaseResponse<>();
 
       XenditPaymentResponse result = new XenditPaymentResponse();
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
-
-      System.out.println(request);
 
       if (payment != null) {
          AuthModel authModel = authService.getAuthBySecureId(payment.getAuthSecureId());

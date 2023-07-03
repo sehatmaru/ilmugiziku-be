@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
-import xcode.ilmugiziku.presenter.TheoryPresenter;
+import xcode.ilmugiziku.service.TheoryService;
 
 import java.util.List;
 
@@ -18,15 +19,11 @@ import java.util.List;
 @RequestMapping(value = "theory")
 public class TheoryApi {
 
-    final TheoryPresenter theoryPresenter;
-
-    public TheoryApi(TheoryPresenter theoryPresenter) {
-        this.theoryPresenter = theoryPresenter;
-    }
+    @Autowired private TheoryService theoryService;
 
     @GetMapping("/list")
     ResponseEntity<BaseResponse<List<TheoryResponse>>> list (@RequestParam @Validated String token, @RequestParam @Validated int theoryType) {
-        BaseResponse<List<TheoryResponse>> response = theoryPresenter.getTheoryList(token, theoryType);
+        BaseResponse<List<TheoryResponse>> response = theoryService.getTheoryList(token, theoryType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +12,7 @@ import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
-import xcode.ilmugiziku.presenter.BimbelPresenter;
-import xcode.ilmugiziku.presenter.LessonPresenter;
-import xcode.ilmugiziku.presenter.PackagePresenter;
-import xcode.ilmugiziku.presenter.RatingPresenter;
+import xcode.ilmugiziku.service.*;
 
 import java.util.List;
 
@@ -22,26 +20,16 @@ import java.util.List;
 @RequestMapping(value = "bimbel")
 public class BimbelApi {
 
-    final PackagePresenter packagePresenter;
-    final RatingPresenter ratingPresenter;
-    final BimbelPresenter bimbelPresenter;
-    final LessonPresenter lessonPresenter;
-
-    public BimbelApi(PackagePresenter packagePresenter,
-                     RatingPresenter ratingPresenter,
-                     BimbelPresenter bimbelPresenter,
-                     LessonPresenter lessonPresenter) {
-        this.packagePresenter = packagePresenter;
-        this.ratingPresenter = ratingPresenter;
-        this.bimbelPresenter = bimbelPresenter;
-        this.lessonPresenter = lessonPresenter;
-    }
+    @Autowired private PackageService packageService;
+    @Autowired private RatingService ratingService;
+    @Autowired private BimbelService bimbelService;
+    @Autowired private LessonService lessonService;
 
     @GetMapping("/package/list")
     ResponseEntity<BaseResponse<List<PackageResponse>>> list(
             @RequestParam @Validated String token
     ) {
-        BaseResponse<List<PackageResponse>> response = packagePresenter.getPackageList(token);
+        BaseResponse<List<PackageResponse>> response = packageService.getPackageList(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -55,7 +43,7 @@ public class BimbelApi {
             @RequestParam @Validated String lessonSecureId,
             @RequestBody @Validated SubmitRatingRequest body
     ) {
-        BaseResponse<Double> response = ratingPresenter.submitRating(token, lessonSecureId, body);
+        BaseResponse<Double> response = ratingService.submitRating(token, lessonSecureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -68,7 +56,7 @@ public class BimbelApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated int bimbelType
     ) {
-        BaseResponse<BimbelResponse> response = bimbelPresenter.getBimbel(token, bimbelType);
+        BaseResponse<BimbelResponse> response = bimbelService.getBimbel(token, bimbelType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -81,7 +69,7 @@ public class BimbelApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<LessonResponse> response = lessonPresenter.getLesson(token, secureId);
+        BaseResponse<LessonResponse> response = lessonService.getLesson(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -94,7 +82,7 @@ public class BimbelApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<PackageResponse> response = packagePresenter.getPackage(token, secureId);
+        BaseResponse<PackageResponse> response = packageService.getPackage(token, secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -106,7 +94,7 @@ public class BimbelApi {
     ResponseEntity<BaseResponse<BimbelInformationResponse>> getBimbelInformation(
             @RequestParam @Validated String token
     ) {
-        BaseResponse<BimbelInformationResponse> response = bimbelPresenter.getBimbelInformation(token);
+        BaseResponse<BimbelInformationResponse> response = bimbelService.getBimbelInformation(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -119,7 +107,7 @@ public class BimbelApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated String webinarSecureId
     ) {
-        BaseResponse<Boolean> response = bimbelPresenter.sendWebinarReminder(token, webinarSecureId);
+        BaseResponse<Boolean> response = bimbelService.sendWebinarReminder(token, webinarSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

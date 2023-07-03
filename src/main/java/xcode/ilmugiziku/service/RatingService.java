@@ -1,14 +1,12 @@
 package xcode.ilmugiziku.service;
 
-import lombok.NonNull;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.RatingModel;
 import xcode.ilmugiziku.domain.repository.RatingRepository;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.presenter.RatingPresenter;
 
 import java.util.Date;
 import java.util.List;
@@ -17,22 +15,12 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
-public class RatingService implements RatingPresenter {
+public class RatingService  {
 
-   private final AuthTokenService authTokenService;
-   private final LessonService lessonService;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private LessonService lessonService;
+   @Autowired private RatingRepository ratingRepository;
 
-   private final RatingRepository ratingRepository;
-
-   public RatingService(AuthTokenService authTokenService,
-                        RatingRepository ratingRepository,
-                        @NonNull @Lazy LessonService lessonService) {
-      this.authTokenService = authTokenService;
-      this.ratingRepository = ratingRepository;
-      this.lessonService = lessonService;
-   }
-
-   @Override
    public BaseResponse<Double> submitRating(String token, String lessonSecureId, SubmitRatingRequest request) {
       BaseResponse<Double> response = new BaseResponse<>();
 

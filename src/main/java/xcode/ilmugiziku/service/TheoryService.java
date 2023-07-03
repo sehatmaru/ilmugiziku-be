@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.TheoryModel;
 import xcode.ilmugiziku.domain.repository.TheoryRepository;
@@ -9,31 +10,23 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
 import xcode.ilmugiziku.mapper.TheoryMapper;
-import xcode.ilmugiziku.presenter.TheoryPresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.*;
+import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 
 @Service
-public class TheoryService implements TheoryPresenter {
+public class TheoryService {
 
-   private final AuthTokenService authTokenService;
-
-   private final TheoryRepository theoryRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private TheoryRepository theoryRepository;
 
    private final TheoryMapper theoryMapper = new TheoryMapper();
 
-   public TheoryService(AuthTokenService authTokenService, TheoryRepository theoryRepository) {
-      this.authTokenService = authTokenService;
-      this.theoryRepository = theoryRepository;
-   }
-
-   @Override
    public BaseResponse<List<TheoryResponse>> getTheoryList(String token, int theoryType) {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
 
@@ -58,7 +51,6 @@ public class TheoryService implements TheoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createTheory(String token, CreateTheoryRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -85,7 +77,6 @@ public class TheoryService implements TheoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateTheory(String token, UpdateTheoryRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -112,7 +103,6 @@ public class TheoryService implements TheoryPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteTheory(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

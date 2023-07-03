@@ -1,7 +1,9 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.*;
+import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.model.LessonModel;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
@@ -9,7 +11,6 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.mapper.LessonMapper;
-import xcode.ilmugiziku.presenter.LessonPresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,22 +21,14 @@ import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
 @Service
-public class LessonService implements LessonPresenter {
+public class LessonService {
 
-   private final AuthTokenService authTokenService;
-   private final RatingService ratingService;
-
-   private final LessonRepository lessonRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private RatingService ratingService;
+   @Autowired private LessonRepository lessonRepository;
 
    private final LessonMapper lessonMapper = new LessonMapper();
 
-   public LessonService(AuthTokenService authTokenService, LessonRepository lessonRepository, RatingService ratingService) {
-      this.authTokenService = authTokenService;
-      this.lessonRepository = lessonRepository;
-      this.ratingService = ratingService;
-   }
-
-   @Override
    public BaseResponse<List<LessonResponse>> getLessonList(String token, int bimbelType) {
       BaseResponse<List<LessonResponse>> response = new BaseResponse<>();
 
@@ -67,7 +60,6 @@ public class LessonService implements LessonPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createLesson(String token, CreateLessonRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -94,7 +86,6 @@ public class LessonService implements LessonPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateLesson(String token, String secureId, UpdateLessonRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -121,7 +112,6 @@ public class LessonService implements LessonPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteLesson(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -154,7 +144,6 @@ public class LessonService implements LessonPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<LessonResponse> getLesson(String token, String secureId) {
       BaseResponse<LessonResponse> response = new BaseResponse<>();
 

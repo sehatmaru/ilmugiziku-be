@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
 import xcode.ilmugiziku.domain.model.TemplateModel;
@@ -10,29 +11,20 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.DiscussionVideoResponse;
 import xcode.ilmugiziku.mapper.DiscussionVideoMapper;
-import xcode.ilmugiziku.presenter.DiscussionVideoPresenter;
 
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
-public class DiscussionVideoService implements DiscussionVideoPresenter {
+public class DiscussionVideoService {
 
-   private final AuthTokenService authTokenService;
-   private final TemplateService templateService;
-
-   private final DiscussionVideoRepository discussionVideoRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private TemplateService templateService;
+   @Autowired private DiscussionVideoRepository discussionVideoRepository;
 
    private final DiscussionVideoMapper discussionVideoMapper = new DiscussionVideoMapper();
 
-   public DiscussionVideoService(AuthTokenService authTokenService, TemplateService templateService, DiscussionVideoRepository discussionVideoRepository) {
-      this.authTokenService = authTokenService;
-      this.templateService = templateService;
-      this.discussionVideoRepository = discussionVideoRepository;
-   }
-
-   @Override
    public BaseResponse<DiscussionVideoResponse> getDiscussionVideo(String token, String templateSecureId) {
       BaseResponse<DiscussionVideoResponse> response = new BaseResponse<>();
 
@@ -57,7 +49,6 @@ public class DiscussionVideoService implements DiscussionVideoPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createDiscussionVideo(String token, CreateDiscussionVideoRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -90,7 +81,6 @@ public class DiscussionVideoService implements DiscussionVideoPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateDiscussionVideo(String token, UpdateDiscussionVideoRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -111,7 +101,6 @@ public class DiscussionVideoService implements DiscussionVideoPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteDiscussionVideo(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

@@ -1,20 +1,23 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.*;
+import xcode.ilmugiziku.domain.model.AnswerModel;
+import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.model.QuestionModel;
+import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
-import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
+import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionExamResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
-import xcode.ilmugiziku.presenter.QuestionPresenter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,41 +32,25 @@ import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
-public class QuestionService implements QuestionPresenter {
+public class QuestionService {
 
-   private final AuthTokenService authTokenService;
-   private final AuthService authService;
-   private final AnswerService answerService;
-   private final TemplateService templateService;
-
-   private final QuestionRepository questionRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private AuthService authService;
+   @Autowired private AnswerService answerService;
+   @Autowired private TemplateService templateService;
+   @Autowired private QuestionRepository questionRepository;
 
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
 
-   public QuestionService(AuthTokenService authTokenService,
-                          AnswerService answerService,
-                          QuestionRepository questionRepository,
-                          AuthService authService,
-                          TemplateService templateService) {
-      this.authTokenService = authTokenService;
-      this.questionRepository = questionRepository;
-      this.answerService = answerService;
-      this.authService = authService;
-      this.templateService = templateService;
-   }
-
-   @Override
    public BaseResponse<List<QuestionAnswerResponse>> getQuizQuestions(String token) {
       return getQuiz(token, QUIZ);
    }
 
-   @Override
    public BaseResponse<List<QuestionAnswerResponse>> getPracticeQuestions(String token) {
       return getQuiz(token, PRACTICE);
    }
 
-   @Override
    public BaseResponse<QuestionResponse> getTryOutQuestion(String token, int questionType, int questionSubType, String templateSecureId) {
       BaseResponse<QuestionResponse> response = new BaseResponse<>();
       QuestionResponse questionResponse = new QuestionResponse();
@@ -92,7 +79,6 @@ public class QuestionService implements QuestionPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createQuestion(String token, CreateQuestionRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -120,7 +106,6 @@ public class QuestionService implements QuestionPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateQuestion(String token, UpdateQuestionRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -151,7 +136,6 @@ public class QuestionService implements QuestionPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteQuestion(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       QuestionModel model = new QuestionModel();

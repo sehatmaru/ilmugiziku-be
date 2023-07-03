@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
@@ -13,7 +14,6 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageFeatureResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
 import xcode.ilmugiziku.mapper.PackageMapper;
-import xcode.ilmugiziku.presenter.PackagePresenter;
 
 import java.util.Date;
 import java.util.List;
@@ -21,27 +21,15 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
-public class PackageService implements PackagePresenter {
+public class PackageService {
 
-   private final AuthTokenService authTokenService;
-   private final AuthService authService;
-   private final PackageFeatureService packageFeatureService;
-
-   private final PackageRepository packageRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private AuthService authService;
+   @Autowired private PackageFeatureService packageFeatureService;
+   @Autowired private PackageRepository packageRepository;
 
    private final PackageMapper packageMapper = new PackageMapper();
 
-   public PackageService(AuthTokenService authTokenService,
-                         AuthService authService,
-                         PackageRepository packageRepository,
-                         PackageFeatureService packageFeatureService) {
-      this.authTokenService = authTokenService;
-      this.authService = authService;
-      this.packageRepository = packageRepository;
-      this.packageFeatureService = packageFeatureService;
-   }
-
-   @Override
    public BaseResponse<List<PackageResponse>> getPackageList(String token) {
       BaseResponse<List<PackageResponse>> response = new BaseResponse<>();
 
@@ -69,7 +57,6 @@ public class PackageService implements PackagePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<PackageResponse> getPackage(String token, String secureId) {
       BaseResponse<PackageResponse> response = new BaseResponse<>();
 
@@ -95,7 +82,6 @@ public class PackageService implements PackagePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createPackage(String token, CreatePackageRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -118,7 +104,6 @@ public class PackageService implements PackagePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updatePackage(String token, String secureId, UpdatePackageRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -139,7 +124,6 @@ public class PackageService implements PackagePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deletePackage(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,8 @@ import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.exam.*;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
-import xcode.ilmugiziku.presenter.ExamPresenter;
-import xcode.ilmugiziku.presenter.QuestionPresenter;
+import xcode.ilmugiziku.service.ExamService;
+import xcode.ilmugiziku.service.QuestionService;
 
 import java.util.List;
 
@@ -22,13 +23,8 @@ import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.QUIZ;
 @RequestMapping(value = "exam")
 public class ExamApi {
 
-    final QuestionPresenter questionPresenter;
-    final ExamPresenter examPresenter;
-
-    public ExamApi(QuestionPresenter questionPresenter, ExamPresenter examPresenter) {
-        this.questionPresenter = questionPresenter;
-        this.examPresenter = examPresenter;
-    }
+    @Autowired private QuestionService questionService;
+    @Autowired private ExamService examService;
 
     @GetMapping("/quiz/list")
     ResponseEntity<BaseResponse<List<QuestionAnswerResponse>>> getQuizList(
@@ -38,9 +34,9 @@ public class ExamApi {
         BaseResponse<List<QuestionAnswerResponse>> response = new BaseResponse<>();
 
         if (questionType == QUIZ) {
-            response = questionPresenter.getQuizQuestions(token);
+            response = questionService.getQuizQuestions(token);
         } else if (questionType == PRACTICE) {
-            response = questionPresenter.getPracticeQuestions(token);
+            response = questionService.getPracticeQuestions(token);
         } else {
             response.setWrongParams();
         }
@@ -58,7 +54,7 @@ public class ExamApi {
             @RequestParam @Validated int questionSubType,
             @RequestParam String templateSecureId
     ) {
-        BaseResponse<QuestionResponse> response = questionPresenter.getTryOutQuestion(token, questionType, questionSubType, templateSecureId);
+        BaseResponse<QuestionResponse> response = questionService.getTryOutQuestion(token, questionType, questionSubType, templateSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -71,7 +67,7 @@ public class ExamApi {
             @RequestParam @Validated String token,
             @RequestBody @Validated CreateExamRequest request
     ) {
-        BaseResponse<CreateExamResponse> response = examPresenter.submitExam(token, request);
+        BaseResponse<CreateExamResponse> response = examService.submitExam(token, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -84,7 +80,7 @@ public class ExamApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated int questionType
     ) {
-        BaseResponse<List<ExamResultResponse>> response = examPresenter.getExamResult(token, questionType);
+        BaseResponse<List<ExamResultResponse>> response = examService.getExamResult(token, questionType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -98,7 +94,7 @@ public class ExamApi {
             @RequestParam @Validated int questionType,
             @RequestParam @Validated int questionSubType
     ) {
-        BaseResponse<List<ExamRankResponse>> response = examPresenter.getExamRank(token, questionType, questionSubType);
+        BaseResponse<List<ExamRankResponse>> response = examService.getExamRank(token, questionType, questionSubType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -112,7 +108,7 @@ public class ExamApi {
             @RequestParam @Validated int questionType,
             @RequestParam @Validated int questionSubType
     ) {
-        BaseResponse<List<ExamKeyResponse>> response = examPresenter.getExamKey(token, questionType, questionSubType);
+        BaseResponse<List<ExamKeyResponse>> response = examService.getExamKey(token, questionType, questionSubType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -125,7 +121,7 @@ public class ExamApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated int questionType
     ) {
-        BaseResponse<List<ExamInformationResponse>> response = examPresenter.getExamInformation(token, questionType);
+        BaseResponse<List<ExamInformationResponse>> response = examService.getExamInformation(token, questionType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -138,7 +134,7 @@ public class ExamApi {
             @RequestParam @Validated String token,
             @RequestParam @Validated int questionType
     ) {
-        BaseResponse<List<ExamVideoResponse>> response = examPresenter.getExamVideo(token, questionType);
+        BaseResponse<List<ExamVideoResponse>> response = examService.getExamVideo(token, questionType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

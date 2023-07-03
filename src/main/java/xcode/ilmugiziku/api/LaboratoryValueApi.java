@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.LaboratoryValueResponse;
-import xcode.ilmugiziku.presenter.LaboratoryPresenter;
+import xcode.ilmugiziku.service.LaboratoryValueService;
 
 import java.util.List;
 
@@ -18,15 +19,11 @@ import java.util.List;
 @RequestMapping(value = "laboratory-value")
 public class LaboratoryValueApi {
 
-    final LaboratoryPresenter laboratoryPresenter;
-
-    public LaboratoryValueApi(LaboratoryPresenter laboratoryPresenter) {
-        this.laboratoryPresenter = laboratoryPresenter;
-    }
+    @Autowired private LaboratoryValueService laboratoryService;
 
     @GetMapping("/list")
     ResponseEntity<BaseResponse<List<LaboratoryValueResponse>>> list (@RequestParam @Validated String token) {
-        BaseResponse<List<LaboratoryValueResponse>> response = laboratoryPresenter.getLaboratoryValueList(token);
+        BaseResponse<List<LaboratoryValueResponse>> response = laboratoryService.getLaboratoryValueList(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

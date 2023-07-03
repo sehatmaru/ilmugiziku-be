@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,21 +11,17 @@ import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.auth.LoginResponse;
-import xcode.ilmugiziku.presenter.AuthPresenter;
+import xcode.ilmugiziku.service.AuthService;
 
 @RestController
 @RequestMapping(value = "auth")
 public class AuthApi {
 
-    final AuthPresenter authPresenter;
-
-    public AuthApi(AuthPresenter authPresenter) {
-        this.authPresenter = authPresenter;
-    }
+    @Autowired private AuthService authService;
 
     @PostMapping("/register")
     ResponseEntity<BaseResponse<CreateBaseResponse>> register (@RequestBody @Validated RegisterRequest body) {
-        BaseResponse<CreateBaseResponse> response = authPresenter.register(body);
+        BaseResponse<CreateBaseResponse> response = authService.register(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -34,7 +31,7 @@ public class AuthApi {
 
     @PostMapping("/login")
     ResponseEntity<BaseResponse<LoginResponse>> login(@RequestBody @Validated LoginRequest request) {
-        BaseResponse<LoginResponse> response = authPresenter.login(request);
+        BaseResponse<LoginResponse> response = authService.login(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -44,7 +41,7 @@ public class AuthApi {
 
     @PostMapping("/logout")
     ResponseEntity<BaseResponse<Boolean>> logout(@RequestParam @Validated String token) {
-        BaseResponse<Boolean> response = authPresenter.logout(token);
+        BaseResponse<Boolean> response = authService.logout(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -56,12 +53,12 @@ public class AuthApi {
 //    ResponseEntity<BaseResponse<Integer>> delete(@RequestParam @Validated int id) {
 //        BaseResponse<Integer> response = new BaseResponse<>();
 //
-//        if (authPresenter.isBookExist(id)) {
-//            AuthModel authModel = authPresenter.findById(id);
+//        if (authService.isBookExist(id)) {
+//            AuthModel authModel = authService.findById(id);
 //            authModel.setDeletedAt(new Date());
 //
 //            try {
-//                authPresenter.update(id, authModel);
+//                authService.update(id, authModel);
 //
 //                response.setCode(SUCCESS_CODE);
 //                response.setMessage(SUCCESS_MESSAGE);
@@ -85,8 +82,8 @@ public class AuthApi {
 //    ResponseEntity<BaseResponse<AuthModel>> update (@RequestBody @Validated AuthModel request) {
 //        BaseResponse<AuthModel> response = new BaseResponse<>();
 //
-//        if (authPresenter.isBookExist(request.getId())) {
-//            AuthModel authModel = authPresenter.findById(request.getId());
+//        if (authService.isBookExist(request.getId())) {
+//            AuthModel authModel = authService.findById(request.getId());
 //            authModel.setTitle(request.getTitle());
 //            authModel.setPublication(request.getPublication());
 //            authModel.setAuthor(request.getAuthor());
@@ -95,7 +92,7 @@ public class AuthApi {
 //            authModel.setUpdatedAt(new Date());
 //
 //            try {
-//                authPresenter.update(request.getId(), authModel);
+//                authService.update(request.getId(), authModel);
 //
 //                response.setCode(SUCCESS_CODE);
 //                response.setMessage(SUCCESS_MESSAGE);
@@ -122,7 +119,7 @@ public class AuthApi {
 //        BaseResponse<List<AuthModel>> response = new BaseResponse<>();
 //
 //        try {
-//            authModels = authPresenter.findAll();
+//            authModels = authService.findAll();
 //
 //            response.setCode(SUCCESS_CODE);
 //            response.setMessage(SUCCESS_MESSAGE);

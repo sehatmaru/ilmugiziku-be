@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.repository.ScheduleRepository;
@@ -9,7 +10,6 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
 import xcode.ilmugiziku.mapper.ScheduleMapper;
-import xcode.ilmugiziku.presenter.SchedulePresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,20 +18,13 @@ import java.util.List;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
-public class ScheduleService implements SchedulePresenter {
+public class ScheduleService {
 
-   private final AuthTokenService authTokenService;
-
-   private final ScheduleRepository scheduleRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private ScheduleRepository scheduleRepository;
 
    private final ScheduleMapper scheduleMapper = new ScheduleMapper();
 
-   public ScheduleService(AuthTokenService authTokenService, ScheduleRepository scheduleRepository) {
-      this.authTokenService = authTokenService;
-      this.scheduleRepository = scheduleRepository;
-   }
-
-   @Override
    public BaseResponse<List<ScheduleResponse>> getScheduleList(String token) {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
 
@@ -52,7 +45,6 @@ public class ScheduleService implements SchedulePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<CreateBaseResponse> createSchedule(String token, CreateScheduleRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -81,7 +73,6 @@ public class ScheduleService implements SchedulePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> updateSchedule(String token, String scheduleSecureId, UpdateScheduleRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -114,7 +105,6 @@ public class ScheduleService implements SchedulePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> deleteSchedule(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       ScheduleModel model = new ScheduleModel();
@@ -146,7 +136,6 @@ public class ScheduleService implements SchedulePresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<Boolean> checkSchedule(String token) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

@@ -1,15 +1,15 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.ExamRepository;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamRequest;
-import xcode.ilmugiziku.domain.response.*;
+import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.exam.*;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.mapper.ExamMapper;
-import xcode.ilmugiziku.presenter.ExamPresenter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,39 +22,19 @@ import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
-public class ExamService implements ExamPresenter {
+public class ExamService {
 
-   private final AuthTokenService authTokenService;
-   private final AuthService authService;
-   private final AnswerService answerService;
-   private final ScheduleService scheduleService;
-   private final QuestionService questionService;
-   private final DiscussionVideoService videoService;
-   private final TemplateService templateService;
-
-   private final ExamRepository examRepository;
+   @Autowired private AuthTokenService authTokenService;
+   @Autowired private AuthService authService;
+   @Autowired private AnswerService answerService;
+   @Autowired private ScheduleService scheduleService;
+   @Autowired private QuestionService questionService;
+   @Autowired private DiscussionVideoService videoService;
+   @Autowired private TemplateService templateService;
+   @Autowired private ExamRepository examRepository;
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public ExamService(AuthTokenService authTokenService,
-                      AuthService authService,
-                      AnswerService answerService,
-                      ScheduleService scheduleService,
-                      QuestionService questionService,
-                      ExamRepository examRepository,
-                      DiscussionVideoService videoService,
-                      TemplateService templateService) {
-      this.authTokenService = authTokenService;
-      this.authService = authService;
-      this.examRepository = examRepository;
-      this.answerService = answerService;
-      this.scheduleService = scheduleService;
-      this.questionService = questionService;
-      this.videoService = videoService;
-      this.templateService = templateService;
-   }
-
-   @Override
    public BaseResponse<CreateExamResponse> submitExam(String token, CreateExamRequest request) {
       BaseResponse<CreateExamResponse> response = new BaseResponse<>();
 
@@ -146,7 +126,6 @@ public class ExamService implements ExamPresenter {
       return model;
    }
 
-   @Override
    public BaseResponse<List<ExamResultResponse>> getExamResult(String token, int questionType) {
       BaseResponse<List<ExamResultResponse>> response = new BaseResponse<>();
 
@@ -167,7 +146,6 @@ public class ExamService implements ExamPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<List<ExamRankResponse>> getExamRank(String token, int questionType, int questionSubType) {
       BaseResponse<List<ExamRankResponse>> response = new BaseResponse<>();
 
@@ -194,7 +172,6 @@ public class ExamService implements ExamPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<List<ExamKeyResponse>> getExamKey(String token, int questionType, int questionSubType) {
       BaseResponse<List<ExamKeyResponse>> response = new BaseResponse<>();
 
@@ -233,7 +210,6 @@ public class ExamService implements ExamPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<List<ExamInformationResponse>> getExamInformation(String token, int questionType) {
       BaseResponse<List<ExamInformationResponse>> response = new BaseResponse<>();
       List<ExamInformationResponse> results = new ArrayList<>();
@@ -270,7 +246,6 @@ public class ExamService implements ExamPresenter {
       return response;
    }
 
-   @Override
    public BaseResponse<List<ExamVideoResponse>> getExamVideo(String token, int questionType) {
       BaseResponse<List<ExamVideoResponse>> response = new BaseResponse<>();
       List<ExamVideoResponse> results = new ArrayList<>();
