@@ -1,38 +1,47 @@
 package xcode.ilmugiziku.service;
 
+import lombok.NonNull;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.repository.AuthRepository;
-import xcode.ilmugiziku.domain.request.LoginRequest;
-import xcode.ilmugiziku.domain.request.RegisterRequest;
+import xcode.ilmugiziku.domain.request.auth.LoginRequest;
+import xcode.ilmugiziku.domain.request.auth.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.LoginResponse;
-import xcode.ilmugiziku.mapper.LoginMapper;
+import xcode.ilmugiziku.domain.response.auth.LoginResponse;
+import xcode.ilmugiziku.domain.response.auth.UserResponse;
+import xcode.ilmugiziku.mapper.AuthMapper;
 import xcode.ilmugiziku.presenter.AuthPresenter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
+import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.UKOM_NEWBIE;
 import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
+import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
 public class AuthService implements AuthPresenter {
 
    private final AuthTokenService authTokenService;
+   private final PaymentService paymentService;
 
    private final AuthRepository authRepository;
 
-   private final LoginMapper loginMapper = new LoginMapper();
+   private final AuthMapper authMapper = new AuthMapper();
 
-   public AuthService(AuthTokenService authTokenService, AuthRepository authRepository) {
+   public AuthService(AuthTokenService authTokenService,
+                      @NonNull @Lazy PaymentService paymentService,
+                      AuthRepository authRepository) {
       this.authTokenService = authTokenService;
+      this.paymentService = paymentService;
       this.authRepository = authRepository;
    }
 
@@ -53,32 +62,46 @@ public class AuthService implements AuthPresenter {
             if (request.getType() == GOOGLE) {
                AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
 
+               if (model.isPremium()) {
+                  refreshPremiumPackage(model);
+               }
+
                if (tokenModel == null) {
                   String token = authTokenService.generateAuthToken(model.getSecureId());
-                  response.setSuccess(loginMapper.modelToResponse(model, token));
+                  response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
                } else {
                   if (authTokenService.isStillValidToken(tokenModel)) {
                      response.setExistData(AUTH_EXIST_MESSAGE);
                   } else {
                      String token = authTokenService.refreshToken(tokenModel, model.getSecureId());
-                     response.setSuccess(loginMapper.modelToResponse(model, token));
+                     response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
                   }
                }
             } else {
-               if (model.getPassword().equals(encrypt(request.getPassword()))) {
-                  AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
+               if (model.isPremium()) {
+                  refreshPremiumPackage(model);
+               }
 
-                  if (tokenModel == null) {
+               if (model.getPassword().equals(encrypt(request.getPassword()))) {
+                  if (model.getRole() == ADMIN) {
                      String token = authTokenService.generateAuthToken(model.getSecureId());
 
-                     response.setSuccess(loginMapper.modelToResponse(model, token));
+                     response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
                   } else {
-                     if (authTokenService.isStillValidToken(tokenModel)) {
-                        response.setExistData(AUTH_EXIST_MESSAGE);
-                     } else {
-                        String token = authTokenService.refreshToken(tokenModel, model.getSecureId());
+                     AuthTokenModel tokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
 
-                        response.setSuccess(loginMapper.modelToResponse(model, token));
+                     if (tokenModel == null) {
+                        String token = authTokenService.generateAuthToken(model.getSecureId());
+
+                        response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
+                     } else {
+                        if (authTokenService.isStillValidToken(tokenModel)) {
+                           response.setExistData(AUTH_EXIST_MESSAGE);
+                        } else {
+                           String token = authTokenService.refreshToken(tokenModel, model.getSecureId());
+
+                           response.setSuccess(authMapper.loginModelToLoginResponse(model, token));
+                        }
                      }
                   }
                } else {
@@ -103,25 +126,25 @@ public class AuthService implements AuthPresenter {
       if (request.validate()) {
          try {
             if (authRepository.findByEmailAndDeletedAtIsNull(request.getEmail()) == null) {
-               AuthModel authModel = new AuthModel();
-               authModel.setSecureId(generateSecureId());
-               authModel.setFirstName(request.getFirstName());
-               authModel.setLastName(request.getLastName());
-               authModel.setGender(request.getGender());
-               authModel.setEmail(request.getEmail());
-               authModel.setType(request.getRegistrationType());
-               authModel.setRole(request.getRole());
-               authModel.setCreatedAt(new Date());
+               if (request.getRegistrationType() != GOOGLE) {
+                  if (!request.getPassword().isEmpty()) {
+                     AuthModel model = authMapper.registerRequestToLoginModel(request);
+                     authRepository.save(model);
 
-               if (request.getPassword() != null) {
-                  authModel.setPassword(encrypt(request.getPassword()));
+                     createResponse.setSecureId(model.getSecureId());
+
+                     response.setSuccess(createResponse);
+                  } else {
+                     response.setWrongParams();
+                  }
+               } else {
+                  AuthModel model = authMapper.registerRequestToLoginModel(request);
+                  authRepository.save(model);
+
+                  createResponse.setSecureId(model.getSecureId());
+
+                  response.setSuccess(createResponse);
                }
-
-               authRepository.save(authModel);
-
-               createResponse.setSecureId(authModel.getSecureId());
-
-               response.setSuccess(createResponse);
             } else {
                response.setExistData("");
             }
@@ -136,28 +159,14 @@ public class AuthService implements AuthPresenter {
    }
 
    @Override
-   public BaseResponse<List<LoginResponse>> getUserList(String token) {
-      BaseResponse<List<LoginResponse>> response = new BaseResponse<>();
-      List<LoginResponse> loginResponses = new ArrayList<>();
+   public BaseResponse<List<UserResponse>> getUserList(String token) {
+      BaseResponse<List<UserResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
          try {
             List<AuthModel> models = authRepository.findByRoleAndDeletedAtIsNull(CONSUMER);
 
-            for (AuthModel model : models) {
-               LoginResponse value = new LoginResponse();
-               value.setSecureId(model.getSecureId());
-               value.setFirstName(model.getFirstName());
-               value.setLastName(model.getLastName());
-               value.setEmail(model.getEmail());
-               value.setGender(model.getGender());
-               value.setType(model.getType());
-               value.setRole(model.getRole());
-
-               loginResponses.add(value);
-            }
-
-            response.setSuccess(loginResponses);
+            response.setSuccess(authMapper.loginModelsToLoginResponses(models));
          } catch (Exception e) {
             response.setFailed(e.toString());
          }
@@ -187,5 +196,90 @@ public class AuthService implements AuthPresenter {
       }
 
       return response;
+   }
+
+   @Override
+   public BaseResponse<Boolean> destroyToken(String request) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      if (!request.isEmpty()) {
+         AuthModel model = new AuthModel();
+
+         try {
+            model = authRepository.findByEmailAndDeletedAtIsNull(request);
+         } catch (Exception e) {
+            response.setFailed(e.toString());
+         }
+
+         if (model != null) {
+            AuthTokenModel authTokenModel = authTokenService.getAuthTokenByAuthSecureId(model.getSecureId());
+
+            if (authTokenModel != null) {
+               authTokenService.destroyAuthToken(authTokenModel);
+
+               response.setSuccess(true);
+            }
+         } else {
+            response.setNotFound(AUTH_ERROR_MESSAGE);
+         }
+      } else {
+         response.setWrongParams();
+      }
+
+      return response;
+   }
+
+   public AuthModel getActiveAuthBySecureId(String secureId) {
+      return authRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+   }
+
+   public AuthModel getAuthBySecureId(String secureId) {
+      return authRepository.findBySecureId(secureId);
+   }
+
+   public boolean isRoleAdmin(String secureId) {
+      return authRepository.findBySecureIdAndDeletedAtIsNull(secureId).getRole() == ADMIN;
+   }
+
+   public void saveAuthModel(AuthModel model) {
+      authRepository.save(model);
+   }
+
+   public void refreshPremiumPackage(AuthModel authModel) {
+      if (authModel.isSKBPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isSKBExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), SKB_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authRepository.save(authModel);
+         }
+      }
+
+      if (authModel.isUKOMPackage()) {
+         PaymentModel paymentModel;
+
+         if (authModel.isUKOMExpert()) {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_EXPERT);
+         } else {
+            paymentModel = paymentService.getPaidPaymentByAuthSecureIdAndType(authModel.getSecureId(), UKOM_NEWBIE);
+         }
+
+         if (paymentModel.getExpiredDate().before(new Date())) {
+            paymentModel.setDeletedAt(new Date());
+            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+
+            paymentService.savePaymentModel(paymentModel);
+            authRepository.save(authModel);
+         }
+      }
    }
 }

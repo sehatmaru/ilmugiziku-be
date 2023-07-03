@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "schedule")
+@Table(name = "t_schedule")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,11 +27,14 @@ public class ScheduleModel {
    @Column(name = "description")
    private String description;
 
-   @Column(name = "schedule")
-   private Date schedule;
+   @Column(name = "start_date")
+   private Date startDate;
 
-   @Column(name = "auth_secure_id")
-   private String authSecureId;
+   @Column(name = "end_date")
+   private Date endDate;
+
+   @Column(name = "template_secure_id")
+   private String templateSecureId;
 
    @Column(name = "created_at")
    private Date createdAt;

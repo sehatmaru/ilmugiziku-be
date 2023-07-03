@@ -1,7 +1,7 @@
 package xcode.ilmugiziku.presenter;
 
-import xcode.ilmugiziku.domain.request.CreateTheoryRequest;
-import xcode.ilmugiziku.domain.request.UpdateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;

@@ -23,7 +23,7 @@ public class MainApplication extends SpringBootServletInitializer {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedMethods("*")
-						.allowedOrigins("http://localhost:3000");
+						.allowedOrigins("*");
 			}
 		};
 	}

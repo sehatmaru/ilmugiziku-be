@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "auth_token")
+@Table(name = "t_auth_token")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

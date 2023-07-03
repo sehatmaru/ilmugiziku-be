@@ -3,11 +3,12 @@ package xcode.ilmugiziku.service;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.TheoryModel;
 import xcode.ilmugiziku.domain.repository.TheoryRepository;
-import xcode.ilmugiziku.domain.request.CreateTheoryRequest;
-import xcode.ilmugiziku.domain.request.UpdateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
+import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
+import xcode.ilmugiziku.mapper.TheoryMapper;
 import xcode.ilmugiziku.presenter.TheoryPresenter;
 
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 
@@ -26,6 +26,8 @@ public class TheoryService implements TheoryPresenter {
 
    private final TheoryRepository theoryRepository;
 
+   private final TheoryMapper theoryMapper = new TheoryMapper();
+
    public TheoryService(AuthTokenService authTokenService, TheoryRepository theoryRepository) {
       this.authTokenService = authTokenService;
       this.theoryRepository = theoryRepository;
@@ -34,7 +36,6 @@ public class TheoryService implements TheoryPresenter {
    @Override
    public BaseResponse<List<TheoryResponse>> getTheoryList(String token, int theoryType) {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
-      List<TheoryResponse> responses = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
          if (theoryType == UKOM || theoryType == SKB_GIZI) {
@@ -46,21 +47,7 @@ public class TheoryService implements TheoryPresenter {
                response.setFailed(e.toString());
             }
 
-            if (models != null) {
-               for (TheoryModel model : models) {
-                  TheoryResponse resp = new TheoryResponse();
-                  resp.setSecureId(model.getSecureId());
-                  resp.setCompetence(model.getCompetence());
-                  resp.setTheoryType(model.getTheoryType());
-                  resp.setUri(model.getUri());
-
-                  responses.add(resp);
-               }
-
-               response.setStatusCode(SUCCESS_CODE);
-               response.setMessage(SUCCESS_MESSAGE);
-               response.setResult(responses);
-            }
+            response.setSuccess(theoryMapper.modelsToResponses(models));
          } else {
             response.setWrongParams();
          }
@@ -78,19 +65,11 @@ public class TheoryService implements TheoryPresenter {
 
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
-            String tempSecureId = generateSecureId();
-
-            TheoryModel model = new TheoryModel();
-            model.setSecureId(tempSecureId);
-            model.setCompetence(request.getCompetence());
-            model.setUri(request.getUri());
-            model.setTheoryType(request.getTheoryType());
-            model.setCreatedAt(new Date());
-
             try {
+               TheoryModel model = theoryMapper.createRequestToModel(request);
                theoryRepository.save(model);
 
-               createResponse.setSecureId(tempSecureId);
+               createResponse.setSecureId(model.getSecureId());
 
                response.setSuccess(createResponse);
             } catch (Exception e){
@@ -119,13 +98,8 @@ public class TheoryService implements TheoryPresenter {
             response.setFailed(e.toString());
          }
 
-         model.setCompetence(request.getCompetence());
-         model.setUri(request.getUri());
-         model.setTheoryType(request.getTheoryType());
-         model.setUpdatedAt(new Date());
-
          try {
-            theoryRepository.save(model);
+            theoryRepository.save(theoryMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){

@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "question")
+@Table(name = "t_question")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +32,18 @@ public class QuestionModel {
 
    @Column(name = "question_sub_type")
    private int questionSubType;
+
+   @Column(name = "discussion")
+   private String discussion;
+
+   @Column(name = "label")
+   private String label;
+
+   @Column(name = "type")
+   private String type;
+
+   @Column(name = "template_secure_id")
+   private String templateSecureId;
 
    @Column(name = "created_at")
    private Date createdAt;

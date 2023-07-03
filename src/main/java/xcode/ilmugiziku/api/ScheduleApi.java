@@ -25,8 +25,18 @@ public class ScheduleApi {
     }
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list (@RequestParam @Validated String token, @RequestParam @Validated String authSecureId) {
-        BaseResponse<List<ScheduleResponse>> response = schedulePresenter.getScheduleList(token, authSecureId);
+    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list (@RequestParam @Validated String token) {
+        BaseResponse<List<ScheduleResponse>> response = schedulePresenter.getScheduleList(token);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/check")
+    ResponseEntity<BaseResponse<Boolean>> check (@RequestParam @Validated String token) {
+        BaseResponse<Boolean> response = schedulePresenter.checkSchedule(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
