@@ -1,7 +1,7 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.AuthModel;
-import xcode.ilmugiziku.domain.response.LoginResponse;
+import xcode.ilmugiziku.domain.response.auth.LoginResponse;
 
 public class LoginMapper {
     public LoginResponse modelToResponse(AuthModel model, String token) {
