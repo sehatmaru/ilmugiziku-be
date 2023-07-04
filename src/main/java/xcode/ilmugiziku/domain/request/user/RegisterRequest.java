@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.request.auth;
+package xcode.ilmugiziku.domain.request.user;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -22,8 +22,8 @@ public class TheoryApi {
     @Autowired private TheoryService theoryService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<TheoryResponse>>> list (@RequestParam @Validated String token, @RequestParam @Validated int theoryType) {
-        BaseResponse<List<TheoryResponse>> response = theoryService.getTheoryList(token, theoryType);
+    ResponseEntity<BaseResponse<List<TheoryResponse>>> list (@RequestParam @Validated int theoryType) {
+        BaseResponse<List<TheoryResponse>> response = theoryService.getTheoryList(theoryType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

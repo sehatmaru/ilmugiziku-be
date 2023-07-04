@@ -11,13 +11,13 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, String> {
 
    PaymentModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<PaymentModel> findAllByAuthSecureIdAndPaymentStatusAndDeletedAtIsNull(String secureId, String status);
+   List<PaymentModel> findAllByUserSecureIdAndPaymentStatusAndDeletedAtIsNull(String secureId, String status);
 
-   PaymentModel findByAuthSecureIdAndPackageSecureIdAndDeletedAtIsNull(String auth, String pack);
+   PaymentModel findByUserSecureIdAndPackageSecureIdAndDeletedAtIsNull(String user, String pack);
 
    PaymentModel findByInvoiceIdAndDeletedAtIsNull(String invoice);
 
-   PaymentModel findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(String secureId, int type);
+   PaymentModel findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(String secureId, int type);
 
-   PaymentModel findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(String secureId, int type, String status);
+   PaymentModel findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(String secureId, int type, String status);
 }

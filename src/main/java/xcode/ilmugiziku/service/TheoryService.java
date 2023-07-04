@@ -22,95 +22,74 @@ import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 @Service
 public class TheoryService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private TheoryRepository theoryRepository;
 
    private final TheoryMapper theoryMapper = new TheoryMapper();
 
-   public BaseResponse<List<TheoryResponse>> getTheoryList(String token, int theoryType) {
+   public BaseResponse<List<TheoryResponse>> getTheoryList(int theoryType) {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         if (theoryType == UKOM || theoryType == SKB_GIZI) {
-            List<TheoryModel> models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
+      if (theoryType == UKOM || theoryType == SKB_GIZI) {
+         List<TheoryModel> models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
 
-            response.setSuccess(theoryMapper.modelsToResponses(models));
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
-         }
+         response.setSuccess(theoryMapper.modelsToResponses(models));
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(PARAMS_ERROR_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createTheory(String token, CreateTheoryRequest request) {
+   public BaseResponse<CreateBaseResponse> createTheory(CreateTheoryRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            try {
-               TheoryModel model = theoryMapper.createRequestToModel(request);
-               theoryRepository.save(model);
+      try {
+         TheoryModel model = theoryMapper.createRequestToModel(request);
+         theoryRepository.save(model);
 
-               createResponse.setSecureId(model.getSecureId());
+         createResponse.setSecureId(model.getSecureId());
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(createResponse);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> updateTheory(String token, UpdateTheoryRequest request) {
+   public BaseResponse<Boolean> updateTheory(UpdateTheoryRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
+      try {
+         TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
+         theoryRepository.save(theoryMapper.updateRequestToModel(model, request));
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deleteTheory(String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model != null) {
+         model.setDeletedAt(new Date());
+
          try {
-            TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
-            theoryRepository.save(theoryMapper.updateRequestToModel(model, request));
+            theoryRepository.save(model);
 
             response.setSuccess(true);
          } catch (Exception e){
             throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   public BaseResponse<Boolean> deleteTheory(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
-               theoryRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;

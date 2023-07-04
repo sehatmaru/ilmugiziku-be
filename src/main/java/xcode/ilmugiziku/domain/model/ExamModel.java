@@ -42,8 +42,8 @@ public class ExamModel {
    @Column(name = "incorrect")
    private int incorrect;
 
-   @Column(name = "auth_secure_id")
-   private String authSecureId;
+   @Column(name = "user_secure_id")
+   private String userSecureId;
 
    @Column(name = "schedule_secure_id")
    private String scheduleSecureId;

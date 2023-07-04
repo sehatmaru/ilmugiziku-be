@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
     private static final String KEY = "aesEncryptionKey";
     private static final String INIT_VECTOR = "encryptionIntVec";
+    private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
+    private static final long TEMPORARY_EXPIRE_DURATION = 5 * 60 * 1000; // 5 minute
+
 
     public static String generateSecureId() {
         return UUID.randomUUID().toString();
@@ -69,6 +72,10 @@ public class Utils {
 
     public static String[] stringToArray(String requests) {
         return requests.split(",");
+    }
+
+    public static Date getTomorrowDate() {
+        return new Date(System.currentTimeMillis() + EXPIRE_DURATION);
     }
 
 }

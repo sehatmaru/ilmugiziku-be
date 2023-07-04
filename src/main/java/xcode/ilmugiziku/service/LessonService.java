@@ -2,7 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
+import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.LessonModel;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
@@ -16,127 +16,105 @@ import xcode.ilmugiziku.mapper.LessonMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.*;
+import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
 @Service
 public class LessonService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private RatingService ratingService;
    @Autowired private LessonRepository lessonRepository;
 
    private final LessonMapper lessonMapper = new LessonMapper();
 
-   public BaseResponse<List<LessonResponse>> getLessonList(String token, int bimbelType) {
+   public BaseResponse<List<LessonResponse>> getLessonList(int bimbelType) {
       BaseResponse<List<LessonResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-            AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-            List<LessonModel> models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-            List<LessonResponse> responses = lessonMapper.modelsToResponses(models);
+      if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
+         List<LessonModel> models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
+         List<LessonResponse> responses = lessonMapper.modelsToResponses(models);
 
-            for (LessonResponse lesson : responses) {
-               lesson.setRated(ratingService.isRatedByAuthSecureId(authTokenModel.getAuthSecureId(), lesson.getSecureId()));
-            }
-
-            response.setSuccess(responses);
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
+         for (LessonResponse lesson : responses) {
+            lesson.setRated(ratingService.isRatedByUserSecureId(CurrentUser.get().getUserSecureId(), lesson.getSecureId()));
          }
+
+         response.setSuccess(responses);
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(PARAMS_ERROR_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createLesson(String token, CreateLessonRequest request) {
+   public BaseResponse<CreateBaseResponse> createLesson(CreateLessonRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         try {
-            LessonModel model = lessonMapper.createRequestToModel(request);
-            lessonRepository.save(model);
+      try {
+         LessonModel model = lessonMapper.createRequestToModel(request);
+         lessonRepository.save(model);
 
-            createResponse.setSecureId(model.getSecureId());
+         createResponse.setSecureId(model.getSecureId());
 
-            response.setSuccess(createResponse);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(createResponse);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> updateLesson(String token, String secureId, UpdateLessonRequest request) {
+   public BaseResponse<Boolean> updateLesson(String secureId, UpdateLessonRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+      LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      try {
+         lessonRepository.save(lessonMapper.updateRequestToModel(model, request));
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deleteLesson(String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model != null) {
+         model.setDeletedAt(new Date());
 
          try {
-            lessonRepository.save(lessonMapper.updateRequestToModel(model, request));
+            lessonRepository.save(model);
 
             response.setSuccess(true);
          } catch (Exception e){
             throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> deleteLesson(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
-               lessonRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   public BaseResponse<LessonResponse> getLesson(String token, String secureId) {
+   public BaseResponse<LessonResponse> getLesson(String secureId) {
       BaseResponse<LessonResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         LessonResponse result = lessonMapper.modelToResponse(model);
-         result.setRated(ratingService.isRatedByAuthSecureId(authTokenModel.getAuthSecureId(), secureId));
+      LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+      LessonResponse result = lessonMapper.modelToResponse(model);
+      result.setRated(ratingService.isRatedByUserSecureId(CurrentUser.get().getUserSecureId(), secureId));
 
-         if (model != null) {
-            response.setSuccess(result);
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
+      if (model != null) {
+         response.setSuccess(result);
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;

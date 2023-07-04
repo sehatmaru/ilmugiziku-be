@@ -2,6 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
@@ -25,51 +26,45 @@ import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 @Service
 public class ExamService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private ScheduleService scheduleService;
+   @Autowired private ProfileService profileService;
    @Autowired private QuestionService questionService;
    @Autowired private TemplateService templateService;
    @Autowired private ExamRepository examRepository;
    @Autowired private AnswerRepository answerRepository;
    @Autowired private DiscussionVideoRepository discussionVideoRepository;
    @Autowired private QuestionRepository questionRepository;
-   @Autowired private AuthRepository authRepository;
+   @Autowired private UserRepository userRepository;
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public BaseResponse<CreateExamResponse> submitExam(String token, CreateExamRequest request) {
+   public BaseResponse<CreateExamResponse> submitExam(CreateExamRequest request) {
       BaseResponse<CreateExamResponse> response = new BaseResponse<>();
 
-      AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+      ScheduleModel schedule = scheduleService.getScheduleByDate(new Date());
 
-      if (authTokenService.isValidToken(token)) {
-         ScheduleModel schedule = scheduleService.getScheduleByDate(new Date());
-
-         if (authRepository.findBySecureIdAndDeletedAtIsNull(authTokenModel.getAuthSecureId()) != null) {
-            if (request.getQuestionType() == QUIZ) {
-               saveExam(request, response, authTokenModel, schedule);
-            } else {
-               if (!isExamExist(schedule.getSecureId(), authTokenModel.getAuthSecureId(), request.getQuestionType(), request.getQuestionSubType())) {
-                  saveExam(request, response, authTokenModel, schedule);
-               } else {
-                  throw new AppException(EXIST_MESSAGE);
-               }
-            }
+      if (userRepository.findBySecureIdAndDeletedAtIsNull(CurrentUser.get().getSecureId()) != null) {
+         if (request.getQuestionType() == QUIZ) {
+            saveExam(request, response, schedule);
          } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+            if (!isExamExist(schedule.getSecureId(), CurrentUser.get().getUserSecureId(), request.getQuestionType(), request.getQuestionSubType())) {
+               saveExam(request, response, schedule);
+            } else {
+               throw new AppException(EXIST_MESSAGE);
+            }
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   private void saveExam(CreateExamRequest request, BaseResponse<CreateExamResponse> response, AuthTokenModel authTokenModel, ScheduleModel schedule) {
+   private void saveExam(CreateExamRequest request, BaseResponse<CreateExamResponse> response, ScheduleModel schedule) {
       CreateExamResponse createResponse = examMapper.generateResponse(request.getExams());
 
       ExamModel model = examMapper.createRequestToModel(request, createResponse);
-      model.setAuthSecureId(authTokenModel.getAuthSecureId());
+      model.setUserSecureId(CurrentUser.get().getUserSecureId());
       model.setScheduleSecureId(schedule.getSecureId());
 
       try {
@@ -111,67 +106,52 @@ public class ExamService {
       return model;
    }
 
-   public BaseResponse<List<ExamResultResponse>> getExamResult(String token, int questionType) {
+   public BaseResponse<List<ExamResultResponse>> getExamResult(int questionType) {
       BaseResponse<List<ExamResultResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-         List<ExamModel> exams = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType);
+      ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+      List<ExamModel> exams = examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionType(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType);
 
-         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null) {
-            response.setSuccess(examMapper.modelsToResultResponses(exams));
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
+      if (scheduleModel.getSecureId() != null) {
+         response.setSuccess(examMapper.modelsToResultResponses(exams));
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<List<ExamRankResponse>> getExamRank(String token, int questionType, int questionSubType) {
+   public BaseResponse<List<ExamRankResponse>> getExamRank(int questionType, int questionSubType) {
       BaseResponse<List<ExamRankResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-         List<ExamModel> exams = examRepository.findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(scheduleModel.getSecureId(), questionType, questionSubType);
+      ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+      List<ExamModel> exams = examRepository.findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(scheduleModel.getSecureId(), questionType, questionSubType);
 
-         if (scheduleModel.getSecureId() != null) {
-            List<ExamRankResponse> results = examMapper.modelsToRankResponses(exams);
+      if (scheduleModel.getSecureId() != null) {
+         List<ExamRankResponse> results = examMapper.modelsToRankResponses(exams);
 
-            for (int i=0; i < exams.size(); i++) {
-               AuthModel authModel = authRepository.findBySecureId(exams.get(i).getAuthSecureId());
-               results.get(i).setFullName(authModel.getFirstName() + ' ' + authModel.getLastName());
-            }
-
-            response.setSuccess(results);
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+         for (int i=0; i < exams.size(); i++) {
+            results.get(i).setFullName(profileService.getUserFullName(exams.get(i).getUserSecureId()));
          }
+
+         response.setSuccess(results);
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<List<ExamKeyResponse>> getExamKey(String token, int questionType, int questionSubType) {
+   public BaseResponse<List<ExamKeyResponse>> getExamKey(int questionType, int questionSubType) {
       BaseResponse<List<ExamKeyResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
-         ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, questionSubType);
+      ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+      ExamModel exam = examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, questionSubType);
 
-         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null && exam != null) {
-            response.setSuccess(getExamKeys(exam));
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
+      if (scheduleModel.getSecureId() != null && exam != null) {
+         response.setSuccess(getExamKeys(exam));
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
@@ -199,75 +179,64 @@ public class ExamService {
       return results;
    }
 
-   public BaseResponse<List<ExamInformationResponse>> getExamInformation(String token, int questionType) {
+   public BaseResponse<List<ExamInformationResponse>> getExamInformation(int questionType) {
       BaseResponse<List<ExamInformationResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authRepository.findBySecureIdAndDeletedAtIsNull(authTokenModel.getAuthSecureId());
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+      ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
-         if (scheduleModel.getSecureId() != null && authModel.getSecureId() != null) {
-            if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-               response.setSuccess(setExamInformation(token, questionType, scheduleModel, authModel));
-            } else {
-               throw new AppException(PARAMS_ERROR_MESSAGE);
-            }
+      if (scheduleModel.getSecureId() != null) {
+         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+            response.setSuccess(setExamInformation(questionType, scheduleModel));
          } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   private List<ExamInformationResponse> setExamInformation(String token, int questionType, ScheduleModel scheduleModel, AuthModel authModel) {
+   private List<ExamInformationResponse> setExamInformation(int questionType, ScheduleModel scheduleModel) {
       List<ExamInformationResponse> result = new ArrayList<>();
 
       for (int i=1; i<PFS+1; i++) {
-         BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(token, questionType, i, "");
+         BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(questionType, i, "");
 
          result.add(new ExamInformationResponse(
                  i,
                  questions.getResult().getExam().size(),
                  questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI,
-                 !isExamExist(scheduleModel.getSecureId(), authModel.getSecureId(), questionType, i)
+                 !isExamExist(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, i)
          ));
       }
 
       return result;
    }
 
-   public BaseResponse<List<ExamVideoResponse>> getExamVideo(String token, int questionType) {
+   public BaseResponse<List<ExamVideoResponse>> getExamVideo(int questionType) {
       BaseResponse<List<ExamVideoResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
+      ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
-         if (authTokenModel.getAuthSecureId() != null && scheduleModel.getSecureId() != null) {
-            if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-               response.setSuccess(setExamVideo(scheduleModel, questionType, authTokenModel));
-            } else {
-               throw new AppException(PARAMS_ERROR_MESSAGE);
-            }
+      if (scheduleModel.getSecureId() != null) {
+         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+            response.setSuccess(setExamVideo(scheduleModel, questionType));
          } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   private List<ExamVideoResponse> setExamVideo(ScheduleModel scheduleModel, int questionType, AuthTokenModel authTokenModel) {
+   private List<ExamVideoResponse> setExamVideo(ScheduleModel scheduleModel, int questionType) {
       List<ExamVideoResponse> results = new ArrayList<>();
 
       for (int i=1; i<PFS+1; i++) {
-         ExamModel exam = examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), authTokenModel.getAuthSecureId(), questionType, i);
+         ExamModel exam = examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, i);
          TemplateModel template = templateService.getActiveTemplate(questionType, i);
 
          if (exam != null && template != null) {
@@ -282,7 +251,7 @@ public class ExamService {
       return results;
    }
 
-   private boolean isExamExist(String schedule, String auth, int questionType, int questionSubType) {
-      return examRepository.findByScheduleSecureIdAndAuthSecureIdAndQuestionTypeAndQuestionSubType(schedule, auth, questionType, questionSubType) != null;
+   private boolean isExamExist(String schedule, String user, int questionType, int questionSubType) {
+      return examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(schedule, user, questionType, questionSubType) != null;
    }
 }

@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
@@ -22,8 +20,8 @@ public class ScheduleApi {
     @Autowired private ScheduleService scheduleService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list (@RequestParam @Validated String token) {
-        BaseResponse<List<ScheduleResponse>> response = scheduleService.getScheduleList(token);
+    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list () {
+        BaseResponse<List<ScheduleResponse>> response = scheduleService.getScheduleList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -32,8 +30,8 @@ public class ScheduleApi {
     }
 
     @GetMapping("/check")
-    ResponseEntity<BaseResponse<Boolean>> check (@RequestParam @Validated String token) {
-        BaseResponse<Boolean> response = scheduleService.checkSchedule(token);
+    ResponseEntity<BaseResponse<Boolean>> check () {
+        BaseResponse<Boolean> response = scheduleService.checkSchedule();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

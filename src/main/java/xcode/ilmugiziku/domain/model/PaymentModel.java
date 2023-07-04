@@ -24,8 +24,8 @@ public class PaymentModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "auth_secure_id")
-   private String authSecureId;
+   @Column(name = "user_secure_id")
+   private String userSecureId;
 
    @Column(name = "package_secure_id")
    private String packageSecureId;

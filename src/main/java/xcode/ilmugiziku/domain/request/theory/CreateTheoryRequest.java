@@ -3,20 +3,17 @@ package xcode.ilmugiziku.domain.request.theory;
 import lombok.Getter;
 import lombok.Setter;
 
-import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 public class CreateTheoryRequest {
     private String competence;
     private String uri;
+    @NotNull()
     private int theoryType;
 
     public CreateTheoryRequest() {
     }
 
-    public boolean validate() {
-        return theoryType == UKOM || theoryType == SKB_GIZI;
-    }
 }

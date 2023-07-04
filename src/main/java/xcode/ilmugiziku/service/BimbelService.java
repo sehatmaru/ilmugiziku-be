@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.*;
-import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
+import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.domain.repository.WebinarRepository;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
@@ -30,9 +31,9 @@ import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 @Service
 public class BimbelService {
 
-   @Autowired private AuthTokenService authTokenService;
+   @Autowired private ProfileService profileService;
    @Autowired private JavaMailSender javaMailSender;
-   @Autowired private AuthRepository authRepository;
+   @Autowired private UserRepository userRepository;
    @Autowired private LessonRepository lessonRepository;
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private WebinarRepository webinarRepository;
@@ -40,26 +41,21 @@ public class BimbelService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final LessonMapper lessonMapper = new LessonMapper();
 
-   public BaseResponse<BimbelResponse> getBimbel(String token, int bimbelType) {
+   public BaseResponse<BimbelResponse> getBimbel(int bimbelType) {
       BaseResponse<BimbelResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
 
-         if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-            response.setSuccess(setBimbel(authModel, bimbelType));
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
-         }
+      if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
+         response.setSuccess(setBimbel(userModel, bimbelType));
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(PARAMS_ERROR_MESSAGE);
       }
 
       return response;
    }
 
-   private BimbelResponse setBimbel(AuthModel authModel, int bimbelType) {
+   private BimbelResponse setBimbel(UserModel userModel, int bimbelType) {
       BimbelResponse result = new BimbelResponse();
 
       List<LessonModel> lessons = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
@@ -68,7 +64,7 @@ public class BimbelService {
          result.getLessons().add(lessonMapper.modelToResponse(lesson));
       }
 
-      if (authModel.isAdmin() || (bimbelType == UKOM && authModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && authModel.isSKBExpert())) {
+      if (userModel.isAdmin() || (bimbelType == UKOM && userModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && userModel.isSKBExpert())) {
          List<WebinarModel> webinars = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
 
          for (WebinarModel webinar: webinars) {
@@ -79,100 +75,90 @@ public class BimbelService {
       return result;
    }
 
-   public BaseResponse<BimbelInformationResponse> getBimbelInformation(String token) {
+   public BaseResponse<BimbelInformationResponse> getBimbelInformation() {
       BaseResponse<BimbelInformationResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
 
-         if (authModel.isPremium()) {
-            refreshPremiumPackage(authModel);
-         }
-
-         response.setSuccess(new BimbelInformationResponse(authModel.isUKOMPackage(), authModel.isSKBPackage()));
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+      if (userModel.isPremium()) {
+         refreshPremiumPackage(userModel);
       }
+
+      response.setSuccess(new BimbelInformationResponse(userModel.isUKOMPackage(), userModel.isSKBPackage()));
 
       return response;
    }
 
-   public BaseResponse<Boolean> sendWebinarReminder(String token, String secureId) {
+   public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
-         WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
-         if (webinarModel != null) {
-            DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-            DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            String date = dateFormat.format(webinarModel.getDate());
-            String time = timeFormat.format(webinarModel.getDate());
+      if (webinarModel != null) {
+         DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+         DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+         String date = dateFormat.format(webinarModel.getDate());
+         String time = timeFormat.format(webinarModel.getDate());
 
-            SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setTo(authModel.getEmail());
-            msg.setSubject("Zoom Meeting Reminder");
-            msg.setText("Halo " + authModel.getFullName() + ",\n\n" +
-                    "Ini adalah reminder untuk kelas webinar anda\n\n" +
-                    "Judul: " + webinarModel.getTitle() + "\n" +
-                    "Tanggal: " + date + "\n" +
-                    "Waktu: " + time + " WIB\n" +
-                    "Link: " + webinarModel.getLink() + "\n" +
-                    "Meeting ID: " + webinarModel.getMeetingId() + "\n" +
-                    "Passcode: " + webinarModel.getPasscode() + "\n\n" +
-                    "Pastikan hadir tepat waktu ya !\n\n" +
-                    "Note: Ini adalah email otomatis, jangan reply ke email ini.");
+         SimpleMailMessage msg = new SimpleMailMessage();
+         msg.setTo(userModel.getEmail());
+         msg.setSubject("Zoom Meeting Reminder");
+         msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getSecureId()) + ",\n\n" +
+                 "Ini adalah reminder untuk kelas webinar anda\n\n" +
+                 "Judul: " + webinarModel.getTitle() + "\n" +
+                 "Tanggal: " + date + "\n" +
+                 "Waktu: " + time + " WIB\n" +
+                 "Link: " + webinarModel.getLink() + "\n" +
+                 "Meeting ID: " + webinarModel.getMeetingId() + "\n" +
+                 "Passcode: " + webinarModel.getPasscode() + "\n\n" +
+                 "Pastikan hadir tepat waktu ya !\n\n" +
+                 "Note: Ini adalah email otomatis, jangan reply ke email ini.");
 
-            javaMailSender.send(msg);
+         javaMailSender.send(msg);
 
-            response.setSuccess(true);
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
+         response.setSuccess(true);
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public void refreshPremiumPackage(AuthModel authModel) {
-      if (authModel.isSKBPackage()) {
+   public void refreshPremiumPackage(UserModel userModel) {
+      if (userModel.isSKBPackage()) {
          PaymentModel paymentModel;
 
-         if (authModel.isSKBExpert()) {
-            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_EXPERT, PAID);
+         if (userModel.isSKBExpert()) {
+            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), SKB_EXPERT, PAID);
          } else {
-            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), SKB_NEWBIE, PAID);
+            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), SKB_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
-            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+            userModel.setPackages(userModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
             paymentRepository.save(paymentModel);
-            authRepository.save(authModel);
+            userRepository.save(userModel);
          }
       }
 
-      if (authModel.isUKOMPackage()) {
+      if (userModel.isUKOMPackage()) {
          PaymentModel paymentModel;
 
-         if (authModel.isUKOMExpert()) {
-            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_EXPERT, PAID);
+         if (userModel.isUKOMExpert()) {
+            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), UKOM_EXPERT, PAID);
          } else {
-            paymentModel = paymentRepository.findByAuthSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(authModel.getSecureId(), UKOM_NEWBIE, PAID);
+            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), UKOM_NEWBIE, PAID);
          }
 
          if (paymentModel.getExpiredDate().before(new Date())) {
             paymentModel.setDeletedAt(new Date());
-            authModel.setPackages(authModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
+            userModel.setPackages(userModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
 
             paymentRepository.save(paymentModel);
-            authRepository.save(authModel);
+            userRepository.save(userModel);
          }
       }
    }

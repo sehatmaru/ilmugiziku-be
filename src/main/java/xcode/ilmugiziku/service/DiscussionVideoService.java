@@ -21,105 +21,88 @@ import static xcode.ilmugiziku.shared.ResponseCode.*;
 @Service
 public class DiscussionVideoService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private DiscussionVideoRepository discussionVideoRepository;
    @Autowired private TemplateRepository templateRepository;
 
    private final DiscussionVideoMapper discussionVideoMapper = new DiscussionVideoMapper();
 
-   public BaseResponse<DiscussionVideoResponse> getDiscussionVideo(String token, String templateSecureId) {
+   public BaseResponse<DiscussionVideoResponse> getDiscussionVideo(String templateSecureId) {
       BaseResponse<DiscussionVideoResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId);
+      TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId);
 
-         if (templateModel != null) {
-            try {
-               DiscussionVideoModel model = discussionVideoRepository.findByTemplateSecureIdAndDeletedAtIsNull(templateSecureId);
+      if (templateModel != null) {
+         try {
+            DiscussionVideoModel model = discussionVideoRepository.findByTemplateSecureIdAndDeletedAtIsNull(templateSecureId);
 
-               response.setSuccess(discussionVideoMapper.modelToResponse(model));
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+            response.setSuccess(discussionVideoMapper.modelToResponse(model));
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createDiscussionVideo(String token, CreateDiscussionVideoRequest request) {
+   public BaseResponse<CreateBaseResponse> createDiscussionVideo(CreateDiscussionVideoRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getTemplateSecureId());
+      TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getTemplateSecureId());
 
-         if (templateModel != null) {
-            try {
-               DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
-               discussionVideoRepository.save(model);
+      if (templateModel != null) {
+         try {
+            DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
+            discussionVideoRepository.save(model);
 
-               createResponse.setSecureId(model.getSecureId());
+            createResponse.setSecureId(model.getSecureId());
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
+            response.setSuccess(createResponse);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> updateDiscussionVideo(String token, UpdateDiscussionVideoRequest request) {
+   public BaseResponse<Boolean> updateDiscussionVideo(UpdateDiscussionVideoRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         DiscussionVideoModel model = discussionVideoRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
+      DiscussionVideoModel model = discussionVideoRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
+
+      try {
+         discussionVideoRepository.save(discussionVideoMapper.updateRequestToModel(model, request));
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deleteDiscussionVideo(String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      DiscussionVideoModel model = discussionVideoRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model != null) {
+         model.setDeletedAt(new Date());
 
          try {
-            discussionVideoRepository.save(discussionVideoMapper.updateRequestToModel(model, request));
+            discussionVideoRepository.save(model);
 
             response.setSuccess(true);
          } catch (Exception e){
             throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   public BaseResponse<Boolean> deleteDiscussionVideo(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         DiscussionVideoModel model = discussionVideoRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
-               discussionVideoRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;

@@ -22,10 +22,9 @@ public class PaymentApi {
 
     @PostMapping("/create")
     ResponseEntity<BaseResponse<CreatePaymentResponse>> list(
-            @RequestParam @Validated String token,
             @RequestBody @Validated CreatePaymentRequest request
     ) {
-        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(token, request);
+        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -35,10 +34,9 @@ public class PaymentApi {
 
     @GetMapping("/detail")
     ResponseEntity<BaseResponse<PaymentResponse>> detail(
-            @RequestParam @Validated String token,
             @RequestParam @Validated int packageType
     ) {
-        BaseResponse<PaymentResponse> response = paymentService.detailPayment(token, packageType);
+        BaseResponse<PaymentResponse> response = paymentService.detailPayment(packageType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -2,7 +2,6 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.TemplateRepository;
 import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
@@ -23,36 +22,30 @@ import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
 @Service
 public class TemplateService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private TemplateRepository templateRepository;
 
    private final TemplateMapper templateMapper = new TemplateMapper();
 
-   public BaseResponse<List<TemplateResponse>> getTemplateList(String token, int questionType, int questionSubType) {
+   public BaseResponse<List<TemplateResponse>> getTemplateList(int questionType, int questionSubType) {
       BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-            List<TemplateModel> models = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
+      if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+         List<TemplateModel> models = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
 
-            response.setSuccess(templateMapper.modelsToResponses(models));
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
-         }
+         response.setSuccess(templateMapper.modelsToResponses(models));
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(PARAMS_ERROR_MESSAGE);
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> setTemplateActive(String token, String secureId) {
+   public BaseResponse<Boolean> setTemplateActive(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      AuthTokenModel model = authTokenService.getAuthTokenByToken(token);
       TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
-      if (model != null && templateModel != null) {
+      if (templateModel != null) {
          List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(templateModel.getQuestionType(), templateModel.getQuestionSubType());
 
          for (TemplateModel template : list) {
@@ -69,68 +62,56 @@ public class TemplateService {
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createTemplate(String token, CreateTemplateRequest request) {
+   public BaseResponse<CreateBaseResponse> createTemplate(CreateTemplateRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         try {
-            TemplateModel model = templateMapper.createRequestToModel(request);
-            templateRepository.save(model);
+      try {
+         TemplateModel model = templateMapper.createRequestToModel(request);
+         templateRepository.save(model);
 
-            createResponse.setSecureId(model.getSecureId());
+         createResponse.setSecureId(model.getSecureId());
 
-            response.setSuccess(createResponse);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(createResponse);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> updateTemplate(String token, UpdateTemplateRequest request) {
+   public BaseResponse<Boolean> updateTemplate(UpdateTemplateRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
+      try {
+         TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
+         templateRepository.save(templateMapper.updateRequestToModel(model, request));
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deleteTemplate(String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model != null) {
+         model.setDeletedAt(new Date());
+
          try {
-            TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
-            templateRepository.save(templateMapper.updateRequestToModel(model, request));
+            templateRepository.save(model);
 
             response.setSuccess(true);
          } catch (Exception e){
             throw new AppException(e.toString());
          }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   public BaseResponse<Boolean> deleteTemplate(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
-               templateRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;

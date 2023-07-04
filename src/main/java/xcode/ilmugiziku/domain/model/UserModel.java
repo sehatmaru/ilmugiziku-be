@@ -14,26 +14,17 @@ import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 @Data
 @Builder
 @Entity
-@Table(name = "t_auth")
+@Table(name = "t_user")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthModel {
+public class UserModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
 
    @Column(name = "secure_id")
    private String secureId;
-
-   @Column(name = "first_name")
-   private String firstName;
-
-   @Column(name = "last_name")
-   private String lastName;
-
-   @Column(name = "gender")
-   private String gender;
 
    @Column(name = "email")
    private String email;
@@ -50,6 +41,9 @@ public class AuthModel {
    @Column(name = "role")
    private int role;
 
+   @Column(name = "active")
+   private boolean active = false;
+
    @Column(name = "created_at")
    private Date createdAt;
 
@@ -61,10 +55,6 @@ public class AuthModel {
 
    public boolean isPremium() {
       return packages != null && !packages.isEmpty();
-   }
-
-   public String getFullName() {
-      return firstName + " " + lastName;
    }
 
    public boolean isUKOMPackage() {

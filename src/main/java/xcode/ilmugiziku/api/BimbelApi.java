@@ -26,10 +26,8 @@ public class BimbelApi {
     @Autowired private LessonService lessonService;
 
     @GetMapping("/package/list")
-    ResponseEntity<BaseResponse<List<PackageResponse>>> list(
-            @RequestParam @Validated String token
-    ) {
-        BaseResponse<List<PackageResponse>> response = packageService.getPackageList(token);
+    ResponseEntity<BaseResponse<List<PackageResponse>>> list() {
+        BaseResponse<List<PackageResponse>> response = packageService.getPackageList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -39,11 +37,10 @@ public class BimbelApi {
 
     @PostMapping("/lesson/rating/set")
     ResponseEntity<BaseResponse<Double>> submitRating(
-            @RequestParam @Validated String token,
             @RequestParam @Validated String lessonSecureId,
             @RequestBody @Validated SubmitRatingRequest body
     ) {
-        BaseResponse<Double> response = ratingService.submitRating(token, lessonSecureId, body);
+        BaseResponse<Double> response = ratingService.submitRating(lessonSecureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,10 +50,9 @@ public class BimbelApi {
 
     @GetMapping("")
     ResponseEntity<BaseResponse<BimbelResponse>> getBimbel(
-            @RequestParam @Validated String token,
             @RequestParam @Validated int bimbelType
     ) {
-        BaseResponse<BimbelResponse> response = bimbelService.getBimbel(token, bimbelType);
+        BaseResponse<BimbelResponse> response = bimbelService.getBimbel(bimbelType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -66,10 +62,9 @@ public class BimbelApi {
 
     @GetMapping("/lesson")
     ResponseEntity<BaseResponse<LessonResponse>> getLesson(
-            @RequestParam @Validated String token,
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<LessonResponse> response = lessonService.getLesson(token, secureId);
+        BaseResponse<LessonResponse> response = lessonService.getLesson(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -79,10 +74,9 @@ public class BimbelApi {
 
     @GetMapping("/package")
     ResponseEntity<BaseResponse<PackageResponse>> getPackage(
-            @RequestParam @Validated String token,
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<PackageResponse> response = packageService.getPackage(token, secureId);
+        BaseResponse<PackageResponse> response = packageService.getPackage(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -91,10 +85,8 @@ public class BimbelApi {
     }
 
     @GetMapping("/information")
-    ResponseEntity<BaseResponse<BimbelInformationResponse>> getBimbelInformation(
-            @RequestParam @Validated String token
-    ) {
-        BaseResponse<BimbelInformationResponse> response = bimbelService.getBimbelInformation(token);
+    ResponseEntity<BaseResponse<BimbelInformationResponse>> getBimbelInformation() {
+        BaseResponse<BimbelInformationResponse> response = bimbelService.getBimbelInformation();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -104,10 +96,9 @@ public class BimbelApi {
 
     @PostMapping("/webinar/reminder")
     ResponseEntity<BaseResponse<Boolean>> sendWebinarReminder(
-            @RequestParam @Validated String token,
             @RequestParam @Validated String webinarSecureId
     ) {
-        BaseResponse<Boolean> response = bimbelService.sendWebinarReminder(token, webinarSecureId);
+        BaseResponse<Boolean> response = bimbelService.sendWebinarReminder(webinarSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

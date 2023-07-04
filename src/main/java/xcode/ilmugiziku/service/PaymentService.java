@@ -5,12 +5,13 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.model.AuthModel;
+import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
-import xcode.ilmugiziku.domain.repository.AuthRepository;
+import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.PackageRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
+import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -31,73 +32,65 @@ import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 @Service
 public class PaymentService {
 
-   @Autowired private AuthTokenService authTokenService;
-   @Autowired private AuthRepository authRepository;
+   @Autowired private ProfileService profileService;
+   @Autowired private UserRepository userRepository;
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private PackageRepository packageRepository;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
-   public BaseResponse<PaymentResponse> detailPayment(String token, int packageType) {
+   public BaseResponse<PaymentResponse> detailPayment(int packageType) {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthModel authModel = authRepository.findBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
-         PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
-         try {
-            boolean isUpgrade = isUpgradePackage(authModel, packageType);
-            int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
+      try {
+         boolean isUpgrade = isUpgradePackage(userModel, packageType);
+         int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
 
-            PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
+         PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
-            PaymentResponse payment = new PaymentResponse();
-            payment.setUpgrade(isUpgrade);
-            payment.setFee(fee * 6);
-            payment.setPackageName(model.getTitle());
+         PaymentResponse payment = new PaymentResponse();
+         payment.setUpgrade(isUpgrade);
+         payment.setFee(fee * 6);
+         payment.setPackageName(model.getTitle());
 
-            response.setSuccess(payment);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(payment);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<CreatePaymentResponse> createPayment(String token, CreatePaymentRequest request) {
+   public BaseResponse<CreatePaymentResponse> createPayment(CreatePaymentRequest request) {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         AuthModel authModel = authRepository.findBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
-         PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
-         boolean isUpgrade = isUpgradePackage(authModel, request.getPackageType());
-         int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
-         fee *= 6;
+      boolean isUpgrade = isUpgradePackage(userModel, request.getPackageType());
+      int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
+      fee *= 6;
 
-         try {
-            String secureId = generateSecureId();
+      try {
+         String secureId = generateSecureId();
 
-            CreatePaymentResponse payment = createInvoice(authModel, request, packageModel, fee, secureId);
+         CreatePaymentResponse payment = createInvoice(userModel, request, packageModel, fee, secureId);
 
-            PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
-            model.setSecureId(secureId);
-            model.setPackageSecureId(packageModel.getSecureId());
-            model.setAuthSecureId(authModel.getSecureId());
-            model.setFee(fee);
-            model.setUpgrade(isUpgrade);
+         PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
+         model.setSecureId(secureId);
+         model.setPackageSecureId(packageModel.getSecureId());
+         model.setUserSecureId(userModel.getSecureId());
+         model.setFee(fee);
+         model.setUpgrade(isUpgrade);
 
-            paymentRepository.save(model);
+         paymentRepository.save(model);
 
-            response.setSuccess(payment);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(payment);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
@@ -110,17 +103,17 @@ public class PaymentService {
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
       if (payment != null) {
-         AuthModel authModel = authRepository.findBySecureId(payment.getAuthSecureId());
+         UserModel userModel = userRepository.findBySecureId(payment.getUserSecureId());
 
          if (request.isPaid()) {
-            String packages = authModel.getPackages() != null ? authModel.getPackages() : "";
+            String packages = userModel.getPackages() != null ? userModel.getPackages() : "";
             packages += String.valueOf(payment.getPackageType());
 
-            authModel.setPackages(packages);
+            userModel.setPackages(packages);
 
             payment.setPaidDate(new Date());
 
-            savePreviousPayment(payment, authModel);
+            savePreviousPayment(payment, userModel);
          } else if (request.isExpired()) {
             payment.setDeletedAt(new Date());
          }
@@ -129,7 +122,7 @@ public class PaymentService {
 
          try {
             paymentRepository.save(payment);
-            authRepository.save(authModel);
+            userRepository.save(userModel);
 
             result.setInvoiceId(request.getId());
             result.setStatus(request.getStatus());
@@ -146,10 +139,10 @@ public class PaymentService {
       return response;
    }
 
-   private void savePreviousPayment(PaymentModel payment, AuthModel authModel) {
+   private void savePreviousPayment(PaymentModel payment, UserModel userModel) {
       if (payment.isUpgrade()) {
          int prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
-         PaymentModel prevPayment = paymentRepository.findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(authModel.getSecureId(), prevType);
+         PaymentModel prevPayment = paymentRepository.findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(userModel.getSecureId(), prevType);
          prevPayment.setDeletedAt(new Date());
 
          paymentRepository.save(prevPayment);
@@ -157,7 +150,7 @@ public class PaymentService {
       }
    }
 
-   private CreatePaymentResponse createInvoice(AuthModel auth,
+   private CreatePaymentResponse createInvoice(UserModel user,
                                                CreatePaymentRequest request,
                                                PackageModel packageModel,
                                                int fee,
@@ -169,7 +162,7 @@ public class PaymentService {
               .build();
 
       try {
-         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(auth, request, packageModel, fee, secureId));
+         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, packageModel, fee, secureId));
 
          response.setInvoiceId(invoice.getId());
          response.setInvoiceUrl(invoice.getInvoiceUrl());
@@ -181,24 +174,24 @@ public class PaymentService {
       return response;
    }
 
-   public boolean isUpgradePackage(AuthModel authModel, int packageType) {
+   public boolean isUpgradePackage(UserModel userModel, int packageType) {
       boolean result = false;
 
-      if (authModel.isPremium()) {
+      if (userModel.isPremium()) {
          if (packageType == UKOM_EXPERT) {
-            result = checkPackage(authModel, UKOM_NEWBIE);
+            result = checkPackage(userModel, UKOM_NEWBIE);
          }
 
          if (packageType == SKB_EXPERT) {
-            result = checkPackage(authModel, SKB_NEWBIE);
+            result = checkPackage(userModel, SKB_NEWBIE);
          }
       }
 
       return result;
    }
 
-   private boolean checkPackage(AuthModel authModel, int packageType) {
-      for (String type : stringToArray(authModel.getPackages())) {
+   private boolean checkPackage(UserModel userModel, int packageType) {
+      for (String type : stringToArray(userModel.getPackages())) {
          if (Integer.parseInt(type) == packageType) {
             return true;
          }

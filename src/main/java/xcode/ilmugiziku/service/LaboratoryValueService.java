@@ -20,88 +20,73 @@ import static xcode.ilmugiziku.shared.ResponseCode.*;
 @Service
 public class LaboratoryValueService {
 
-   @Autowired private AuthTokenService authTokenService;
    @Autowired private LaboratoryValueRepository laboratoryValueRepository;
 
    private final LaboratoryValueMapper laboratoryValueMapper = new LaboratoryValueMapper();
 
-   public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList(String token) {
+   public BaseResponse<List<LaboratoryValueResponse>> getLaboratoryValueList() {
       BaseResponse<List<LaboratoryValueResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         try {
-            List<LaboratoryValueModel> models = laboratoryValueRepository.findByDeletedAtIsNull();
+      try {
+         List<LaboratoryValueModel> models = laboratoryValueRepository.findByDeletedAtIsNull();
 
-            response.setSuccess(laboratoryValueMapper.modelsToResponses(models));
-         } catch (Exception e) {
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(laboratoryValueMapper.modelsToResponses(models));
+      } catch (Exception e) {
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createLaboratoryValue(String token, CreateLaboratoryValueRequest request) {
+   public BaseResponse<CreateBaseResponse> createLaboratoryValue(CreateLaboratoryValueRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         LaboratoryValueModel model = laboratoryValueMapper.createRequestToModel(request);
+      LaboratoryValueModel model = laboratoryValueMapper.createRequestToModel(request);
 
-         try {
-            laboratoryValueRepository.save(model);
+      try {
+         laboratoryValueRepository.save(model);
 
-            createResponse.setSecureId(model.getSecureId());
+         createResponse.setSecureId(model.getSecureId());
 
-            response.setSuccess(createResponse);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         response.setSuccess(createResponse);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
    }
 
-   public BaseResponse<Boolean> updateLaboratoryValue(String token, UpdateLaboratoryValueRequest request) {
+   public BaseResponse<Boolean> updateLaboratoryValue(UpdateLaboratoryValueRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
       LaboratoryValueModel model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
 
-      if (authTokenService.isValidToken(token)) {
+      try {
+         laboratoryValueRepository.save(laboratoryValueMapper.updateRequestToModel(model, request));
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deleteLaboratoryValue(String secureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+      LaboratoryValueModel model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model != null) {
          try {
-            laboratoryValueRepository.save(laboratoryValueMapper.updateRequestToModel(model, request));
+            model.setDeletedAt(new Date());
+            laboratoryValueRepository.save(model);
 
             response.setSuccess(true);
          } catch (Exception e){
             throw new AppException(e.toString());
          }
-      }
-
-      return response;
-   }
-
-   public BaseResponse<Boolean> deleteLaboratoryValue(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-      LaboratoryValueModel model = laboratoryValueRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-      if (authTokenService.isValidToken(token)) {
-         if (model != null) {
-            try {
-               model.setDeletedAt(new Date());
-               laboratoryValueRepository.save(model);
-
-               response.setSuccess(true);
-            } catch (Exception e){
-               throw new AppException(e.toString());
-            }
-         } else {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         }
       } else {
-         throw new AppException(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
