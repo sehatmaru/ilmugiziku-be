@@ -114,6 +114,7 @@ public class UserService {
          if (userRepository.findByEmailAndDeletedAtIsNull(request.getEmail()) == null) {
             UserModel model = userMapper.registerRequestToLoginModel(request);
             userRepository.save(model);
+            profileRepository.save(userMapper.registerRequestToProfileModel(request, model.getSecureId()));
 
             createResponse.setSecureId(model.getSecureId());
             response.setSuccess(createResponse);

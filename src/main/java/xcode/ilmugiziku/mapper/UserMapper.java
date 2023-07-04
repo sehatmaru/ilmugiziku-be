@@ -53,6 +53,23 @@ public class UserMapper {
         }
     }
 
+    public ProfileModel registerRequestToProfileModel(RegisterRequest request, String userId) {
+        if (request != null) {
+            ProfileModel response = new ProfileModel();
+            response.setSecureId(generateSecureId());
+            response.setUser(userId);
+            response.setGender(request.getGender());
+            response.setEmail(request.getEmail());
+            response.setFirstName(request.getFirstName());
+            response.setLastName(request.getLastName());
+            response.setCreatedAt(new Date());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
     public List<UserResponse> loginModelsToLoginResponses(List<UserModel> models) {
         if (models != null) {
             List<UserResponse> responses = new ArrayList<>();
