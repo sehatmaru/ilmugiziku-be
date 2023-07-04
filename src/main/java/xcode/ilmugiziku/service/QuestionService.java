@@ -18,6 +18,7 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionExamResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
 
@@ -26,7 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
@@ -55,28 +56,36 @@ public class QuestionService {
    }
 
    public BaseResponse<QuestionResponse> getTryOutQuestion(String token, int questionType, int questionSubType, String templateSecureId) {
-      BaseResponse<QuestionResponse> response = new BaseResponse<>();
-      QuestionResponse questionResponse = new QuestionResponse();
+      BaseResponse<QuestionResponse> response;
 
       if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
          if (questionSubType > 0 && questionSubType < 5) {
-            if (authTokenService.isValidToken(token)) {
-               AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-
-               if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
-                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
-               } else {
-                  questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI);
-                  response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
-               }
-            } else {
-               response.setFailed(TOKEN_ERROR_MESSAGE);
-            }
+            response = getQuestions(token, questionType, questionSubType, templateSecureId);
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setWrongParams();
+         throw new AppException(PARAMS_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   private BaseResponse<QuestionResponse> getQuestions(String token, int questionType, int questionSubType, String templateSecureId) {
+      BaseResponse<QuestionResponse> response = new BaseResponse<>();
+      QuestionResponse questionResponse = new QuestionResponse();
+
+      if (authTokenService.isValidToken(token)) {
+         AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
+
+         if (authService.isRoleAdmin(authTokenModel.getAuthSecureId())) {
+            response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
+         } else {
+            questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI);
+            response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
+         }
+      } else {
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -86,24 +95,26 @@ public class QuestionService {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (request.validate()) {
-         QuestionModel model = questionMapper.createRequestToModel(request);
+      if (authTokenService.isValidToken(token)) {
+         if (request.isValid()) {
+            QuestionModel model = questionMapper.createRequestToModel(request);
 
-         try {
-            questionRepository.save(model);
+            try {
+               questionRepository.save(model);
 
-            for (CreateAnswerRequest answer : request.getAnswers()) {
-               createAnswer(answer, model.getSecureId());
+               for (CreateAnswerRequest answer : request.getAnswers()) {
+                  createAnswer(answer, model.getSecureId());
+               }
+
+               createResponse.setSecureId(model.getSecureId());
+
+               response.setSuccess(createResponse);
+            } catch (Exception e) {
+               throw new AppException(e.toString());
             }
-
-            createResponse.setSecureId(model.getSecureId());
-
-            response.setSuccess(createResponse);
-         } catch (Exception e){
-            response.setFailed(e.toString());
          }
       } else {
-         response.setWrongParams();
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -112,28 +123,32 @@ public class QuestionService {
    public BaseResponse<Boolean> updateQuestion(String token, UpdateQuestionRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (request.validate()) {
-         for (UpdateAnswerRequest answer : request.getAnswers()) {
-            try {
-               AnswerModel model = answerRepository.findBySecureId(answer.getSecureId());
+      if (authTokenService.isValidToken(token)) {
+         if (request.isValid()) {
+            for (UpdateAnswerRequest answer : request.getAnswers()) {
+               try {
+                  AnswerModel model = answerRepository.findBySecureId(answer.getSecureId());
 
-               answerRepository.save(answerMapper.updateRequestToModel(model, answer));
-            } catch (Exception e) {
-               response.setFailed(e.toString());
+                  answerRepository.save(answerMapper.updateRequestToModel(model, answer));
+               } catch (Exception e) {
+                  throw new AppException(e.toString());
+               }
             }
-         }
 
-         try {
-            QuestionModel model = questionRepository.findBySecureId(request.getSecureId());
+            try {
+               QuestionModel model = questionRepository.findBySecureId(request.getSecureId());
 
-            questionRepository.save(questionMapper.updateRequestToModel(model, request));
+               questionRepository.save(questionMapper.updateRequestToModel(model, request));
 
-            response.setSuccess(true);
-         } catch (Exception e){
-            response.setFailed(e.toString());
+               response.setSuccess(true);
+            } catch (Exception e){
+               throw new AppException(e.toString());
+            }
+         } else {
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setWrongParams();
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -141,26 +156,25 @@ public class QuestionService {
 
    public BaseResponse<Boolean> deleteQuestion(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
-      QuestionModel model = new QuestionModel();
 
-      try {
-         model = questionRepository.findBySecureId(secureId);
-      } catch (Exception e) {
-         response.setFailed(e.toString());
-      }
+      if (authTokenService.isValidToken(token)) {
+         QuestionModel model = questionRepository.findBySecureId(secureId);
 
-      if (model != null) {
-         model.setDeletedAt(new Date());
+         if (model != null) {
+            model.setDeletedAt(new Date());
 
-         try {
-            questionRepository.save(model);
+            try {
+               questionRepository.save(model);
 
-            response.setSuccess(true);
-         } catch (Exception e){
-            response.setFailed(e.toString());
+               response.setSuccess(true);
+            } catch (Exception e){
+               throw new AppException(e.toString());
+            }
+         } else {
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setNotFound("");
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -170,39 +184,31 @@ public class QuestionService {
       try {
          answerRepository.save(answerMapper.createRequestToModel(request, questionSecureId));
       } catch (Exception e){
-         System.out.println(e.getMessage());
+         throw new AppException(e.toString());
       }
    }
 
-   private QuestionResponse getTryOut(QuestionResponse questionResponse, int questionType, int questionSubType, int role, String templateSecureId) {
-      List<QuestionModel> questionModels = new ArrayList<>();
-      List<AnswerModel> answerModels = new ArrayList<>();
-
-      try {
-         if (questionSubType == 0) {
-            questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
-         } else {
-            TemplateModel model = !templateSecureId.isEmpty() ? templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId) : templateService.getActiveTemplate(questionType, questionSubType);
-            questionModels = questionRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, model.getSecureId());
-         }
-      } catch (Exception e) {
-         System.out.println(e.getMessage());
-      }
+   private QuestionResponse getTryOut(QuestionResponse questionResponse,
+                                      int questionType,
+                                      int questionSubType,
+                                      int role,
+                                      String templateSecureId
+   ) {
+      TemplateModel model = !templateSecureId.isEmpty()
+              ? templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId)
+              : templateService.getActiveTemplate(questionType, questionSubType);
+      List<QuestionModel> questionModels = questionSubType == 0
+              ? questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType)
+              : questionRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, model.getSecureId());
 
       if (questionModels != null) {
          List<QuestionExamResponse> questionExamResponses = new ArrayList<>();
 
          for (QuestionModel question : questionModels) {
             QuestionExamResponse questionExamResponse = questionMapper.modelToQuestionExamResponse(question, role);
-
-            try {
-               answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
-            } catch (Exception e) {
-               System.out.println(e.getMessage());
-            }
+            List<AnswerModel> answerModels = answerRepository.findAllByQuestionSecureId(question.getSecureId());
 
             questionExamResponse.setAnswers(answerMapper.modelsToAnswerResponses(answerModels, role));
-
             questionExamResponses.add(questionExamResponse);
          }
 
@@ -217,8 +223,6 @@ public class QuestionService {
       List<QuestionAnswerResponse> questionResponses = new ArrayList<>();
 
       if (authTokenService.isValidToken(token)) {
-         List<AnswerModel> answerModels = new ArrayList<>();
-
          List<QuestionModel> questionModels = questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType);
 
          if (questionModels != null) {
@@ -232,12 +236,7 @@ public class QuestionService {
             for (int i=0; i<n; i++) {
                QuestionModel model = questionModels.get(i);
                QuestionAnswerResponse questionResponse = questionMapper.modelToQuestionValueResponse(model);
-
-               try {
-                  answerModels = answerRepository.findAllByQuestionSecureId(model.getSecureId());
-               } catch (Exception e) {
-                  response.setFailed(e.toString());
-               }
+               List<AnswerModel> answerModels = answerRepository.findAllByQuestionSecureId(model.getSecureId());
 
                questionResponse.setAnswers(answerMapper.modelsToAnswerValueResponses(answerModels));
                questionResponses.add(questionResponse);
@@ -246,7 +245,7 @@ public class QuestionService {
             response.setSuccess(questionResponses);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

@@ -10,13 +10,13 @@ import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.LessonMapper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
@@ -35,14 +35,7 @@ public class LessonService {
       if (authTokenService.isValidToken(token)) {
          if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
             AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-            List<LessonModel> models = new ArrayList<>();
-
-            try {
-               models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-            } catch (Exception e) {
-               response.setFailed(e.toString());
-            }
-
+            List<LessonModel> models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
             List<LessonResponse> responses = lessonMapper.modelsToResponses(models);
 
             for (LessonResponse lesson : responses) {
@@ -51,10 +44,10 @@ public class LessonService {
 
             response.setSuccess(responses);
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -65,22 +58,18 @@ public class LessonService {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            try {
-               LessonModel model = lessonMapper.createRequestToModel(request);
-               lessonRepository.save(model);
+         try {
+            LessonModel model = lessonMapper.createRequestToModel(request);
+            lessonRepository.save(model);
 
-               createResponse.setSecureId(model.getSecureId());
+            createResponse.setSecureId(model.getSecureId());
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
-         } else {
-            response.setWrongParams();
+            response.setSuccess(createResponse);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -90,23 +79,17 @@ public class LessonService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         LessonModel model = new LessonModel();
-
-         try {
-            model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          try {
             lessonRepository.save(lessonMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -116,13 +99,7 @@ public class LessonService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         LessonModel model = new LessonModel();
-
-         try {
-            model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         LessonModel model = lessonRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (model != null) {
             model.setDeletedAt(new Date());
@@ -132,13 +109,13 @@ public class LessonService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -156,10 +133,10 @@ public class LessonService {
          if (model != null) {
             response.setSuccess(result);
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

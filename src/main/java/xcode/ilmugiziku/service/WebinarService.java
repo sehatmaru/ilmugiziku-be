@@ -9,13 +9,13 @@ import xcode.ilmugiziku.domain.request.webinar.UpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.WebinarResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.WebinarMapper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
@@ -32,20 +32,14 @@ public class WebinarService {
 
       if (authTokenService.isValidToken(token)) {
          if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-            List<WebinarModel> models = new ArrayList<>();
-
-            try {
-               models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-            } catch (Exception e) {
-               response.setFailed(e.toString());
-            }
+            List<WebinarModel> models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
 
             response.setSuccess(webinarMapper.modelsToResponses(models));
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -56,22 +50,18 @@ public class WebinarService {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            try {
-               WebinarModel model = webinarMapper.createRequestToModel(request);
-               webinarRepository.save(model);
+         try {
+            WebinarModel model = webinarMapper.createRequestToModel(request);
+            webinarRepository.save(model);
 
-               createResponse.setSecureId(model.getSecureId());
+            createResponse.setSecureId(model.getSecureId());
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
-         } else {
-            response.setWrongParams();
+            response.setSuccess(createResponse);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -81,23 +71,16 @@ public class WebinarService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         WebinarModel model = new WebinarModel();
-
          try {
-            model = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
-
-         try {
+            WebinarModel model = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
             webinarRepository.save(webinarMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -107,13 +90,7 @@ public class WebinarService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         WebinarModel model = new WebinarModel();
-
-         try {
-            model = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         WebinarModel model = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (model != null) {
             model.setDeletedAt(new Date());
@@ -123,13 +100,13 @@ public class WebinarService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

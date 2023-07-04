@@ -10,12 +10,13 @@ import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.TemplateMapper;
 
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
 
@@ -36,10 +37,10 @@ public class TemplateService {
 
             response.setSuccess(templateMapper.modelsToResponses(models));
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -62,7 +63,7 @@ public class TemplateService {
 
          response.setSuccess(true);
       } else {
-         response.setNotFound("");
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
@@ -73,22 +74,18 @@ public class TemplateService {
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            try {
-               TemplateModel model = templateMapper.createRequestToModel(request);
-               templateRepository.save(model);
+         try {
+            TemplateModel model = templateMapper.createRequestToModel(request);
+            templateRepository.save(model);
 
-               createResponse.setSecureId(model.getSecureId());
+            createResponse.setSecureId(model.getSecureId());
 
-               response.setSuccess(createResponse);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
-         } else {
-            response.setWrongParams();
+            response.setSuccess(createResponse);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -98,17 +95,16 @@ public class TemplateService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
-
          try {
+            TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
             templateRepository.save(templateMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -128,13 +124,13 @@ public class TemplateService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

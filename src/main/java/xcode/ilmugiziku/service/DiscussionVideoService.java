@@ -11,11 +11,12 @@ import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequ
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.DiscussionVideoResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.DiscussionVideoMapper;
 
 import java.util.Date;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 
 @Service
 public class DiscussionVideoService {
@@ -38,13 +39,13 @@ public class DiscussionVideoService {
 
                response.setSuccess(discussionVideoMapper.modelToResponse(model));
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -58,25 +59,21 @@ public class DiscussionVideoService {
          TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getTemplateSecureId());
 
          if (templateModel != null) {
-            if (request.validate()) {
-               try {
-                  DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
-                  discussionVideoRepository.save(model);
+            try {
+               DiscussionVideoModel model = discussionVideoMapper.createRequestToModel(request);
+               discussionVideoRepository.save(model);
 
-                  createResponse.setSecureId(model.getSecureId());
+               createResponse.setSecureId(model.getSecureId());
 
-                  response.setSuccess(createResponse);
-               } catch (Exception e){
-                  response.setFailed(e.toString());
-               }
-            } else {
-               response.setWrongParams();
+               response.setSuccess(createResponse);
+            } catch (Exception e){
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -93,10 +90,10 @@ public class DiscussionVideoService {
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -116,13 +113,13 @@ public class DiscussionVideoService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

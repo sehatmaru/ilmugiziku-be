@@ -9,12 +9,13 @@ import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureReques
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PackageFeatureResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.PackageFeatureMapper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
@@ -29,17 +30,11 @@ public class PackageFeatureService {
       BaseResponse<List<PackageFeatureResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         List<PackageFeatureModel> models = new ArrayList<>();
-
-         try {
-            models = packageFeatureRepository.findByDeletedAtIsNull();
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         List<PackageFeatureModel> models = packageFeatureRepository.findByDeletedAtIsNull();
 
          response.setSuccess(packageFeatureMapper.modelsToResponses(models));
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -58,10 +53,10 @@ public class PackageFeatureService {
 
             response.setSuccess(createResponse);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -78,10 +73,10 @@ public class PackageFeatureService {
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -101,19 +96,15 @@ public class PackageFeatureService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
-   }
-
-   public PackageFeatureModel getPackageFeatureBySecureId(String secureId) {
-      return packageFeatureRepository.findBySecureIdAndDeletedAtIsNull(secureId);
    }
 }

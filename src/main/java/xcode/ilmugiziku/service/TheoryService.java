@@ -9,13 +9,13 @@ import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.TheoryMapper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 
@@ -32,20 +32,14 @@ public class TheoryService {
 
       if (authTokenService.isValidToken(token)) {
          if (theoryType == UKOM || theoryType == SKB_GIZI) {
-            List<TheoryModel> models = new ArrayList<>();
-
-            try {
-               models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
-            } catch (Exception e) {
-               response.setFailed(e.toString());
-            }
+            List<TheoryModel> models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
 
             response.setSuccess(theoryMapper.modelsToResponses(models));
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -65,13 +59,13 @@ public class TheoryService {
 
                response.setSuccess(createResponse);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -81,23 +75,16 @@ public class TheoryService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         TheoryModel model = new TheoryModel();
-
          try {
-            model = theoryRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
-
-         try {
+            TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
             theoryRepository.save(theoryMapper.updateRequestToModel(model, request));
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -107,13 +94,7 @@ public class TheoryService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         TheoryModel model = new TheoryModel();
-
-         try {
-            model = theoryRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         TheoryModel model = theoryRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (model != null) {
             model.setDeletedAt(new Date());
@@ -123,13 +104,13 @@ public class TheoryService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

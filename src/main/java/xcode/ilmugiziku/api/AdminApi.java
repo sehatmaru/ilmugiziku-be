@@ -29,6 +29,7 @@ import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.auth.UserResponse;
 import xcode.ilmugiziku.service.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RestController
@@ -506,7 +507,7 @@ public class AdminApi {
 
     @PostMapping("/token/destroy")
     ResponseEntity<BaseResponse<Boolean>> destroyToken(
-            @RequestParam @Validated String email
+            @RequestParam @Validated @NotBlank String email
     ) {
         BaseResponse<Boolean> response = authService.destroyToken(email);
 

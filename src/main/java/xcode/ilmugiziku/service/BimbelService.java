@@ -12,6 +12,7 @@ import xcode.ilmugiziku.domain.repository.WebinarRepository;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.LessonMapper;
 import xcode.ilmugiziku.mapper.WebinarMapper;
 
@@ -20,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
@@ -30,7 +31,6 @@ import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 public class BimbelService {
 
    @Autowired private AuthTokenService authTokenService;
-   @Autowired private AuthService authService;
    @Autowired private JavaMailSender javaMailSender;
    @Autowired private AuthRepository authRepository;
    @Autowired private LessonRepository lessonRepository;
@@ -45,34 +45,38 @@ public class BimbelService {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
 
          if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-            BimbelResponse result = new BimbelResponse();
-
-            List<LessonModel> lessons = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-
-            for (LessonModel lesson: lessons) {
-               result.getLessons().add(lessonMapper.modelToResponse(lesson));
-            }
-
-            if (authModel.isAdmin() || (bimbelType == UKOM && authModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && authModel.isSKBExpert())) {
-               List<WebinarModel> webinars = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-
-               for (WebinarModel webinar: webinars) {
-                  result.getWebinars().add(webinarMapper.modelToResponse(webinar));
-               }
-            }
-
-            response.setSuccess(result);
+            response.setSuccess(setBimbel(authModel, bimbelType));
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
+   }
+
+   private BimbelResponse setBimbel(AuthModel authModel, int bimbelType) {
+      BimbelResponse result = new BimbelResponse();
+
+      List<LessonModel> lessons = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
+
+      for (LessonModel lesson: lessons) {
+         result.getLessons().add(lessonMapper.modelToResponse(lesson));
+      }
+
+      if (authModel.isAdmin() || (bimbelType == UKOM && authModel.isUKOMExpert()) || (bimbelType == SKB_GIZI && authModel.isSKBExpert())) {
+         List<WebinarModel> webinars = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
+
+         for (WebinarModel webinar: webinars) {
+            result.getWebinars().add(webinarMapper.modelToResponse(webinar));
+         }
+      }
+
+      return result;
    }
 
    public BaseResponse<BimbelInformationResponse> getBimbelInformation(String token) {
@@ -80,7 +84,7 @@ public class BimbelService {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
 
          if (authModel.isPremium()) {
             refreshPremiumPackage(authModel);
@@ -88,7 +92,7 @@ public class BimbelService {
 
          response.setSuccess(new BimbelInformationResponse(authModel.isUKOMPackage(), authModel.isSKBPackage()));
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -99,7 +103,7 @@ public class BimbelService {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
          WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (webinarModel != null) {
@@ -126,10 +130,10 @@ public class BimbelService {
 
             response.setSuccess(true);
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

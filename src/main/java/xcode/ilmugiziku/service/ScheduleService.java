@@ -9,13 +9,13 @@ import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.ScheduleMapper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 
 @Service
 public class ScheduleService {
@@ -29,17 +29,11 @@ public class ScheduleService {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         List<ScheduleModel> models = new ArrayList<>();
-
-         try {
-            models = scheduleRepository.findByDeletedAtIsNull();
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         List<ScheduleModel> models = scheduleRepository.findByDeletedAtIsNull();
 
          response.setSuccess(scheduleMapper.modelsToResponses(models));
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -52,22 +46,24 @@ public class ScheduleService {
       if (authTokenService.isValidToken(token)) {
          if (request.validate()) {
             if (isScheduleExist("", request.getStartDate(), request.getEndDate())){
-               response.setExistData("");
+               throw new AppException(EXIST_MESSAGE);
             } else {
-               ScheduleModel model = scheduleMapper.createRequestToModel(request);
+               try {
+                  ScheduleModel model = scheduleMapper.createRequestToModel(request);
 
-               if (create(model)) {
+                  scheduleRepository.save(model);
+
                   createResponse.setSecureId(model.getSecureId());
                   response.setSuccess(createResponse);
-               } else {
-                  response.setFailed("");
+               } catch (Exception e){
+                  throw new AppException(e.toString());
                }
             }
          } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -77,29 +73,25 @@ public class ScheduleService {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(scheduleSecureId);
+         ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(scheduleSecureId);
 
-            if (isScheduleExist(scheduleSecureId, request.getStartDate(), request.getEndDate())) {
-               response.setExistData("");
-            } else {
-               if (model != null) {
-                  try {
-                     scheduleRepository.save(scheduleMapper.updateRequestToModel(model, request));
-
-                     response.setSuccess(true);
-                  } catch (Exception e){
-                     response.setFailed(e.toString());
-                  }
-               } else {
-                  response.setNotFound("");
-               }
-            }
+         if (isScheduleExist(scheduleSecureId, request.getStartDate(), request.getEndDate())) {
+            throw new AppException(EXIST_MESSAGE);
          } else {
-            response.setWrongParams();
+            if (model != null) {
+               try {
+                  scheduleRepository.save(scheduleMapper.updateRequestToModel(model, request));
+
+                  response.setSuccess(true);
+               } catch (Exception e){
+                  throw new AppException(e.toString());
+               }
+            } else {
+               throw new AppException(NOT_FOUND_MESSAGE);
+            }
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -107,14 +99,9 @@ public class ScheduleService {
 
    public BaseResponse<Boolean> deleteSchedule(String token, String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
-      ScheduleModel model = new ScheduleModel();
 
       if (authTokenService.isValidToken(token)) {
-         try {
-            model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
+         ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
          if (model != null) {
             model.setDeletedAt(new Date());
@@ -124,13 +111,13 @@ public class ScheduleService {
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -152,22 +139,10 @@ public class ScheduleService {
 
          response.setSuccess(result);
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
-   }
-
-   private boolean create(ScheduleModel model) {
-      boolean result = true;
-
-      try {
-         scheduleRepository.save(model);
-      } catch (Exception e){
-         result = false;
-      }
-
-      return result;
    }
 
    public ScheduleModel getScheduleByDate(Date date) {
@@ -191,33 +166,28 @@ public class ScheduleService {
       for (ScheduleModel model : schedules) {
          if (!secureId.isEmpty()) {
             if (!model.getSecureId().equals(secureId)) {
-               if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
-                  result = true;
-               }
-
-               if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
-                  result = true;
-               }
-
-               if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
-                  result = true;
-               }
+               result = checkSchedule(startDate, endDate, result, model);
             }
          } else {
-            if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
-               result = true;
-            }
-
-            if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
-               result = true;
-            }
-
-            if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
-               result = true;
-            }
+            result = checkSchedule(startDate, endDate, result, model);
          }
       }
 
+      return result;
+   }
+
+   private boolean checkSchedule(Date startDate, Date endDate, boolean result, ScheduleModel model) {
+      if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
+         result = true;
+      }
+
+      if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
+         result = true;
+      }
+
+      if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
+         result = true;
+      }
       return result;
    }
 }

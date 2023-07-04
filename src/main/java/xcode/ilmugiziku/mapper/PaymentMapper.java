@@ -4,6 +4,7 @@ import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
+import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PENDING;
 
 public class PaymentMapper {
 
-    public PaymentModel createRequestToModel(CreatePaymentRequest request) {
+    public PaymentModel createRequestToModel(CreatePaymentRequest request, CreatePaymentResponse payment) {
         if (request != null) {
             Date expire = new Date();
             expire.setMonth(expire.getMonth() + 6);
@@ -23,6 +24,9 @@ public class PaymentMapper {
             response.setPaymentStatus(PENDING);
             response.setExpiredDate(expire);
             response.setCreatedAt(new Date());
+            response.setInvoiceId(payment.getInvoiceId());
+            response.setInvoiceUrl(payment.getInvoiceUrl());
+            response.setPaymentDeadline(payment.getPaymentDeadline());
 
             return response;
         } else {

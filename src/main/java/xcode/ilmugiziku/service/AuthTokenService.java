@@ -46,7 +46,4 @@ public class AuthTokenService {
       return generateAuthToken(secureId);
    }
 
-   public AuthTokenModel getAuthTokenByAuthSecureId(String secureId) {
-      return authTokenRepository.findByAuthSecureId(secureId);
-   }
 }

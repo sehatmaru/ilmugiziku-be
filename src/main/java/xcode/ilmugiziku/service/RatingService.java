@@ -7,10 +7,12 @@ import xcode.ilmugiziku.domain.model.RatingModel;
 import xcode.ilmugiziku.domain.repository.RatingRepository;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
+import xcode.ilmugiziku.exception.AppException;
 
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.EXIST_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -39,10 +41,10 @@ public class RatingService  {
 
             response.setSuccess(calculateRating(lessonSecureId));
          } else {
-            response.setExistData("");
+            throw new AppException(EXIST_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;

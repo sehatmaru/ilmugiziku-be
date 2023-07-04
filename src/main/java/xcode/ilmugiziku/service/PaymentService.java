@@ -17,12 +17,13 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.PaymentMapper;
 
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.Environment.XENDIT_API;
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
 import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
@@ -31,7 +32,6 @@ import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 public class PaymentService {
 
    @Autowired private AuthTokenService authTokenService;
-   @Autowired private AuthService authService;
    @Autowired private AuthRepository authRepository;
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private PackageRepository packageRepository;
@@ -42,7 +42,7 @@ public class PaymentService {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         AuthModel authModel = authService.getAuthBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
          PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
          try {
@@ -58,10 +58,10 @@ public class PaymentService {
 
             response.setSuccess(payment);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -71,40 +71,33 @@ public class PaymentService {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
       if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            AuthModel authModel = authService.getAuthBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
-            PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
+         AuthModel authModel = authRepository.findBySecureId(authTokenService.getAuthTokenByToken(token).getAuthSecureId());
+         PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
-            boolean isUpgrade = request.isUpgradePackage(authModel);
-            int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
-            fee *= 6;
+         boolean isUpgrade = isUpgradePackage(authModel, request.getPackageType());
+         int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
+         fee *= 6;
 
-            try {
-               String secureId = generateSecureId();
+         try {
+            String secureId = generateSecureId();
 
-               CreatePaymentResponse payment = createInvoice(authModel, request, packageModel, fee, secureId);
+            CreatePaymentResponse payment = createInvoice(authModel, request, packageModel, fee, secureId);
 
-               PaymentModel model = paymentMapper.createRequestToModel(request);
-               model.setSecureId(secureId);
-               model.setPackageSecureId(packageModel.getSecureId());
-               model.setAuthSecureId(authModel.getSecureId());
-               model.setFee(fee);
-               model.setUpgrade(isUpgrade);
-               model.setInvoiceId(payment.getInvoiceId());
-               model.setInvoiceUrl(payment.getInvoiceUrl());
-               model.setPaymentDeadline(payment.getPaymentDeadline());
+            PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
+            model.setSecureId(secureId);
+            model.setPackageSecureId(packageModel.getSecureId());
+            model.setAuthSecureId(authModel.getSecureId());
+            model.setFee(fee);
+            model.setUpgrade(isUpgrade);
 
-               paymentRepository.save(model);
+            paymentRepository.save(model);
 
-               response.setSuccess(payment);
-            } catch (Exception e){
-               response.setFailed(e.toString());
-            }
-         } else {
-            response.setWrongParams();
+            response.setSuccess(payment);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -117,7 +110,7 @@ public class PaymentService {
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
       if (payment != null) {
-         AuthModel authModel = authService.getAuthBySecureId(payment.getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(payment.getAuthSecureId());
 
          if (request.isPaid()) {
             String packages = authModel.getPackages() != null ? authModel.getPackages() : "";
@@ -127,14 +120,7 @@ public class PaymentService {
 
             payment.setPaidDate(new Date());
 
-            if (payment.isUpgrade()) {
-               int prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
-               PaymentModel prevPayment = paymentRepository.findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(authModel.getSecureId(), prevType);
-               prevPayment.setDeletedAt(new Date());
-
-               paymentRepository.save(prevPayment);
-               payment.setExpiredDate(prevPayment.getExpiredDate());
-            }
+            savePreviousPayment(payment, authModel);
          } else if (request.isExpired()) {
             payment.setDeletedAt(new Date());
          }
@@ -151,16 +137,31 @@ public class PaymentService {
 
             response.setSuccess(result);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   private CreatePaymentResponse createInvoice(AuthModel auth, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
+   private void savePreviousPayment(PaymentModel payment, AuthModel authModel) {
+      if (payment.isUpgrade()) {
+         int prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
+         PaymentModel prevPayment = paymentRepository.findByAuthSecureIdAndPackageTypeAndDeletedAtIsNull(authModel.getSecureId(), prevType);
+         prevPayment.setDeletedAt(new Date());
+
+         paymentRepository.save(prevPayment);
+         payment.setExpiredDate(prevPayment.getExpiredDate());
+      }
+   }
+
+   private CreatePaymentResponse createInvoice(AuthModel auth,
+                                               CreatePaymentRequest request,
+                                               PackageModel packageModel,
+                                               int fee,
+                                               String secureId) {
       CreatePaymentResponse response = new CreatePaymentResponse();
 
       XenditClient xenditClient = new XenditClient.Builder()
@@ -174,7 +175,7 @@ public class PaymentService {
          response.setInvoiceUrl(invoice.getInvoiceUrl());
          response.setPaymentDeadline(invoice.getExpiryDate());
       } catch (XenditException e) {
-         e.printStackTrace();
+         throw new AppException(e.toString());
       }
 
       return response;
@@ -185,23 +186,25 @@ public class PaymentService {
 
       if (authModel.isPremium()) {
          if (packageType == UKOM_EXPERT) {
-            for (String type : stringToArray(authModel.getPackages())) {
-               if (Integer.parseInt(type) == UKOM_NEWBIE) {
-                  result = true;
-               }
-            }
+            result = checkPackage(authModel, UKOM_NEWBIE);
          }
 
          if (packageType == SKB_EXPERT) {
-            for (String type : stringToArray(authModel.getPackages())) {
-               if (Integer.parseInt(type) == SKB_NEWBIE) {
-                  result = true;
-               }
-            }
+            result = checkPackage(authModel, SKB_NEWBIE);
          }
       }
 
       return result;
+   }
+
+   private boolean checkPackage(AuthModel authModel, int packageType) {
+      for (String type : stringToArray(authModel.getPackages())) {
+         if (Integer.parseInt(type) == packageType) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
 }

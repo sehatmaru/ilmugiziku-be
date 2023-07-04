@@ -11,11 +11,13 @@ import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.exam.*;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.service.ExamService;
 import xcode.ilmugiziku.service.QuestionService;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.PRACTICE;
 import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.QUIZ;
 
@@ -38,7 +40,7 @@ public class ExamApi {
         } else if (questionType == PRACTICE) {
             response = questionService.getPracticeQuestions(token);
         } else {
-            response.setWrongParams();
+            throw new AppException(PARAMS_ERROR_MESSAGE);
         }
 
         return ResponseEntity

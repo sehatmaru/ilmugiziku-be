@@ -6,6 +6,7 @@ import xcode.ilmugiziku.domain.model.AuthModel;
 import xcode.ilmugiziku.domain.model.AuthTokenModel;
 import xcode.ilmugiziku.domain.model.PackageFeatureModel;
 import xcode.ilmugiziku.domain.model.PackageModel;
+import xcode.ilmugiziku.domain.repository.AuthRepository;
 import xcode.ilmugiziku.domain.repository.PackageFeatureRepository;
 import xcode.ilmugiziku.domain.repository.PackageRepository;
 import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
@@ -14,19 +15,21 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageFeatureResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.PackageMapper;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Service
 public class PackageService {
 
    @Autowired private AuthTokenService authTokenService;
-   @Autowired private AuthService authService;
    @Autowired private PackageRepository packageRepository;
    @Autowired private PackageFeatureRepository packageFeatureRepository;
+   @Autowired private AuthRepository authRepository;
 
    private final PackageMapper packageMapper = new PackageMapper();
 
@@ -35,7 +38,7 @@ public class PackageService {
 
       if (authTokenService.isValidToken(token)) {
          AuthTokenModel authTokenModel = authTokenService.getAuthTokenByToken(token);
-         AuthModel authModel = authService.getAuthBySecureId(authTokenModel.getAuthSecureId());
+         AuthModel authModel = authRepository.findBySecureId(authTokenModel.getAuthSecureId());
          List<PackageModel> models = packageRepository.findByDeletedAtIsNull();
          List<PackageResponse> responses = packageMapper.modelsToResponses(models);
 
@@ -51,7 +54,7 @@ public class PackageService {
 
          response.setSuccess(responses);
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -73,10 +76,10 @@ public class PackageService {
          if (model != null) {
             response.setSuccess(result);
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -95,10 +98,10 @@ public class PackageService {
 
             response.setSuccess(createResponse);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
@@ -115,10 +118,10 @@ public class PackageService {
 
             response.setSuccess(true);
          } catch (Exception e){
-            response.setFailed(e.toString());
+            throw new AppException(e.toString());
          }
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
