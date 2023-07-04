@@ -2,6 +2,8 @@ package xcode.ilmugiziku.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.model.ExamModel;
 
 import java.util.List;
@@ -11,13 +13,13 @@ public interface ExamRepository extends JpaRepository<ExamModel, String> {
 
    ExamModel findBySecureId(String secureId);
 
-   ExamModel findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(String scheduleSecureId, String userSecureId, int questionType, int questionSubType);
+   ExamModel findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(String scheduleSecureId, String userSecureId, QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType);
 
    List<ExamModel> findByScheduleSecureIdAndUserSecureId(String scheduleSecureId, String userSecureId);
 
-   List<ExamModel> findByScheduleSecureIdAndUserSecureIdAndQuestionType(String scheduleSecureId, String userSecureId, int questionType);
+   List<ExamModel> findByScheduleSecureIdAndUserSecureIdAndQuestionType(String scheduleSecureId, String userSecureId, QuestionTypeEnum questionType);
 
-   List<ExamModel> findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(String scheduleSecureId, int questionType, int questionSubType);
+   List<ExamModel> findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(String scheduleSecureId, QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType);
 
    List<ExamModel> findAllByUserSecureId(String userSecureId);
 }

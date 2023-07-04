@@ -2,6 +2,8 @@ package xcode.ilmugiziku.domain.request.exam;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,9 +12,9 @@ import javax.validation.constraints.NotNull;
 public class CreateExamRequest {
     private ExamRequest[] exams;
     @NotNull()
-    private int questionType;
+    private QuestionTypeEnum questionType;
     @NotNull()
-    private int questionSubType;
+    private QuestionSubTypeEnum questionSubType;
 
     public CreateExamRequest() {
     }

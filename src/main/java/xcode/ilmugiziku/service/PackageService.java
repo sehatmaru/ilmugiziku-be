@@ -34,7 +34,7 @@ public class PackageService {
    public BaseResponse<List<PackageResponse>> getPackageList() {
       BaseResponse<List<PackageResponse>> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       List<PackageModel> models = packageRepository.findByDeletedAtIsNull();
       List<PackageResponse> responses = packageMapper.modelsToResponses(models);
 

@@ -2,6 +2,8 @@ package xcode.ilmugiziku.domain.request.template;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 
@@ -10,8 +12,8 @@ import javax.validation.constraints.NotBlank;
 public class CreateTemplateRequest {
     @NotBlank()
     private String name;
-    private int questionType;
-    private int questionSubType;
+    private QuestionTypeEnum questionType;
+    private QuestionSubTypeEnum questionSubType;
 
     public CreateTemplateRequest() {
     }

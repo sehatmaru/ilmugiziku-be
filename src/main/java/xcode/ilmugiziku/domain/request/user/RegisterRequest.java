@@ -2,6 +2,8 @@ package xcode.ilmugiziku.domain.request.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -21,9 +23,9 @@ public class RegisterRequest {
     @NotBlank()
     private String password;
     @NotNull()
-    private int registrationType;
+    private RegistrationTypeEnum registrationType;
     @NotNull()
-    private int role;
+    private RoleEnum role;
 
     public RegisterRequest() {
     }

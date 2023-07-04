@@ -2,13 +2,15 @@ package xcode.ilmugiziku.domain.request.question;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.NONE;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.*;
+import static xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum.NONE;
 
 @Getter
 @Setter
@@ -17,8 +19,8 @@ public class UpdateQuestionRequest {
     private String secureId;
     @NotBlank()
     private String content;
-    private int questionType;
-    private int questionSubType;
+    private QuestionTypeEnum questionType;
+    private QuestionSubTypeEnum questionSubType;
     @NotBlank()
     private String discussion;
     private String label;
@@ -31,13 +33,7 @@ public class UpdateQuestionRequest {
     public boolean isValid() {
         boolean result;
 
-        if (answers.size() != 5
-                || questionType  < 1
-                || questionType > 4
-                || questionType == TRY_OUT_SKB_GIZI
-                || questionType == TRY_OUT_UKOM
-                && (questionSubType < 1 || questionSubType > 4)
-        ) {
+        if (answers.size() != 5) {
             result = false;
         } else {
             result = checkAnswer();

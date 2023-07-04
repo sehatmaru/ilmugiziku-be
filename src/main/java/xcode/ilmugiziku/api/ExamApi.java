@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
 import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.exam.*;
@@ -17,9 +19,9 @@ import xcode.ilmugiziku.service.QuestionService;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.PRACTICE;
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.QUIZ;
 import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.PRACTICE;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.QUIZ;
 
 @RestController
 @RequestMapping(value = "exam")
@@ -30,7 +32,7 @@ public class ExamApi {
 
     @GetMapping("/quiz/list")
     ResponseEntity<BaseResponse<List<QuestionAnswerResponse>>> getQuizList(
-            @RequestParam @Validated int questionType
+            @RequestParam @Validated QuestionTypeEnum questionType
     ) {
         BaseResponse<List<QuestionAnswerResponse>> response;
 
@@ -50,8 +52,8 @@ public class ExamApi {
 
     @GetMapping("/try-out/list")
     ResponseEntity<BaseResponse<QuestionResponse>> getTryOutList (
-            @RequestParam @Validated int questionType,
-            @RequestParam @Validated int questionSubType,
+            @RequestParam @Validated QuestionTypeEnum questionType,
+            @RequestParam @Validated QuestionSubTypeEnum questionSubType,
             @RequestParam String templateSecureId
     ) {
         BaseResponse<QuestionResponse> response = questionService.getTryOutQuestion(questionType, questionSubType, templateSecureId);
@@ -76,7 +78,7 @@ public class ExamApi {
 
     @GetMapping("/result")
     ResponseEntity<BaseResponse<List<ExamResultResponse>>> getExamResult(
-            @RequestParam @Validated int questionType
+            @RequestParam @Validated QuestionTypeEnum questionType
     ) {
         BaseResponse<List<ExamResultResponse>> response = examService.getExamResult(questionType);
 
@@ -88,8 +90,8 @@ public class ExamApi {
 
     @GetMapping("/rank")
     ResponseEntity<BaseResponse<List<ExamRankResponse>>> getExamRank(
-            @RequestParam @Validated int questionType,
-            @RequestParam @Validated int questionSubType
+            @RequestParam @Validated QuestionTypeEnum questionType,
+            @RequestParam @Validated QuestionSubTypeEnum questionSubType
     ) {
         BaseResponse<List<ExamRankResponse>> response = examService.getExamRank(questionType, questionSubType);
 
@@ -101,8 +103,8 @@ public class ExamApi {
 
     @GetMapping("/key")
     ResponseEntity<BaseResponse<List<ExamKeyResponse>>> getExamKey(
-            @RequestParam @Validated int questionType,
-            @RequestParam @Validated int questionSubType
+            @RequestParam @Validated QuestionTypeEnum questionType,
+            @RequestParam @Validated QuestionSubTypeEnum questionSubType
     ) {
         BaseResponse<List<ExamKeyResponse>> response = examService.getExamKey(questionType, questionSubType);
 
@@ -114,7 +116,7 @@ public class ExamApi {
 
     @GetMapping("/information")
     ResponseEntity<BaseResponse<List<ExamInformationResponse>>> getExamInformation(
-            @RequestParam @Validated int questionType
+            @RequestParam @Validated QuestionTypeEnum questionType
     ) {
         BaseResponse<List<ExamInformationResponse>> response = examService.getExamInformation(questionType);
 
@@ -126,7 +128,7 @@ public class ExamApi {
 
     @GetMapping("/discussion-video")
     ResponseEntity<BaseResponse<List<ExamVideoResponse>>> getExamDiscussionVideo(
-            @RequestParam @Validated int questionType
+            @RequestParam @Validated QuestionTypeEnum questionType
     ) {
         BaseResponse<List<ExamVideoResponse>> response = examService.getExamVideo(questionType);
 

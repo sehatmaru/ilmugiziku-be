@@ -2,6 +2,8 @@ package xcode.ilmugiziku.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 
 import java.util.List;
@@ -13,7 +15,7 @@ public interface QuestionRepository extends JpaRepository<QuestionModel, String>
 
    QuestionModel findBySecureId(String secureId);
 
-   List<QuestionModel> findByQuestionTypeAndDeletedAtIsNull(int questionType);
+   List<QuestionModel> findByQuestionTypeAndDeletedAtIsNull(QuestionTypeEnum questionType);
 
-   List<QuestionModel> findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(int questionType, int questionSubType, String secureId);
+   List<QuestionModel> findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType, String secureId);
 }

@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.model.UserModel;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PENDING;
+import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PENDING;
 
 public class PaymentMapper {
 

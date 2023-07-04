@@ -3,6 +3,7 @@ package xcode.ilmugiziku.domain.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.UserModel;
 
 import java.util.List;
@@ -17,13 +18,13 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
 
    UserModel findByEmailAndDeletedAtIsNull(String email);
 
-   List<UserModel> findByRoleAndDeletedAtIsNull(int role);
+   List<UserModel> findByRoleAndDeletedAtIsNull(RoleEnum role);
 
-   UserModel findByEmailAndRole(String email, int role);
+   UserModel findByEmailAndRole(String email, RoleEnum role);
 
    UserModel findByEmailAndPasswordAndDeletedAtIsNull(String email, String password);
 
-   UserModel findByEmailAndPasswordAndRoleAndDeletedAtIsNull(String email, String password, int role);
+   UserModel findByEmailAndPasswordAndRoleAndDeletedAtIsNull(String email, String password, RoleEnum role);
 
    @Query(value = "SELECT * FROM t_user" +
            " WHERE username = :username AND active IS TRUE" +

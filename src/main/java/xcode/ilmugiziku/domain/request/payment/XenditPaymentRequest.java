@@ -2,9 +2,10 @@ package xcode.ilmugiziku.domain.request.payment;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.EXPIRED;
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
+import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.EXPIRED;
+import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PAID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class XenditPaymentRequest {
     private String user_id;
     private boolean is_high;
     private String payment_method;
-    private String status;
+    private PaymentStatusEnum status;
     private String merchant_name;
     private int amount;
     private int paid_amount;

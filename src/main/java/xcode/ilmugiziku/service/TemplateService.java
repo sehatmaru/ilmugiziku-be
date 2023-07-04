@@ -2,6 +2,8 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.TemplateRepository;
 import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
@@ -15,9 +17,9 @@ import xcode.ilmugiziku.mapper.TemplateMapper;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.TRY_OUT_SKB_GIZI;
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.TRY_OUT_UKOM;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.TRY_OUT_UKOM;
 
 @Service
 public class TemplateService {
@@ -26,7 +28,7 @@ public class TemplateService {
 
    private final TemplateMapper templateMapper = new TemplateMapper();
 
-   public BaseResponse<List<TemplateResponse>> getTemplateList(int questionType, int questionSubType) {
+   public BaseResponse<List<TemplateResponse>> getTemplateList(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
 
       if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
@@ -117,7 +119,7 @@ public class TemplateService {
       return response;
    }
 
-   public TemplateModel getActiveTemplate(int questionType, int questionSubType) {
+   public TemplateModel getActiveTemplate(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       TemplateModel result = new TemplateModel();
       List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
 

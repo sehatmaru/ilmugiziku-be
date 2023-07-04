@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.request.answer.CreateAnswerRequest;
 import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
@@ -8,8 +9,8 @@ import xcode.ilmugiziku.domain.response.answer.AnswerValueResponse;
 
 import java.util.*;
 
+import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
-import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
 
 public class AnswerMapper {
 
@@ -52,7 +53,7 @@ public class AnswerMapper {
         }
     }
 
-    public List<AnswerResponse> modelsToAnswerResponses(List<AnswerModel> models, int role) {
+    public List<AnswerResponse> modelsToAnswerResponses(List<AnswerModel> models, RoleEnum role) {
         if (models != null) {
             List<AnswerResponse> response = new ArrayList<>();
 
@@ -64,7 +65,7 @@ public class AnswerMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -93,7 +94,7 @@ public class AnswerMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 }

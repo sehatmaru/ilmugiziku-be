@@ -12,7 +12,7 @@ public interface TokenRepository extends JpaRepository<TokenModel, String> {
     TokenModel findByTokenAndTemporaryIsTrue(String token);
 
     @Query(value = "SELECT * FROM t_token" +
-            " WHERE user_secure_id = :userId AND temporary IS FALSE" +
+            " WHERE user_secure_id = :userId AND temporary = FALSE" +
             " LIMIT 1", nativeQuery = true)
     TokenModel getTokenByUser(String userId);
 

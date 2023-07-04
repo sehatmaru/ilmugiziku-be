@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 
 import javax.persistence.*;
 import java.util.Date;
 
-import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
+import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 
 @Data
 @Builder
@@ -33,13 +36,13 @@ public class UserModel {
    private String password;
 
    @Column(name = "type")
-   private int type;
+   private RegistrationTypeEnum type;
 
    @Column(name = "packages")
    private String packages;
 
    @Column(name = "role")
-   private int role;
+   private RoleEnum role;
 
    @Column(name = "active")
    private boolean active = false;
@@ -65,16 +68,16 @@ public class UserModel {
       return packages != null && (packages.contains("3") || packages.contains("4"));
    }
 
-   public boolean isPaidPackage(int pack) {
+   public boolean isPaidPackage(PackageTypeEnum pack) {
       boolean result;
 
-      if (pack == 1) {
+      if (pack == PackageTypeEnum.UKOM_NEWBIE) {
          if (isUKOMExpert()) {
             result = true;
          } else {
             result = isPremium() && packages.contains(String.valueOf(pack));
          }
-      } else if (pack == 3) {
+      } else if (pack == PackageTypeEnum.SKB_NEWBIE) {
          if (isSKBExpert()) {
             result = true;
          } else {

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -40,10 +42,10 @@ public class PaymentModel {
    private Date paidDate;
 
    @Column(name = "package_type")
-   private int packageType;
+   private PackageTypeEnum packageType;
 
    @Column(name = "payment_status")
-   private String paymentStatus;
+   private PaymentStatusEnum paymentStatus;
 
    @Column(name = "payment_deadline")
    private String paymentDeadline;

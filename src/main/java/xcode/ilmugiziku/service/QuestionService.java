@@ -3,6 +3,9 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.model.TemplateModel;
@@ -27,11 +30,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.*;
+import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
+import static xcode.ilmugiziku.domain.enums.RoleEnum.CONSUMER;
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
-import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
@@ -55,15 +58,14 @@ public class QuestionService {
       return getQuiz(PRACTICE);
    }
 
-   public BaseResponse<QuestionResponse> getTryOutQuestion(int questionType, int questionSubType, String templateSecureId) {
+   public BaseResponse<QuestionResponse> getTryOutQuestion(QuestionTypeEnum questionType,
+                                                           QuestionSubTypeEnum questionSubType, 
+                                                           String templateSecureId
+   ) {
       BaseResponse<QuestionResponse> response;
 
       if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-         if (questionSubType > 0 && questionSubType < 5) {
-            response = getQuestions(questionType, questionSubType, templateSecureId);
-         } else {
-            throw new AppException(PARAMS_ERROR_MESSAGE);
-         }
+         response = getQuestions(questionType, questionSubType, templateSecureId);
       } else {
          throw new AppException(PARAMS_ERROR_MESSAGE);
       }
@@ -71,11 +73,11 @@ public class QuestionService {
       return response;
    }
 
-   private BaseResponse<QuestionResponse> getQuestions(int questionType, int questionSubType, String templateSecureId) {
+   private BaseResponse<QuestionResponse> getQuestions(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType, String templateSecureId) {
       BaseResponse<QuestionResponse> response = new BaseResponse<>();
       QuestionResponse questionResponse = new QuestionResponse();
 
-      if (userService.isRoleAdmin(CurrentUser.get().getSecureId())) {
+      if (userService.isRoleAdmin(CurrentUser.get().getUserSecureId())) {
          response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
       } else {
          questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI);
@@ -171,15 +173,21 @@ public class QuestionService {
    }
 
    private QuestionResponse getTryOut(QuestionResponse questionResponse,
-                                      int questionType,
-                                      int questionSubType,
-                                      int role,
+                                      QuestionTypeEnum questionType,
+                                      QuestionSubTypeEnum questionSubType,
+                                      RoleEnum role,
                                       String templateSecureId
    ) {
       TemplateModel model = !templateSecureId.isEmpty()
               ? templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId)
               : templateService.getActiveTemplate(questionType, questionSubType);
-      List<QuestionModel> questionModels = questionSubType == 0
+
+
+      if (model == null) {
+         throw new AppException(NOT_FOUND_MESSAGE);
+      }
+
+      List<QuestionModel> questionModels = questionSubType == QuestionSubTypeEnum.NONE
               ? questionRepository.findByQuestionTypeAndDeletedAtIsNull(questionType)
               : questionRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, questionSubType, model.getSecureId());
 
@@ -200,7 +208,7 @@ public class QuestionService {
       return questionResponse;
    }
 
-   private BaseResponse<List<QuestionAnswerResponse>> getQuiz(int questionType) {
+   private BaseResponse<List<QuestionAnswerResponse>> getQuiz(QuestionTypeEnum questionType) {
       BaseResponse<List<QuestionAnswerResponse>> response = new BaseResponse<>();
       List<QuestionAnswerResponse> questionResponses = new ArrayList<>();
 

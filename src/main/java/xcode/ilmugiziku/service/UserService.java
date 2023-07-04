@@ -19,11 +19,11 @@ import xcode.ilmugiziku.mapper.UserMapper;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.RegistrationTypeEnum.GOOGLE;
+import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
+import static xcode.ilmugiziku.domain.enums.RoleEnum.CONSUMER;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
-import static xcode.ilmugiziku.shared.refs.RegistrationTypeRefs.GOOGLE;
-import static xcode.ilmugiziku.shared.refs.RoleRefs.ADMIN;
-import static xcode.ilmugiziku.shared.refs.RoleRefs.CONSUMER;
 
 @Service
 public class UserService {
@@ -80,7 +80,7 @@ public class UserService {
          TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
 
          if (tokenModel != null) {
-            throw new AppException(EXIST_MESSAGE);
+            throw new AppException(LOGIN_EXIST_MESSAGE);
          }
       }
 

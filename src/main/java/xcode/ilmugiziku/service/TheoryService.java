@@ -2,6 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.enums.TheoryTypeEnum;
 import xcode.ilmugiziku.domain.model.TheoryModel;
 import xcode.ilmugiziku.domain.repository.TheoryRepository;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
@@ -15,9 +16,9 @@ import xcode.ilmugiziku.mapper.TheoryMapper;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.TheoryTypeEnum.SKB_GIZI;
+import static xcode.ilmugiziku.domain.enums.TheoryTypeEnum.UKOM;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.TheoryTypeRefs.UKOM;
 
 @Service
 public class TheoryService {
@@ -26,7 +27,7 @@ public class TheoryService {
 
    private final TheoryMapper theoryMapper = new TheoryMapper();
 
-   public BaseResponse<List<TheoryResponse>> getTheoryList(int theoryType) {
+   public BaseResponse<List<TheoryResponse>> getTheoryList(TheoryTypeEnum theoryType) {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
 
       if (theoryType == UKOM || theoryType == SKB_GIZI) {

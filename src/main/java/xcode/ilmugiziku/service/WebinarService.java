@@ -2,6 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.repository.WebinarRepository;
 import xcode.ilmugiziku.domain.request.webinar.CreateWebinarRequest;
@@ -16,8 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
 
 @Service
 public class WebinarService {
@@ -26,16 +25,11 @@ public class WebinarService {
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
 
-   public BaseResponse<List<WebinarResponse>> getWebinarList(int bimbelType) {
+   public BaseResponse<List<WebinarResponse>> getWebinarList(BimbelTypeEnum bimbelType) {
       BaseResponse<List<WebinarResponse>> response = new BaseResponse<>();
+      List<WebinarModel> models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
 
-      if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-         List<WebinarModel> models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
-
-         response.setSuccess(webinarMapper.modelsToResponses(models));
-      } else {
-         throw new AppException(PARAMS_ERROR_MESSAGE);
-      }
+      response.setSuccess(webinarMapper.modelsToResponses(models));
 
       return response;
    }

@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
@@ -50,7 +51,7 @@ public class BimbelApi {
 
     @GetMapping("")
     ResponseEntity<BaseResponse<BimbelResponse>> getBimbel(
-            @RequestParam @Validated int bimbelType
+            @RequestParam @Validated BimbelTypeEnum bimbelType
     ) {
         BaseResponse<BimbelResponse> response = bimbelService.getBimbel(bimbelType);
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import xcode.ilmugiziku.domain.enums.TheoryTypeEnum;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.TheoryResponse;
 import xcode.ilmugiziku.service.TheoryService;
@@ -22,7 +23,7 @@ public class TheoryApi {
     @Autowired private TheoryService theoryService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<TheoryResponse>>> list (@RequestParam @Validated int theoryType) {
+    ResponseEntity<BaseResponse<List<TheoryResponse>>> list (@RequestParam @Validated TheoryTypeEnum theoryType) {
         BaseResponse<List<TheoryResponse>> response = theoryService.getTheoryList(theoryType);
 
         return ResponseEntity

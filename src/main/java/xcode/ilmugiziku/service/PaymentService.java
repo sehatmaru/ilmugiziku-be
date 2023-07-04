@@ -6,6 +6,7 @@ import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.model.UserModel;
@@ -23,11 +24,11 @@ import xcode.ilmugiziku.mapper.PaymentMapper;
 
 import java.util.Date;
 
+import static xcode.ilmugiziku.domain.enums.PackageTypeEnum.*;
 import static xcode.ilmugiziku.shared.Environment.XENDIT_API;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
-import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
 
 @Service
 public class PaymentService {
@@ -39,10 +40,10 @@ public class PaymentService {
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
-   public BaseResponse<PaymentResponse> detailPayment(int packageType) {
+   public BaseResponse<PaymentResponse> detailPayment(PackageTypeEnum packageType) {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
       try {
@@ -67,7 +68,7 @@ public class PaymentService {
    public BaseResponse<CreatePaymentResponse> createPayment(CreatePaymentRequest request) {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
       boolean isUpgrade = isUpgradePackage(userModel, request.getPackageType());
@@ -141,7 +142,7 @@ public class PaymentService {
 
    private void savePreviousPayment(PaymentModel payment, UserModel userModel) {
       if (payment.isUpgrade()) {
-         int prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
+         PackageTypeEnum prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
          PaymentModel prevPayment = paymentRepository.findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(userModel.getSecureId(), prevType);
          prevPayment.setDeletedAt(new Date());
 
@@ -174,7 +175,7 @@ public class PaymentService {
       return response;
    }
 
-   public boolean isUpgradePackage(UserModel userModel, int packageType) {
+   public boolean isUpgradePackage(UserModel userModel, PackageTypeEnum packageType) {
       boolean result = false;
 
       if (userModel.isPremium()) {
@@ -190,9 +191,9 @@ public class PaymentService {
       return result;
    }
 
-   private boolean checkPackage(UserModel userModel, int packageType) {
+   private boolean checkPackage(UserModel userModel, PackageTypeEnum packageType) {
       for (String type : stringToArray(userModel.getPackages())) {
-         if (Integer.parseInt(type) == packageType) {
+         if (PackageTypeEnum.valueOf(type) == packageType) {
             return true;
          }
       }

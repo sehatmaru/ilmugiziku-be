@@ -13,6 +13,7 @@ import xcode.ilmugiziku.exception.AppException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static xcode.ilmugiziku.shared.ResponseCode.NOT_AUTHORIZED_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 
 @Slf4j
@@ -24,7 +25,7 @@ public class UserInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-    String token = request.getHeader("Userorization");
+    String token = request.getHeader("Authorization");
 
     if (token != null) {
       TokenModel tokenModel = tokenRepository.findByToken(token.substring(7));
@@ -38,6 +39,8 @@ public class UserInterceptor implements HandlerInterceptor {
       } else {
         throw new AppException(TOKEN_ERROR_MESSAGE);
       }
+    } else {
+      throw new AppException(NOT_AUTHORIZED_MESSAGE);
     }
 
     return true;

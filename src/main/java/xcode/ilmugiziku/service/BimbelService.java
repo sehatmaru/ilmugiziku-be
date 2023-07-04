@@ -5,6 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
@@ -22,11 +23,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.BimbelTypeEnum.SKB_GIZI;
+import static xcode.ilmugiziku.domain.enums.BimbelTypeEnum.UKOM;
+import static xcode.ilmugiziku.domain.enums.PackageTypeEnum.*;
+import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PAID;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.SKB_GIZI;
-import static xcode.ilmugiziku.shared.refs.BimbelTypeRefs.UKOM;
-import static xcode.ilmugiziku.shared.refs.PackageTypeRefs.*;
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PAID;
 
 @Service
 public class BimbelService {
@@ -41,21 +42,16 @@ public class BimbelService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final LessonMapper lessonMapper = new LessonMapper();
 
-   public BaseResponse<BimbelResponse> getBimbel(int bimbelType) {
+   public BaseResponse<BimbelResponse> getBimbel(BimbelTypeEnum bimbelType) {
       BaseResponse<BimbelResponse> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
-
-      if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-         response.setSuccess(setBimbel(userModel, bimbelType));
-      } else {
-         throw new AppException(PARAMS_ERROR_MESSAGE);
-      }
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
+      response.setSuccess(setBimbel(userModel, bimbelType));
 
       return response;
    }
 
-   private BimbelResponse setBimbel(UserModel userModel, int bimbelType) {
+   private BimbelResponse setBimbel(UserModel userModel, BimbelTypeEnum bimbelType) {
       BimbelResponse result = new BimbelResponse();
 
       List<LessonModel> lessons = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
@@ -78,7 +74,7 @@ public class BimbelService {
    public BaseResponse<BimbelInformationResponse> getBimbelInformation() {
       BaseResponse<BimbelInformationResponse> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
 
       if (userModel.isPremium()) {
          refreshPremiumPackage(userModel);
@@ -92,7 +88,7 @@ public class BimbelService {
    public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getSecureId());
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
       if (webinarModel != null) {
@@ -104,7 +100,7 @@ public class BimbelService {
          SimpleMailMessage msg = new SimpleMailMessage();
          msg.setTo(userModel.getEmail());
          msg.setSubject("Zoom Meeting Reminder");
-         msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getSecureId()) + ",\n\n" +
+         msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getUserSecureId()) + ",\n\n" +
                  "Ini adalah reminder untuk kelas webinar anda\n\n" +
                  "Judul: " + webinarModel.getTitle() + "\n" +
                  "Tanggal: " + date + "\n" +

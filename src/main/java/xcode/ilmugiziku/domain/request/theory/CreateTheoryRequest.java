@@ -2,6 +2,7 @@ package xcode.ilmugiziku.domain.request.theory;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.TheoryTypeEnum;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,8 +11,7 @@ import javax.validation.constraints.NotNull;
 public class CreateTheoryRequest {
     private String competence;
     private String uri;
-    @NotNull()
-    private int theoryType;
+    private TheoryTypeEnum theoryType;
 
     public CreateTheoryRequest() {
     }

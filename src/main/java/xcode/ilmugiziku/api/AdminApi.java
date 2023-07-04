@@ -6,6 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.discussionvideo.UpdateDiscussionVideoRequest;
 import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
@@ -276,8 +279,8 @@ public class AdminApi {
 
     @GetMapping("/template-to/list")
     ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateToList(
-            @RequestParam @Validated int questionType,
-            @RequestParam @Validated int questionSubType
+            @RequestParam @Validated QuestionTypeEnum questionType,
+            @RequestParam @Validated QuestionSubTypeEnum questionSubType
     ) {
         BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList(questionType, questionSubType);
 
@@ -399,7 +402,7 @@ public class AdminApi {
 
     @GetMapping("/webinar/list")
     ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList(
-            @RequestParam @Validated int bimbelType
+            @RequestParam @Validated BimbelTypeEnum bimbelType
     ) {
         BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList(bimbelType);
 
@@ -448,7 +451,7 @@ public class AdminApi {
 
     @GetMapping("/lesson/list")
     ResponseEntity<BaseResponse<List<LessonResponse>>> getLessonList(
-            @RequestParam @Validated int bimbelType
+            @RequestParam @Validated BimbelTypeEnum bimbelType
     ) {
         BaseResponse<List<LessonResponse>> response = lessonService.getLessonList(bimbelType);
 

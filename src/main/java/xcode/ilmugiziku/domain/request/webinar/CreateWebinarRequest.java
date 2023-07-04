@@ -2,6 +2,7 @@ package xcode.ilmugiziku.domain.request.webinar;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class CreateWebinarRequest {
     private Date date;
     private String meetingId;
     private String passcode;
-    private int bimbelType;
+    private BimbelTypeEnum bimbelType;
 
     public CreateWebinarRequest() {
     }

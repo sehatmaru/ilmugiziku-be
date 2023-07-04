@@ -3,6 +3,8 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.exam.CreateExamRequest;
@@ -17,9 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.*;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.QuestionSubTypeRefs.PFS;
-import static xcode.ilmugiziku.shared.refs.QuestionTypeRefs.*;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
@@ -43,7 +44,7 @@ public class ExamService {
 
       ScheduleModel schedule = scheduleService.getScheduleByDate(new Date());
 
-      if (userRepository.findBySecureIdAndDeletedAtIsNull(CurrentUser.get().getSecureId()) != null) {
+      if (userRepository.findBySecureIdAndDeletedAtIsNull(CurrentUser.get().getUserSecureId()) != null) {
          if (request.getQuestionType() == QUIZ) {
             saveExam(request, response, schedule);
          } else {
@@ -106,7 +107,7 @@ public class ExamService {
       return model;
    }
 
-   public BaseResponse<List<ExamResultResponse>> getExamResult(int questionType) {
+   public BaseResponse<List<ExamResultResponse>> getExamResult(QuestionTypeEnum questionType) {
       BaseResponse<List<ExamResultResponse>> response = new BaseResponse<>();
 
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -121,7 +122,7 @@ public class ExamService {
       return response;
    }
 
-   public BaseResponse<List<ExamRankResponse>> getExamRank(int questionType, int questionSubType) {
+   public BaseResponse<List<ExamRankResponse>> getExamRank(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       BaseResponse<List<ExamRankResponse>> response = new BaseResponse<>();
 
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -142,7 +143,7 @@ public class ExamService {
       return response;
    }
 
-   public BaseResponse<List<ExamKeyResponse>> getExamKey(int questionType, int questionSubType) {
+   public BaseResponse<List<ExamKeyResponse>> getExamKey(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       BaseResponse<List<ExamKeyResponse>> response = new BaseResponse<>();
 
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -179,7 +180,7 @@ public class ExamService {
       return results;
    }
 
-   public BaseResponse<List<ExamInformationResponse>> getExamInformation(int questionType) {
+   public BaseResponse<List<ExamInformationResponse>> getExamInformation(QuestionTypeEnum questionType) {
       BaseResponse<List<ExamInformationResponse>> response = new BaseResponse<>();
 
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -197,24 +198,24 @@ public class ExamService {
       return response;
    }
 
-   private List<ExamInformationResponse> setExamInformation(int questionType, ScheduleModel scheduleModel) {
+   private List<ExamInformationResponse> setExamInformation(QuestionTypeEnum questionType, ScheduleModel scheduleModel) {
       List<ExamInformationResponse> result = new ArrayList<>();
 
-      for (int i=1; i<PFS+1; i++) {
-         BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(questionType, i, "");
+      for (int i = 1; i< QuestionSubTypeEnum.values().length+1; i++) {
+         BaseResponse<QuestionResponse> questions = questionService.getTryOutQuestion(questionType, QuestionSubTypeEnum.values()[i], "");
 
          result.add(new ExamInformationResponse(
-                 i,
+                 QuestionSubTypeEnum.values()[i],
                  questions.getResult().getExam().size(),
                  questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI,
-                 !isExamExist(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, i)
+                 !isExamExist(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, QuestionSubTypeEnum.values()[i])
          ));
       }
 
       return result;
    }
 
-   public BaseResponse<List<ExamVideoResponse>> getExamVideo(int questionType) {
+   public BaseResponse<List<ExamVideoResponse>> getExamVideo(QuestionTypeEnum questionType) {
       BaseResponse<List<ExamVideoResponse>> response = new BaseResponse<>();
 
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
@@ -232,18 +233,18 @@ public class ExamService {
       return response;
    }
 
-   private List<ExamVideoResponse> setExamVideo(ScheduleModel scheduleModel, int questionType) {
+   private List<ExamVideoResponse> setExamVideo(ScheduleModel scheduleModel, QuestionTypeEnum questionType) {
       List<ExamVideoResponse> results = new ArrayList<>();
 
-      for (int i=1; i<PFS+1; i++) {
-         ExamModel exam = examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, i);
-         TemplateModel template = templateService.getActiveTemplate(questionType, i);
+      for (int i=1; i<QuestionSubTypeEnum.values().length+1; i++) {
+         ExamModel exam = examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, QuestionSubTypeEnum.values()[i]);
+         TemplateModel template = templateService.getActiveTemplate(questionType, QuestionSubTypeEnum.values()[i]);
 
          if (exam != null && template != null) {
-            DiscussionVideoModel video = discussionVideoRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, i, template.getSecureId());
+            DiscussionVideoModel video = discussionVideoRepository.findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(questionType, QuestionSubTypeEnum.values()[i], template.getSecureId());
 
             if (video != null) {
-               results.add(new ExamVideoResponse(video.getUri(), i));
+               results.add(new ExamVideoResponse(video.getUri(), QuestionSubTypeEnum.values()[i]));
             }
          }
       }
@@ -251,7 +252,7 @@ public class ExamService {
       return results;
    }
 
-   private boolean isExamExist(String schedule, String user, int questionType, int questionSubType) {
+   private boolean isExamExist(String schedule, String user, QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       return examRepository.findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(schedule, user, questionType, questionSubType) != null;
    }
 }
