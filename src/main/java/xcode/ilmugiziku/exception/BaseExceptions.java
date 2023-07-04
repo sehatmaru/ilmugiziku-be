@@ -93,7 +93,7 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
                 break;
             }
             case PARAMS_ERROR_MESSAGE: {
-                throw new AppException(PARAMS_ERROR_MESSAGE);
+                response.setWrongParams();
                 break;
             }
             case INVALID_PASSWORD: {
