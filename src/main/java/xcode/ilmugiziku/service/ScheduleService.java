@@ -106,7 +106,7 @@ public class ScheduleService {
       return response;
    }
 
-   public BaseResponse<Boolean> checkSchedule() {
+   public BaseResponse<Boolean> checkOnGoingSchedule() {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       boolean result = false;

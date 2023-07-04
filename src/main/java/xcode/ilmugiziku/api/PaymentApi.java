@@ -22,7 +22,7 @@ public class PaymentApi {
     @Autowired private PaymentService paymentService;
 
     @PostMapping("/create")
-    ResponseEntity<BaseResponse<CreatePaymentResponse>> list(
+    ResponseEntity<BaseResponse<CreatePaymentResponse>> create(
             @RequestBody @Validated CreatePaymentRequest request
     ) {
         BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(request);

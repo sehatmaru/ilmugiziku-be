@@ -46,18 +46,26 @@ public class PaymentService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
+      if (packageModel == null) {
+         throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
+      }
+
       try {
          boolean isUpgrade = isUpgradePackage(userModel, packageType);
          int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
 
          PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
-         PaymentResponse payment = new PaymentResponse();
-         payment.setUpgrade(isUpgrade);
-         payment.setFee(fee * 6);
-         payment.setPackageName(model.getTitle());
+         if (model == null) {
+            throw new AppException(NOT_FOUND_MESSAGE);
+         } else {
+            PaymentResponse payment = new PaymentResponse();
+            payment.setUpgrade(isUpgrade);
+            payment.setFee(fee * 6);
+            payment.setPackageName(model.getTitle());
 
-         response.setSuccess(payment);
+            response.setSuccess(payment);
+         }
       } catch (Exception e){
          throw new AppException(e.toString());
       }

@@ -62,18 +62,6 @@ public class QuestionService {
                                                            QuestionSubTypeEnum questionSubType, 
                                                            String templateSecureId
    ) {
-      BaseResponse<QuestionResponse> response;
-
-      if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
-         response = getQuestions(questionType, questionSubType, templateSecureId);
-      } else {
-         throw new AppException(PARAMS_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   private BaseResponse<QuestionResponse> getQuestions(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType, String templateSecureId) {
       BaseResponse<QuestionResponse> response = new BaseResponse<>();
       QuestionResponse questionResponse = new QuestionResponse();
 
@@ -181,7 +169,6 @@ public class QuestionService {
       TemplateModel model = !templateSecureId.isEmpty()
               ? templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId)
               : templateService.getActiveTemplate(questionType, questionSubType);
-
 
       if (model == null) {
          throw new AppException(NOT_FOUND_MESSAGE);

@@ -20,7 +20,7 @@ public class ScheduleApi {
     @Autowired private ScheduleService scheduleService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list () {
+    ResponseEntity<BaseResponse<List<ScheduleResponse>>> list() {
         BaseResponse<List<ScheduleResponse>> response = scheduleService.getScheduleList();
 
         return ResponseEntity
@@ -29,9 +29,9 @@ public class ScheduleApi {
                 .body(response);
     }
 
-    @GetMapping("/check")
-    ResponseEntity<BaseResponse<Boolean>> check () {
-        BaseResponse<Boolean> response = scheduleService.checkSchedule();
+    @GetMapping("/on-going/check")
+    ResponseEntity<BaseResponse<Boolean>> checkOnGoingSchedule() {
+        BaseResponse<Boolean> response = scheduleService.checkOnGoingSchedule();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
