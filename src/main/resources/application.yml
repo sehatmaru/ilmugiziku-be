@@ -7,33 +7,35 @@ logging:
 spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
-#        hikari:
-#            max-lifetime: 300000
-        username: root
-        password: Xcode-123
-        url: jdbc:mysql://127.0.0.1:3306/xcodev?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-#        url: jdbc:mysql://localhost/xcodev?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        username: ENC(Te/HiLESkKgrvPIThZ3Yzg==)
+        password: ENC(eqxpsnpiLriw7Z3bsS3/a3bfDRmkWB7RyrlA1m0ynys=)
+        url: ENC(Nm0Av1XQ7V5sqK9wtBpUbTzD2qZrOtsu6xJs9t9+Nwd2xN9cRMI0SLCWK/7N/CzMjcpuGQ7/BzckA88b17c0dNJ1EDT56B1K)
     mail:
         host: smtp.gmail.com
         port: 587
-        username: xcodeid200@gmail.com
-        password: diwfuc-1zirmi-jYttap
+        username: ENC(WQ4A2Wa4SM03oCvM/HwoLLxoNmCHhSIIULdES5nps8U=)
+        password: ENC(yaLtsFlWc43QNyE3McGcaDsNuL1vlVpzEG1YH/nvY2c=)
         properties:
             mail:
                 smtp:
                     auth: true
-                    connectiontimeout: 5000
-                    timeout: 5000
-                    writetimeout: 5000
                     starttls:
                         enable: true
+        protocol: smtp
+        test-connection: false
+        default-encoding: utf-8
     jpa:
         hibernate:
             ddl-auto: update
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL5Dialect
-        show-sql: true
-        generate-ddl: true
+        show-sql: false
+        generate-ddl: false
     main:
         allow-bean-definition-overriding: true
+jasypt:
+    encryptor:
+        password: {JASYPT_PASSWORD}
+        algorithm: PBEWithMD5AndDES
+        iv-generator-classname: org.jasypt.iv.NoIvGenerator
