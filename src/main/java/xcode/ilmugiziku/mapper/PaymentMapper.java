@@ -1,7 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
-import xcode.ilmugiziku.domain.model.PackageModel;
+import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
@@ -35,7 +34,7 @@ public class PaymentMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, PackageModel packageModel, int totalAmount, String secureId) {
+    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, CourseModel courseModel, int totalAmount, String secureId) {
         Map<String, Object> customer = new HashMap<>();
         customer.put("given_names", fullName);
         customer.put("email", user.getEmail());
@@ -48,9 +47,9 @@ public class PaymentMapper {
         notification.put("invoice_expired", preferences);
 
         Map<String, Object> item = new HashMap<>();
-        item.put("name", packageModel.getTitle());
+        item.put("name", courseModel.getTitle());
         item.put("quantity", 1);
-        item.put("price", packageModel.getPrice());
+        item.put("price", courseModel.getPrice());
         Map[] items = new Map[]{item};
 
         Map<String, Object> params = new HashMap<>();
@@ -62,7 +61,7 @@ public class PaymentMapper {
         params.put("customer_notification_preference", notification);
         params.put("items", items);
         params.put("should_send_email", true);
-        params.put("description", "Paket " + packageModel.getTitle() + " selama 6 bulan");
+        params.put("description", "Paket " + courseModel.getTitle() + " selama 6 bulan");
         params.put("success_redirect_url", request.getSuccessRedirectUrl());
         params.put("failure_redirect_url", request.getFailureRedirectUrl());
 

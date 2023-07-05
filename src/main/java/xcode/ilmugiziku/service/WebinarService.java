@@ -2,7 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.repository.WebinarRepository;
 import xcode.ilmugiziku.domain.request.webinar.CreateWebinarRequest;
@@ -25,9 +25,9 @@ public class WebinarService {
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
 
-   public BaseResponse<List<WebinarResponse>> getWebinarList(BimbelTypeEnum bimbelType) {
+   public BaseResponse<List<WebinarResponse>> getWebinarList(CourseTypeEnum courseType) {
       BaseResponse<List<WebinarResponse>> response = new BaseResponse<>();
-      List<WebinarModel> models = webinarRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
+      List<WebinarModel> models = webinarRepository.findAllByCourseTypeAndDeletedAtIsNull(courseType);
 
       response.setSuccess(webinarMapper.modelsToResponses(models));
 

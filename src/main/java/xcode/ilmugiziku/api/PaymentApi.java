@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -35,7 +35,7 @@ public class PaymentApi {
 
     @GetMapping("/detail")
     ResponseEntity<BaseResponse<PaymentResponse>> detail(
-            @RequestParam @Validated PackageTypeEnum packageType
+            @RequestParam @Validated CourseTypeEnum packageType
     ) {
         BaseResponse<PaymentResponse> response = paymentService.detailPayment(packageType);
 

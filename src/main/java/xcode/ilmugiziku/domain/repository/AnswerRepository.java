@@ -9,11 +9,9 @@ import java.util.List;
 @Repository
 public interface AnswerRepository extends JpaRepository<AnswerModel, String> {
 
-   AnswerModel findById(int id);
 
    AnswerModel findBySecureId(String secureId);
 
-   AnswerModel findByQuestionSecureIdAndValue(String questionSecureId, boolean value);
 
    List<AnswerModel> findAllByQuestionSecureId(String questionSecureId);
 }

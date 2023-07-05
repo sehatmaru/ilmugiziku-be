@@ -17,7 +17,7 @@ import xcode.ilmugiziku.mapper.TemplateMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.TRY_OUT_SKB_GIZI;
+import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.TRY_OUT_SKB;
 import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.TRY_OUT_UKOM;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 
@@ -31,7 +31,7 @@ public class TemplateService {
    public BaseResponse<List<TemplateResponse>> getTemplateList(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
       BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
 
-      if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+      if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB) {
          List<TemplateModel> models = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
 
          response.setSuccess(templateMapper.modelsToResponses(models));

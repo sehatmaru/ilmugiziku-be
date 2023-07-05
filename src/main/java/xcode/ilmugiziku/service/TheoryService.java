@@ -16,7 +16,7 @@ import xcode.ilmugiziku.mapper.TheoryMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.TheoryTypeEnum.SKB_GIZI;
+import static xcode.ilmugiziku.domain.enums.TheoryTypeEnum.SKB;
 import static xcode.ilmugiziku.domain.enums.TheoryTypeEnum.UKOM;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 
@@ -30,7 +30,7 @@ public class TheoryService {
    public BaseResponse<List<TheoryResponse>> getTheoryList(TheoryTypeEnum theoryType) {
       BaseResponse<List<TheoryResponse>> response = new BaseResponse<>();
 
-      if (theoryType == UKOM || theoryType == SKB_GIZI) {
+      if (theoryType == UKOM || theoryType == SKB) {
          List<TheoryModel> models = theoryRepository.findByTheoryTypeAndDeletedAtIsNull(theoryType);
 
          response.setSuccess(theoryMapper.modelsToResponses(models));

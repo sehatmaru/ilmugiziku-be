@@ -1,9 +1,8 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.model.PackageFeatureModel;
-import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
-import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
-import xcode.ilmugiziku.domain.response.PackageFeatureResponse;
+import xcode.ilmugiziku.domain.model.BenefitModel;
+import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
+import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,11 +10,11 @@ import java.util.List;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
-public class PackageFeatureMapper {
+public class BenefitMapper {
 
-    public PackageFeatureResponse modelToResponse(PackageFeatureModel model) {
+    public BenefitResponse modelToResponse(BenefitModel model) {
         if (model != null) {
-            PackageFeatureResponse response = new PackageFeatureResponse();
+            BenefitResponse response = new BenefitResponse();
             response.setSecureId(model.getSecureId());
             response.setDesc(model.getDescription());
 
@@ -25,11 +24,11 @@ public class PackageFeatureMapper {
         }
     }
 
-    public List<PackageFeatureResponse> modelsToResponses(List<PackageFeatureModel> models) {
+    public List<BenefitResponse> modelsToResponses(List<BenefitModel> models) {
         if (models != null) {
-            List<PackageFeatureResponse> response = new ArrayList<>();
+            List<BenefitResponse> response = new ArrayList<>();
 
-            for (PackageFeatureModel model : models) {
+            for (BenefitModel model : models) {
                 response.add(modelToResponse(model));
             }
 
@@ -39,9 +38,9 @@ public class PackageFeatureMapper {
         }
     }
 
-    public PackageFeatureModel createRequestToModel(CreatePackageFeatureRequest request) {
+    public BenefitModel createRequestToModel(CreateUpdateBenefitRequest request) {
         if (request != null) {
-            PackageFeatureModel response = new PackageFeatureModel();
+            BenefitModel response = new BenefitModel();
             response.setSecureId(generateSecureId());
             response.setDescription(request.getDesc());
             response.setCreatedAt(new Date());
@@ -52,7 +51,7 @@ public class PackageFeatureMapper {
         }
     }
 
-    public PackageFeatureModel updateRequestToModel(PackageFeatureModel model, UpdatePackageFeatureRequest request) {
+    public BenefitModel updateRequestToModel(BenefitModel model, CreateUpdateBenefitRequest request) {
         if (request != null && model != null) {
             model.setDescription(request.getDesc());
             model.setUpdatedAt(new Date());

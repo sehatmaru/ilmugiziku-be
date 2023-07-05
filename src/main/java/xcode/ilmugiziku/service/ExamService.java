@@ -21,7 +21,7 @@ import java.util.List;
 
 import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.*;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
@@ -186,7 +186,7 @@ public class ExamService {
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
       if (scheduleModel.getSecureId() != null) {
-         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB) {
             response.setSuccess(setExamInformation(questionType, scheduleModel));
          } else {
             throw new AppException(PARAMS_ERROR_MESSAGE);
@@ -207,7 +207,7 @@ public class ExamService {
          result.add(new ExamInformationResponse(
                  QuestionSubTypeEnum.values()[i],
                  questions.getResult().getExam().size(),
-                 questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI,
+                 questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB,
                  !isExamExist(scheduleModel.getSecureId(), CurrentUser.get().getUserSecureId(), questionType, QuestionSubTypeEnum.values()[i])
          ));
       }
@@ -221,7 +221,7 @@ public class ExamService {
       ScheduleModel scheduleModel = scheduleService.getScheduleByDate(new Date());
 
       if (scheduleModel.getSecureId() != null) {
-         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB_GIZI) {
+         if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB) {
             response.setSuccess(setExamVideo(scheduleModel, questionType));
          } else {
             throw new AppException(PARAMS_ERROR_MESSAGE);

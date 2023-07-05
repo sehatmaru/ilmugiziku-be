@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface LaboratoryValueRepository extends JpaRepository<LaboratoryValueModel, String> {
-
    LaboratoryValueModel findBySecureIdAndDeletedAtIsNull(String secureId);
-
    List<LaboratoryValueModel> findByDeletedAtIsNull();
 }

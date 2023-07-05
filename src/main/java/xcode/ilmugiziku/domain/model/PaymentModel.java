@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 
 import javax.persistence.*;
@@ -29,8 +29,8 @@ public class PaymentModel {
    @Column(name = "user_secure_id")
    private String userSecureId;
 
-   @Column(name = "package_secure_id")
-   private String packageSecureId;
+   @Column(name = "course_secure_id")
+   private String course;
 
    @Column(name = "invoice_id")
    private String invoiceId;
@@ -42,7 +42,7 @@ public class PaymentModel {
    private Date paidDate;
 
    @Column(name = "package_type")
-   private PackageTypeEnum packageType;
+   private CourseTypeEnum packageType;
 
    @Column(name = "payment_status")
    private PaymentStatusEnum paymentStatus;

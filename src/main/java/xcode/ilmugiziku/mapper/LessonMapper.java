@@ -6,6 +6,7 @@ import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
 import xcode.ilmugiziku.domain.response.LessonResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class LessonMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -49,7 +50,7 @@ public class LessonMapper {
             LessonModel response = new LessonModel();
             response.setSecureId(generateSecureId());
             response.setTitle(request.getTitle());
-            response.setBimbelType(request.getBimbelType());
+            response.setCourseType(request.getCourseType());
             response.setTheory(request.getTheory());
             response.setVideoUri(request.getVideoUri());
             response.setThumbnailUri(request.getThumbnailUri());

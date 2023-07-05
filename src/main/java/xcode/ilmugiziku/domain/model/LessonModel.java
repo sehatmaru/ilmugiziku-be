@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -31,8 +31,8 @@ public class LessonModel {
    @Column(name = "thumbnail_uri")
    private String thumbnailUri;
 
-   @Column(name = "bimbel_type")
-   private BimbelTypeEnum bimbelType;
+   @Column(name = "course_type")
+   private CourseTypeEnum courseType;
 
    @Column(name = "title")
    private String title;

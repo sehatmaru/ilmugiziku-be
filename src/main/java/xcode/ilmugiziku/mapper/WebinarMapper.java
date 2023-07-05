@@ -48,7 +48,7 @@ public class WebinarMapper {
             WebinarModel response = new WebinarModel();
             response.setSecureId(generateSecureId());
             response.setTitle(request.getTitle());
-            response.setBimbelType(request.getBimbelType());
+            response.setCourseType(request.getCourseType());
             response.setDate(request.getDate());
             response.setMeetingId(request.getMeetingId());
             response.setLink(request.getLink());

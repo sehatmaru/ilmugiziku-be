@@ -7,16 +7,15 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Data
 @Builder
 @Entity
-@Table(name = "t_package_feature")
+@Table(name = "t_course_benefit_rel")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class PackageFeatureModel {
+public class CourseBenefitRelModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -24,16 +23,13 @@ public class PackageFeatureModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "description")
-   private String description;
+   @Column(name = "course_secure_id")
+   private String course;
 
-   @Column(name = "created_at")
-   private Date createdAt;
+   @Column(name = "benefit_secure_id")
+   private String benefit;
 
-   @Column(name = "updated_at")
-   private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
+   @Column(name = "deleted")
+   private boolean deleted;
 
 }

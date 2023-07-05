@@ -20,12 +20,6 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
 
    List<UserModel> findByRoleAndDeletedAtIsNull(RoleEnum role);
 
-   UserModel findByEmailAndRole(String email, RoleEnum role);
-
-   UserModel findByEmailAndPasswordAndDeletedAtIsNull(String email, String password);
-
-   UserModel findByEmailAndPasswordAndRoleAndDeletedAtIsNull(String email, String password, RoleEnum role);
-
    @Query(value = "SELECT * FROM t_user" +
            " WHERE username = :username AND active IS TRUE" +
            " AND deleted_at IS NULL" +

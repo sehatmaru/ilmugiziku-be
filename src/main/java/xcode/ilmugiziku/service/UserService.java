@@ -29,7 +29,7 @@ import static xcode.ilmugiziku.shared.Utils.encrypt;
 public class UserService {
 
    @Autowired private JwtService jwtService;
-   @Autowired private BimbelService bimbelService;
+   @Autowired private CourseService courseService;
    @Autowired private UserRepository userRepository;
    @Autowired private TokenRepository tokenRepository;
    @Autowired private ProfileRepository profileRepository;
@@ -48,7 +48,8 @@ public class UserService {
       if (request.getType() == GOOGLE) {
          response.setSuccess(getGoogleAccount(model));
       } else {
-         if (model.isPremium()) bimbelService.refreshPremiumPackage(model);
+         // TODO: 05/07/23
+//         if (model.isPremium()) courseService.refreshPremiumPackage(model);
 
          if (model.getPassword().equals(encrypt(request.getPassword()))) {
             response = getEmailAccount(model);
@@ -92,9 +93,10 @@ public class UserService {
       LoginResponse response;
       TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
 
-      if (model.isPremium()) {
-         bimbelService.refreshPremiumPackage(model);
-      }
+      // TODO: 05/07/23
+//      if (model.isPremium()) {
+//         courseService.refreshPremiumPackage(model);
+//      }
 
       if (tokenModel == null) {
          response = userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model));

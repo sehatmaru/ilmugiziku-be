@@ -35,7 +35,7 @@ import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 import static xcode.ilmugiziku.domain.enums.RoleEnum.CONSUMER;
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
-import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB_GIZI;
+import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_SKB;
 import static xcode.ilmugiziku.shared.refs.TimeLimitRefs.TIME_LIMIT_UKOM;
 
 @Service
@@ -68,7 +68,7 @@ public class QuestionService {
       if (userService.isRoleAdmin(CurrentUser.get().getUserSecureId())) {
          response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, ADMIN, templateSecureId));
       } else {
-         questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB_GIZI);
+         questionResponse.setTimeLimit(questionType == TRY_OUT_UKOM ? TIME_LIMIT_UKOM : TIME_LIMIT_SKB);
          response.setSuccess(getTryOut(questionResponse, questionType, questionSubType, CONSUMER, templateSecureId));
       }
 

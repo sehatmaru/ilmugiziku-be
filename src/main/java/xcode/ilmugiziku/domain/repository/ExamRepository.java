@@ -10,16 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ExamRepository extends JpaRepository<ExamModel, String> {
-
-   ExamModel findBySecureId(String secureId);
-
    ExamModel findByScheduleSecureIdAndUserSecureIdAndQuestionTypeAndQuestionSubType(String scheduleSecureId, String userSecureId, QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType);
-
-   List<ExamModel> findByScheduleSecureIdAndUserSecureId(String scheduleSecureId, String userSecureId);
-
    List<ExamModel> findByScheduleSecureIdAndUserSecureIdAndQuestionType(String scheduleSecureId, String userSecureId, QuestionTypeEnum questionType);
-
    List<ExamModel> findByScheduleSecureIdAndQuestionTypeAndQuestionSubTypeOrderByScoreDesc(String scheduleSecureId, QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType);
-
-   List<ExamModel> findAllByUserSecureId(String userSecureId);
 }

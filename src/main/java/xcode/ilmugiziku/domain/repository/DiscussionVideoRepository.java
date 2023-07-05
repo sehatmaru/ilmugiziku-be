@@ -8,10 +8,7 @@ import xcode.ilmugiziku.domain.model.DiscussionVideoModel;
 
 @Repository
 public interface DiscussionVideoRepository extends JpaRepository<DiscussionVideoModel, String> {
-
    DiscussionVideoModel findBySecureIdAndDeletedAtIsNull(String secureId);
-
    DiscussionVideoModel findByQuestionTypeAndQuestionSubTypeAndTemplateSecureIdAndDeletedAtIsNull(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType, String secureId);
-
    DiscussionVideoModel findByTemplateSecureIdAndDeletedAtIsNull(String secureId);
 }
