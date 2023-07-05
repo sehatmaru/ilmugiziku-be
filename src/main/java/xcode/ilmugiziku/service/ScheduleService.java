@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.ScheduleModel;
 import xcode.ilmugiziku.domain.repository.ScheduleRepository;
@@ -8,177 +9,119 @@ import xcode.ilmugiziku.domain.request.schedule.UpdateScheduleRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.ScheduleResponse;
+import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.ScheduleMapper;
-import xcode.ilmugiziku.presenter.SchedulePresenter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
 
 @Service
-public class ScheduleService implements SchedulePresenter {
+public class ScheduleService {
 
-   private final AuthTokenService authTokenService;
-
-   private final ScheduleRepository scheduleRepository;
+   @Autowired private ScheduleRepository scheduleRepository;
 
    private final ScheduleMapper scheduleMapper = new ScheduleMapper();
 
-   public ScheduleService(AuthTokenService authTokenService, ScheduleRepository scheduleRepository) {
-      this.authTokenService = authTokenService;
-      this.scheduleRepository = scheduleRepository;
-   }
-
-   @Override
-   public BaseResponse<List<ScheduleResponse>> getScheduleList(String token) {
+   public BaseResponse<List<ScheduleResponse>> getScheduleList() {
       BaseResponse<List<ScheduleResponse>> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         List<ScheduleModel> models = new ArrayList<>();
+      List<ScheduleModel> models = scheduleRepository.findByDeletedAtIsNull();
 
-         try {
-            models = scheduleRepository.findByDeletedAtIsNull();
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
-
-         response.setSuccess(scheduleMapper.modelsToResponses(models));
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
-      }
+      response.setSuccess(scheduleMapper.modelsToResponses(models));
 
       return response;
    }
 
-   @Override
-   public BaseResponse<CreateBaseResponse> createSchedule(String token, CreateScheduleRequest request) {
+   public BaseResponse<CreateBaseResponse> createSchedule(CreateScheduleRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
-      if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            if (isScheduleExist("", request.getStartDate(), request.getEndDate())){
-               response.setExistData("");
-            } else {
+      if (request.validate()) {
+         if (isScheduleExist("", request.getStartDate(), request.getEndDate())){
+            throw new AppException(EXIST_MESSAGE);
+         } else {
+            try {
                ScheduleModel model = scheduleMapper.createRequestToModel(request);
 
-               if (create(model)) {
-                  createResponse.setSecureId(model.getSecureId());
-                  response.setSuccess(createResponse);
-               } else {
-                  response.setFailed("");
-               }
-            }
-         } else {
-            response.setWrongParams();
-         }
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   @Override
-   public BaseResponse<Boolean> updateSchedule(String token, String scheduleSecureId, UpdateScheduleRequest request) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      if (authTokenService.isValidToken(token)) {
-         if (request.validate()) {
-            ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(scheduleSecureId);
-
-            if (isScheduleExist(scheduleSecureId, request.getStartDate(), request.getEndDate())) {
-               response.setExistData("");
-            } else {
-               if (model != null) {
-                  try {
-                     scheduleRepository.save(scheduleMapper.updateRequestToModel(model, request));
-
-                     response.setSuccess(true);
-                  } catch (Exception e){
-                     response.setFailed(e.toString());
-                  }
-               } else {
-                  response.setNotFound("");
-               }
-            }
-         } else {
-            response.setWrongParams();
-         }
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
-      }
-
-      return response;
-   }
-
-   @Override
-   public BaseResponse<Boolean> deleteSchedule(String token, String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-      ScheduleModel model = new ScheduleModel();
-
-      if (authTokenService.isValidToken(token)) {
-         try {
-            model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-         } catch (Exception e) {
-            response.setFailed(e.toString());
-         }
-
-         if (model != null) {
-            model.setDeletedAt(new Date());
-
-            try {
                scheduleRepository.save(model);
+
+               createResponse.setSecureId(model.getSecureId());
+               response.setSuccess(createResponse);
+            } catch (Exception e){
+               throw new AppException(e.toString());
+            }
+         }
+      } else {
+         throw new AppException(PARAMS_ERROR_MESSAGE);
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> updateSchedule(String scheduleSecureId, UpdateScheduleRequest request) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(scheduleSecureId);
+
+      if (isScheduleExist(scheduleSecureId, request.getStartDate(), request.getEndDate())) {
+         throw new AppException(EXIST_MESSAGE);
+      } else {
+         if (model != null) {
+            try {
+               scheduleRepository.save(scheduleMapper.updateRequestToModel(model, request));
 
                response.setSuccess(true);
             } catch (Exception e){
-               response.setFailed(e.toString());
+               throw new AppException(e.toString());
             }
          } else {
-            response.setNotFound("");
+            throw new AppException(NOT_FOUND_MESSAGE);
          }
-      } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
       }
 
       return response;
    }
 
-   @Override
-   public BaseResponse<Boolean> checkSchedule(String token) {
+   public BaseResponse<Boolean> deleteSchedule(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      if (authTokenService.isValidToken(token)) {
-         boolean result = false;
-         List<ScheduleModel> models = scheduleRepository.findByDeletedAtIsNull();
+      ScheduleModel model = scheduleRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
-         for (ScheduleModel model : models) {
-            if (model.getStartDate().before(new Date()) && model.getEndDate().after(new Date())) {
-               result = true;
-               break;
-            }
+      if (model != null) {
+         model.setDeletedAt(new Date());
+
+         try {
+            scheduleRepository.save(model);
+
+            response.setSuccess(true);
+         } catch (Exception e){
+            throw new AppException(e.toString());
          }
-
-         response.setSuccess(result);
       } else {
-         response.setFailed(TOKEN_ERROR_MESSAGE);
+         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
    }
 
-   private boolean create(ScheduleModel model) {
-      boolean result = true;
+   public BaseResponse<Boolean> checkOnGoingSchedule() {
+      BaseResponse<Boolean> response = new BaseResponse<>();
 
-      try {
-         scheduleRepository.save(model);
-      } catch (Exception e){
-         result = false;
+      boolean result = false;
+      List<ScheduleModel> models = scheduleRepository.findByDeletedAtIsNull();
+
+      for (ScheduleModel model : models) {
+         if (model.getStartDate().before(new Date()) && model.getEndDate().after(new Date())) {
+            result = true;
+            break;
+         }
       }
 
-      return result;
+      response.setSuccess(result);
+
+      return response;
    }
 
    public ScheduleModel getScheduleByDate(Date date) {
@@ -202,33 +145,28 @@ public class ScheduleService implements SchedulePresenter {
       for (ScheduleModel model : schedules) {
          if (!secureId.isEmpty()) {
             if (!model.getSecureId().equals(secureId)) {
-               if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
-                  result = true;
-               }
-
-               if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
-                  result = true;
-               }
-
-               if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
-                  result = true;
-               }
+               result = checkSchedule(startDate, endDate, result, model);
             }
          } else {
-            if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
-               result = true;
-            }
-
-            if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
-               result = true;
-            }
-
-            if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
-               result = true;
-            }
+            result = checkSchedule(startDate, endDate, result, model);
          }
       }
 
+      return result;
+   }
+
+   private boolean checkSchedule(Date startDate, Date endDate, boolean result, ScheduleModel model) {
+      if (startDate.after(model.getStartDate()) && startDate.before(model.getEndDate())) {
+         result = true;
+      }
+
+      if (endDate.after(model.getStartDate()) && endDate.before(model.getEndDate())) {
+         result = true;
+      }
+
+      if (startDate == model.getStartDate() || endDate == model.getEndDate()) {
+         result = true;
+      }
       return result;
    }
 }

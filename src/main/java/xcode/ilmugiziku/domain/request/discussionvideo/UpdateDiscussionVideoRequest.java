@@ -2,14 +2,16 @@ package xcode.ilmugiziku.domain.request.discussionvideo;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 @Getter
 @Setter
 public class UpdateDiscussionVideoRequest {
     private String secureId;
     private String uri;
-    private int questionType;
-    private int questionSubType;
+    private QuestionTypeEnum questionType;
+    private QuestionSubTypeEnum questionSubType;
 
     public UpdateDiscussionVideoRequest() {
     }

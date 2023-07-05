@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.TheoryTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class TheoryModel {
    private String uri;
 
    @Column(name = "theory_type")
-   private int theoryType;
+   private TheoryTypeEnum theoryType;
 
    @Column(name = "created_at")
    private Date createdAt;

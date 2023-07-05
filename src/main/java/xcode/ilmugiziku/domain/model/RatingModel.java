@@ -27,8 +27,8 @@ public class RatingModel {
    @Column(name = "lesson_secure_id")
    private String lessonSecureId;
 
-   @Column(name = "auth_secure_id")
-   private String authSecureId;
+   @Column(name = "user_secure_id")
+   private String userSecureId;
 
    @Column(name = "rating")
    private int rating;

@@ -1,19 +1,21 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.model.AuthModel;
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 import xcode.ilmugiziku.domain.model.PackageModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
+import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
+import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xcode.ilmugiziku.shared.refs.PaymentStatusRefs.PENDING;
+import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PENDING;
 
 public class PaymentMapper {
 
-    public PaymentModel createRequestToModel(CreatePaymentRequest request) {
+    public PaymentModel createRequestToModel(CreatePaymentRequest request, CreatePaymentResponse payment) {
         if (request != null) {
             Date expire = new Date();
             expire.setMonth(expire.getMonth() + 6);
@@ -23,6 +25,9 @@ public class PaymentMapper {
             response.setPaymentStatus(PENDING);
             response.setExpiredDate(expire);
             response.setCreatedAt(new Date());
+            response.setInvoiceId(payment.getInvoiceId());
+            response.setInvoiceUrl(payment.getInvoiceUrl());
+            response.setPaymentDeadline(payment.getPaymentDeadline());
 
             return response;
         } else {
@@ -30,10 +35,10 @@ public class PaymentMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(AuthModel auth, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
+    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
         Map<String, Object> customer = new HashMap<>();
-        customer.put("given_names", auth.getFullName());
-        customer.put("email", auth.getEmail());
+        customer.put("given_names", fullName);
+        customer.put("email", user.getEmail());
 
         String[] preferences = {"email"};
         Map<String, Object> notification = new HashMap<>();
@@ -52,7 +57,7 @@ public class PaymentMapper {
         params.put("external_id", secureId);
         params.put("amount", fee);
         params.put("currency", "IDR");
-        params.put("payer_email", auth.getEmail());
+        params.put("payer_email", user.getEmail());
         params.put("customer", customer);
         params.put("customer_notification_preference", notification);
         params.put("items", items);

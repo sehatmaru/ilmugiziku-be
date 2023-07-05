@@ -2,6 +2,7 @@ package xcode.ilmugiziku.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 import xcode.ilmugiziku.domain.model.LessonModel;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface LessonRepository extends JpaRepository<LessonModel, String> {
 
    LessonModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<LessonModel> findAllByBimbelTypeAndDeletedAtIsNull(int type);
+   List<LessonModel> findAllByBimbelTypeAndDeletedAtIsNull(BimbelTypeEnum type);
 }

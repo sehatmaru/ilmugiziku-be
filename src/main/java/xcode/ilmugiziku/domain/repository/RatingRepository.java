@@ -11,7 +11,7 @@ public interface RatingRepository extends JpaRepository<RatingModel, String> {
 
    RatingModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   RatingModel findByAuthSecureIdAndLessonSecureIdAndDeletedAtIsNull(String auth, String lesson);
+   RatingModel findByUserSecureIdAndLessonSecureIdAndDeletedAtIsNull(String user, String lesson);
 
    List<RatingModel> findAllByLessonSecureIdAndDeletedAtIsNull(String lesson);
 }

@@ -2,6 +2,7 @@ package xcode.ilmugiziku.domain.response.payment;
 
 import lombok.Getter;
 import lombok.Setter;
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 
 import java.util.Date;
 
@@ -9,6 +10,6 @@ import java.util.Date;
 @Setter
 public class XenditPaymentResponse {
     private String invoiceId;
-    private String status;
+    private PaymentStatusEnum status;
     private Date paidDate;
 }

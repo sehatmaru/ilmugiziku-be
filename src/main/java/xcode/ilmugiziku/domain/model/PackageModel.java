@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class PackageModel {
    private String availability;
 
    @Column(name = "package_type")
-   private int packageType;
+   private PackageTypeEnum packageType;
 
    @Column(name = "created_at")
    private Date createdAt;

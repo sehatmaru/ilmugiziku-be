@@ -1,34 +1,31 @@
 package xcode.ilmugiziku.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
 import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
-import xcode.ilmugiziku.presenter.PaymentPresenter;
+import xcode.ilmugiziku.service.PaymentService;
 
 @RestController
 @RequestMapping(value = "payment")
 public class PaymentApi {
 
-    final PaymentPresenter paymentPresenter;
-
-    public PaymentApi(PaymentPresenter paymentPresenter) {
-        this.paymentPresenter = paymentPresenter;
-    }
+    @Autowired private PaymentService paymentService;
 
     @PostMapping("/create")
-    ResponseEntity<BaseResponse<CreatePaymentResponse>> list(
-            @RequestParam @Validated String token,
+    ResponseEntity<BaseResponse<CreatePaymentResponse>> create(
             @RequestBody @Validated CreatePaymentRequest request
     ) {
-        BaseResponse<CreatePaymentResponse> response = paymentPresenter.createPayment(token, request);
+        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -38,10 +35,9 @@ public class PaymentApi {
 
     @GetMapping("/detail")
     ResponseEntity<BaseResponse<PaymentResponse>> detail(
-            @RequestParam @Validated String token,
-            @RequestParam @Validated int packageType
+            @RequestParam @Validated PackageTypeEnum packageType
     ) {
-        BaseResponse<PaymentResponse> response = paymentPresenter.detailPayment(token, packageType);
+        BaseResponse<PaymentResponse> response = paymentService.detailPayment(packageType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,7 +49,7 @@ public class PaymentApi {
     ResponseEntity<BaseResponse<XenditPaymentResponse>> xenditCallback(
             @RequestBody @Validated XenditPaymentRequest request
     ) {
-        BaseResponse<XenditPaymentResponse> response = paymentPresenter.xenditCallback(request);
+        BaseResponse<XenditPaymentResponse> response = paymentService.xenditCallback(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

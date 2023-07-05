@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,7 +29,7 @@ public class WebinarModel {
    private String link;
 
    @Column(name = "bimbel_type")
-   private int bimbelType;
+   private BimbelTypeEnum bimbelType;
 
    @Column(name = "title")
    private String title;

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
+import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,10 +30,10 @@ public class DiscussionVideoModel {
    private String uri;
 
    @Column(name = "question_type")
-   private int questionType;
+   private QuestionTypeEnum questionType;
 
    @Column(name = "question_sub_type")
-   private int questionSubType;
+   private QuestionSubTypeEnum questionSubType;
 
    @Column(name = "template_secure_id")
    private String templateSecureId;
