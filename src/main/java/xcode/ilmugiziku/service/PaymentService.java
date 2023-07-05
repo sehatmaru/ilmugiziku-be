@@ -44,7 +44,6 @@ public class PaymentService {
    public BaseResponse<PaymentResponse> detailPayment(PackageTypeEnum packageType) {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
       if (packageModel == null) {
@@ -52,17 +51,13 @@ public class PaymentService {
       }
 
       try {
-         boolean isUpgrade = isUpgradePackage(userModel, packageType);
-         int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
-
          PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
 
          if (model == null) {
             throw new AppException(NOT_FOUND_MESSAGE);
          } else {
             PaymentResponse payment = new PaymentResponse();
-            payment.setUpgrade(isUpgrade);
-            payment.setFee(fee * 6);
+            payment.setTotalAmount(packageModel.getPrice());
             payment.setPackageName(model.getTitle());
 
             response.setSuccess(payment);
@@ -80,21 +75,18 @@ public class PaymentService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
-      boolean isUpgrade = isUpgradePackage(userModel, request.getPackageType());
-      int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
-      fee *= 6;
+      if (packageModel == null) throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
 
       try {
          String secureId = generateSecureId();
 
-         CreatePaymentResponse payment = createInvoice(userModel, request, packageModel, fee, secureId);
+         CreatePaymentResponse payment = createInvoice(userModel, request, packageModel, packageModel.getPrice(), secureId);
 
          PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
          model.setSecureId(secureId);
          model.setPackageSecureId(packageModel.getSecureId());
          model.setUserSecureId(userModel.getSecureId());
-         model.setFee(fee);
-         model.setUpgrade(isUpgrade);
+         model.setTotalAmount(packageModel.getPrice());
 
          paymentRepository.save(model);
 
@@ -124,8 +116,6 @@ public class PaymentService {
             userModel.setPackages(packages);
 
             payment.setPaidDate(new Date());
-
-            savePreviousPayment(payment, userModel);
          } else if (request.isExpired()) {
             payment.setDeletedAt(new Date());
          }
@@ -150,22 +140,10 @@ public class PaymentService {
 
       return response;
    }
-
-   private void savePreviousPayment(PaymentModel payment, UserModel userModel) {
-      if (payment.isUpgrade()) {
-         PackageTypeEnum prevType = payment.getPackageType() == UKOM_EXPERT ? UKOM_NEWBIE : SKB_NEWBIE;
-         PaymentModel prevPayment = paymentRepository.findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(userModel.getSecureId(), prevType);
-         prevPayment.setDeletedAt(new Date());
-
-         paymentRepository.save(prevPayment);
-         payment.setExpiredDate(prevPayment.getExpiredDate());
-      }
-   }
-
    private CreatePaymentResponse createInvoice(UserModel user,
                                                CreatePaymentRequest request,
                                                PackageModel packageModel,
-                                               int fee,
+                                               int totalAmount,
                                                String secureId) {
       CreatePaymentResponse response = new CreatePaymentResponse();
 
@@ -174,7 +152,9 @@ public class PaymentService {
               .build();
 
       try {
-         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, packageModel, fee, secureId));
+         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, packageModel, totalAmount, secureId));
+
+         System.out.println(invoice.toString());
 
          response.setInvoiceId(invoice.getId());
          response.setInvoiceUrl(invoice.getInvoiceUrl());
@@ -186,6 +166,7 @@ public class PaymentService {
       return response;
    }
 
+   @Deprecated
    public boolean isUpgradePackage(UserModel userModel, PackageTypeEnum packageType) {
       boolean result = false;
 

@@ -35,7 +35,7 @@ public class PaymentMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, PackageModel packageModel, int fee, String secureId) {
+    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, PackageModel packageModel, int totalAmount, String secureId) {
         Map<String, Object> customer = new HashMap<>();
         customer.put("given_names", fullName);
         customer.put("email", user.getEmail());
@@ -49,28 +49,24 @@ public class PaymentMapper {
 
         Map<String, Object> item = new HashMap<>();
         item.put("name", packageModel.getTitle());
-        item.put("quantity", 6);
+        item.put("quantity", 1);
         item.put("price", packageModel.getPrice());
         Map[] items = new Map[]{item};
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", secureId);
-        params.put("amount", fee);
+        params.put("amount", totalAmount);
         params.put("currency", "IDR");
         params.put("payer_email", user.getEmail());
         params.put("customer", customer);
         params.put("customer_notification_preference", notification);
         params.put("items", items);
         params.put("should_send_email", true);
-        params.put("description", packageModel.getTitle() + " selama 6 bulan");
+        params.put("description", "Paket " + packageModel.getTitle() + " selama 6 bulan");
+        params.put("success_redirect_url", request.getSuccessRedirectUrl());
+        params.put("failure_redirect_url", request.getFailureRedirectUrl());
 
-        if (!request.getSuccessRedirectUrl().isEmpty()) {
-            params.put("success_redirect_url", request.getSuccessRedirectUrl());
-        }
-
-        if (!request.getFailureRedirectUrl().isEmpty()) {
-            params.put("failure_redirect_url", request.getFailureRedirectUrl());
-        }
+        params.forEach((key, value) -> System.out.println(key + " : " + value));
 
         return params;
     }

@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class PaymentResponse {
     private String packageName;
-    private int fee;
-    private boolean isUpgrade;
+    private int totalAmount;
 }

@@ -35,7 +35,7 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
    @Query(value = "SELECT * FROM t_user" +
            " WHERE secure_id = :secureId AND deleted_at IS NULL" +
            " LIMIT 1", nativeQuery = true)
-   Optional<UserModel> getUserBySecureId(String secureId);
+   UserModel getUserBySecureId(String secureId);
 
    @Query(value = "SELECT * FROM t_user" +
            " WHERE secure_id = :secureId AND active IS TRUE" +

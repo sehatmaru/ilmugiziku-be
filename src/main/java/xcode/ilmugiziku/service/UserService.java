@@ -74,7 +74,6 @@ public class UserService {
    private BaseResponse<LoginResponse> getEmailAccount(UserModel model) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
       
-      String token = saveToken(model);
 
       if (model.getRole() != ADMIN) {
          TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
@@ -84,7 +83,7 @@ public class UserService {
          }
       }
 
-      response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), token));
+      response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model)));
       
       return response;
    }
