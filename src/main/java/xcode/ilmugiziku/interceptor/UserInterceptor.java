@@ -7,8 +7,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.TokenModel;
+import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.TokenRepository;
+import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.exception.AppException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,12 +26,14 @@ import static xcode.ilmugiziku.shared.ResponseCode.TOKEN_ERROR_MESSAGE;
 public class UserInterceptor implements HandlerInterceptor {
 
   @Autowired TokenRepository tokenRepository;
+  @Autowired UserRepository userRepository;
   @Autowired Environment environment;
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
     String token = request.getHeader("Authorization");
     String xenditCallbackToken = request.getHeader("X-CALLBACK-TOKEN");
+    String url = request.getRequestURI();
 
     TokenModel tokenModel = new TokenModel();
 
@@ -36,6 +41,12 @@ public class UserInterceptor implements HandlerInterceptor {
       tokenModel = tokenRepository.findByToken(token.substring(7));
 
       if (tokenModel != null) {
+        UserModel userModel = userRepository.getUserBySecureId(tokenModel.getUserSecureId());
+
+        if (url.contains("admin") && userModel.getRole() != RoleEnum.ADMIN) {
+          throw new AppException(NOT_AUTHORIZED_MESSAGE);
+        }
+
         if (!tokenModel.isValid()) {
           throw new AppException(TOKEN_ERROR_MESSAGE);
         }
