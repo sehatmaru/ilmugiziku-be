@@ -6,30 +6,44 @@ import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 
 import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.EXPIRED;
 import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PAID;
+import com.google.gson.annotations.SerializedName;
 
 @Getter
 @Setter
 public class XenditPaymentRequest {
     private String id;
-    private String external_id;
-    private String user_id;
-    private boolean is_high;
-    private String payment_method;
+    @SerializedName("external_id")
+    private String externalId;
+    @SerializedName("user_id")
+    private String userId;
+    @SerializedName("is_high")
+    private boolean isHigh;
+    @SerializedName("payment_method")
+    private String paymentMethod;
     private PaymentStatusEnum status;
-    private String merchant_name;
+    @SerializedName("merchant_name")
+    private String merchantName;
     private int amount;
-    private int paid_amount;
-    private String bank_code;
-    private String paid_at;
-    private String payer_email;
+    @SerializedName("paid_amount")
+    private int paidAmount;
+    @SerializedName("bank_code")
+    private String bankCode;
+    @SerializedName("paid_at")
+    private String paidAt;
+    @SerializedName("payer_email")
+    private String payerEmail;
     private String description;
-    private int adjusted_received_amount;
-    private String fees_paid_amount;
+    @SerializedName("adjusted_received_amount")
+    private int adjustedReceivedAmount;
+    @SerializedName("fees_paid_amount")
+    private String feesPaidAmount;
     private String updated;
     private String created;
     private String currency;
-    private String payment_channel;
-    private String payment_destination;
+    @SerializedName("payment_channel")
+    private String paymentChannel;
+    @SerializedName("payment_destination")
+    private String paymentDestination;
 
     public XenditPaymentRequest() {
     }
@@ -42,29 +56,4 @@ public class XenditPaymentRequest {
         return status.equals(EXPIRED);
     }
 
-    @Override
-    public String toString() {
-        return "XenditPaymentRequest{" +
-                "id='" + id + '\'' +
-                ", external_id='" + external_id + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", is_high=" + is_high +
-                ", payment_method='" + payment_method + '\'' +
-                ", status='" + status + '\'' +
-                ", merchant_name='" + merchant_name + '\'' +
-                ", amount=" + amount +
-                ", paid_amount=" + paid_amount +
-                ", bank_code='" + bank_code + '\'' +
-                ", paid_at='" + paid_at + '\'' +
-                ", payer_email='" + payer_email + '\'' +
-                ", description='" + description + '\'' +
-                ", adjusted_received_amount=" + adjusted_received_amount +
-                ", fees_paid_amount='" + fees_paid_amount + '\'' +
-                ", updated='" + updated + '\'' +
-                ", created='" + created + '\'' +
-                ", currency='" + currency + '\'' +
-                ", payment_channel='" + payment_channel + '\'' +
-                ", payment_destination='" + payment_destination + '\'' +
-                '}';
-    }
 }
