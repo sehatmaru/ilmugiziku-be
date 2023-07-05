@@ -109,6 +109,8 @@ public class PaymentService {
    public BaseResponse<XenditPaymentResponse> xenditCallback(XenditPaymentRequest request) {
       BaseResponse<XenditPaymentResponse> response = new BaseResponse<>();
 
+      System.out.println(request.toString());
+
       XenditPaymentResponse result = new XenditPaymentResponse();
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
