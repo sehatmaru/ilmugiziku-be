@@ -15,7 +15,7 @@ import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
-import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
+import xcode.ilmugiziku.domain.request.pack.CreateUpdatePackageRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
@@ -353,7 +353,7 @@ public class AdminApi {
     @PutMapping("/package/update")
     ResponseEntity<BaseResponse<Boolean>> updatePackage(
             @RequestParam @Validated String secureId,
-            @RequestBody @Validated UpdatePackageRequest body
+            @RequestBody @Validated CreateUpdatePackageRequest body
     ) {
         BaseResponse<Boolean> response = packageService.updatePackage(secureId, body);
 
@@ -464,6 +464,18 @@ public class AdminApi {
     @GetMapping("/consumer/list")
     ResponseEntity<BaseResponse<List<UserResponse>>> consumerList() {
         BaseResponse<List<UserResponse>> response = userService.getUserList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/package/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
+            @RequestBody @Validated CreateUpdatePackageRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = packageService.createPackage(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

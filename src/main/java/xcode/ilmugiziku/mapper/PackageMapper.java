@@ -1,13 +1,13 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.PackageModel;
-import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
+import xcode.ilmugiziku.domain.request.pack.CreateUpdatePackageRequest;
 import xcode.ilmugiziku.domain.request.pack.PackageFeatureRequest;
-import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
 import xcode.ilmugiziku.domain.response.pack.PackageFeatureResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class PackageMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -62,32 +62,34 @@ public class PackageMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 
-    public PackageModel createRequestToModel(CreatePackageRequest request) {
+    public PackageModel createRequestToModel(CreateUpdatePackageRequest request) {
         if (request != null) {
-            PackageModel response = new PackageModel();
-            response.setSecureId(generateSecureId());
-            response.setTitle(request.getTitle());
-            response.setPrice(request.getPrice());
-            response.setFeatures(arrayToString(request.getFeatures(), true));
-            response.setAvailability(arrayToString(request.getFeatures(), false));
-            response.setCreatedAt(new Date());
+            PackageModel model = new PackageModel();
+            model.setSecureId(generateSecureId());
+            model.setTitle(request.getTitle());
+            model.setPrice(request.getPrice());
+            model.setFeatures(arrayToString(request.getFeatures(), true));
+            model.setAvailability(arrayToString(request.getFeatures(), false));
+            model.setPackageType(request.getPackageType());
+            model.setCreatedAt(new Date());
 
-            return response;
+            return model;
         } else {
             return null;
         }
     }
 
-    public PackageModel updateRequestToModel(PackageModel model, UpdatePackageRequest request) {
+    public PackageModel updateRequestToModel(PackageModel model, CreateUpdatePackageRequest request) {
         if (request != null && model != null) {
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
             model.setFeatures(arrayToString(request.getFeatures(), true));
             model.setAvailability(arrayToString(request.getFeatures(), false));
+            model.setPackageType(request.getPackageType());
             model.setUpdatedAt(new Date());
 
             return model;

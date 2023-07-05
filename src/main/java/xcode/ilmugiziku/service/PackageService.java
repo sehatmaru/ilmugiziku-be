@@ -9,8 +9,7 @@ import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.PackageFeatureRepository;
 import xcode.ilmugiziku.domain.repository.PackageRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
-import xcode.ilmugiziku.domain.request.pack.CreatePackageRequest;
-import xcode.ilmugiziku.domain.request.pack.UpdatePackageRequest;
+import xcode.ilmugiziku.domain.request.pack.CreateUpdatePackageRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.pack.PackageFeatureResponse;
@@ -74,7 +73,7 @@ public class PackageService {
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createPackage(CreatePackageRequest request) {
+   public BaseResponse<CreateBaseResponse> createPackage(CreateUpdatePackageRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
@@ -92,7 +91,7 @@ public class PackageService {
       return response;
    }
 
-   public BaseResponse<Boolean> updatePackage(String secureId, UpdatePackageRequest request) {
+   public BaseResponse<Boolean> updatePackage(String secureId, CreateUpdatePackageRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       PackageModel model = packageRepository.findBySecureIdAndDeletedAtIsNull(secureId);

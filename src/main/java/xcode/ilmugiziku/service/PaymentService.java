@@ -80,6 +80,8 @@ public class PaymentService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
 
+      if (packageModel == null) throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
+
       boolean isUpgrade = isUpgradePackage(userModel, request.getPackageType());
       int fee = isUpgrade ? packageModel.getPrice() * 50 / 100 : packageModel.getPrice();
       fee *= 6;
