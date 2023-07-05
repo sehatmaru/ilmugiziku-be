@@ -38,3 +38,5 @@ jasypt:
     encryptor:
         algorithm: PBEWithMD5AndDES
         iv-generator-classname: org.jasypt.iv.NoIvGenerator
+xendit:
+    token: ENC(/n6LplARZeQHl1JXFq3kS6Nj0SwFHK+wej7kClLSCgiH3Vl0DGLPk1hO3aLa/U86XhUYmocOTCVlRyr4oyXsVDj0JiJI8E5IWSGttTrxxuFL+Kcrvzkd/8GqLoE1mZmX)

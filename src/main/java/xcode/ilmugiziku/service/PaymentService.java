@@ -4,6 +4,7 @@ import com.xendit.XenditClient;
 import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
@@ -25,7 +26,6 @@ import xcode.ilmugiziku.mapper.PaymentMapper;
 import java.util.Date;
 
 import static xcode.ilmugiziku.domain.enums.PackageTypeEnum.*;
-import static xcode.ilmugiziku.shared.Environment.XENDIT_API;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
@@ -37,6 +37,7 @@ public class PaymentService {
    @Autowired private UserRepository userRepository;
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private PackageRepository packageRepository;
+   @Autowired private Environment environment;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
@@ -167,7 +168,7 @@ public class PaymentService {
       CreatePaymentResponse response = new CreatePaymentResponse();
 
       XenditClient xenditClient = new XenditClient.Builder()
-              .setApikey(XENDIT_API)
+              .setApikey(environment.getProperty("xendit.token"))
               .build();
 
       try {
