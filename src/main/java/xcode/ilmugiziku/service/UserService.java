@@ -48,9 +48,6 @@ public class UserService {
       if (request.getType() == GOOGLE) {
          response.setSuccess(getGoogleAccount(model));
       } else {
-         // TODO: 05/07/23
-//         if (model.isPremium()) courseService.refreshPremiumPackage(model);
-
          if (model.getPassword().equals(encrypt(request.getPassword()))) {
             response = getEmailAccount(model);
          } else {
@@ -92,11 +89,6 @@ public class UserService {
    private LoginResponse getGoogleAccount(UserModel model) {
       LoginResponse response;
       TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
-
-      // TODO: 05/07/23
-//      if (model.isPremium()) {
-//         courseService.refreshPremiumPackage(model);
-//      }
 
       if (tokenModel == null) {
          response = userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model));

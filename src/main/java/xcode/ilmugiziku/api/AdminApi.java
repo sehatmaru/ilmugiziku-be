@@ -482,4 +482,17 @@ public class AdminApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("refresh")
+    ResponseEntity<BaseResponse<Boolean>> refresh() {
+        courseService.refreshActiveCourse();
+
+        BaseResponse<Boolean> response = new BaseResponse<>();
+        response.setSuccess(true);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

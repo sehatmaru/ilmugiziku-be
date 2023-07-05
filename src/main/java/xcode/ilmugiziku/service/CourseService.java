@@ -3,8 +3,10 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
+import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
@@ -17,6 +19,7 @@ import xcode.ilmugiziku.mapper.CourseMapper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
@@ -31,6 +34,8 @@ public class CourseService {
    @Autowired private UserRepository userRepository;
    @Autowired private LessonRepository lessonRepository;
    @Autowired private WebinarRepository webinarRepository;
+   @Autowired private UserCourseRepository userCourseRepository;
+   @Autowired private CronJobRepository cronJobRepository;
 
    private final CourseMapper courseMapper = new CourseMapper();
 
@@ -194,43 +199,34 @@ public class CourseService {
       return response;
    }
 
-   // TODO: 05/07/23
-//   public void refreshPremiumPackage(UserModel userModel) {
-//      if (userModel.isSKBPackage()) {
-//         PaymentModel paymentModel;
-//
-//         if (userModel.isSKBExpert()) {
-//            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), SKB_EXPERT, PAID);
-//         } else {
-//            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), SKB_NEWBIE, PAID);
-//         }
-//
-//         if (paymentModel.getExpiredDate().before(new Date())) {
-//            paymentModel.setDeletedAt(new Date());
-//            userModel.setPackages(userModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
-//
-//            paymentRepository.save(paymentModel);
-//            userRepository.save(userModel);
-//         }
-//      }
-//
-//      if (userModel.isUKOMPackage()) {
-//         PaymentModel paymentModel;
-//
-//         if (userModel.isUKOMExpert()) {
-//            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), UKOM_EXPERT, PAID);
-//         } else {
-//            paymentModel = paymentRepository.findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(userModel.getSecureId(), UKOM_NEWBIE, PAID);
-//         }
-//
-//         if (paymentModel.getExpiredDate().before(new Date())) {
-//            paymentModel.setDeletedAt(new Date());
-//            userModel.setPackages(userModel.getPackages().replace(String.valueOf(paymentModel.getPackageType()), ""));
-//
-//            paymentRepository.save(paymentModel);
-//            userRepository.save(userModel);
-//         }
-//      }
-//   }
+   /**
+    * will execute at 1 am every dat
+    */
+   @Scheduled(cron = "0 0 1 * * ?")
+   public void refreshActiveCourse() {
+      CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_COURSE);
+
+      try {
+         List<UserCourseRelModel> userCourse = userCourseRepository.getAllActiveCourse(CurrentUser.get().getUserSecureId());
+
+         int totalEffectedData = 0;
+
+         for (UserCourseRelModel course : userCourse) {
+            if (course.getExpireAt().before(new Date())) {
+               course.setActive(false);
+               totalEffectedData += 1;
+            }
+         }
+
+         userCourseRepository.saveAll(userCourse);
+
+         cronJobModel.setSuccess(true);
+         cronJobModel.setTotalEffectedData(totalEffectedData);
+      } catch (Exception e) {
+         cronJobModel.setDescription(e.toString());
+      }
+
+      cronJobRepository.save(cronJobModel);
+   }
 
 }
