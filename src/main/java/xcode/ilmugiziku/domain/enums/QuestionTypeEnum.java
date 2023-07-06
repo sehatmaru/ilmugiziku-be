@@ -4,5 +4,5 @@ public enum QuestionTypeEnum {
     QUIZ,
     PRACTICE,
     TRY_OUT_UKOM,
-    TRY_OUT_SKB_GIZI
+    TRY_OUT_SKB
 }

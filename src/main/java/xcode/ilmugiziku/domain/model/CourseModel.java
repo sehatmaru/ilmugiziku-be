@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,11 +13,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "t_package")
+@Table(name = "t_course")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class PackageModel {
+public class CourseModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -31,14 +31,11 @@ public class PackageModel {
    @Column(name = "price")
    private int price;
 
-   @Column(name = "features")
-   private String features;
-
    @Column(name = "availability")
    private String availability;
 
-   @Column(name = "package_type")
-   private PackageTypeEnum packageType;
+   @Column(name = "course_type")
+   private CourseTypeEnum courseType;
 
    @Column(name = "created_at")
    private Date createdAt;

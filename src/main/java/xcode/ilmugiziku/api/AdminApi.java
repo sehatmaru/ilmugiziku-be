@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
 import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.request.discussionvideo.CreateDiscussionVideoRequest;
@@ -15,9 +15,8 @@ import xcode.ilmugiziku.domain.request.laboratory.CreateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.laboratory.UpdateLaboratoryValueRequest;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
 import xcode.ilmugiziku.domain.request.lesson.UpdateLessonRequest;
-import xcode.ilmugiziku.domain.request.pack.CreateUpdatePackageRequest;
-import xcode.ilmugiziku.domain.request.packagefeature.CreatePackageFeatureRequest;
-import xcode.ilmugiziku.domain.request.packagefeature.UpdatePackageFeatureRequest;
+import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
+import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
 import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
 import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
 import xcode.ilmugiziku.domain.request.schedule.CreateScheduleRequest;
@@ -29,6 +28,7 @@ import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
 import xcode.ilmugiziku.domain.request.webinar.CreateWebinarRequest;
 import xcode.ilmugiziku.domain.request.webinar.UpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.*;
+import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.service.*;
 
@@ -45,8 +45,8 @@ public class AdminApi {
     @Autowired private UserService userService;
     @Autowired private DiscussionVideoService discussionVideoService;
     @Autowired private TemplateService templateService;
-    @Autowired private PackageFeatureService packageFeatureService;
-    @Autowired private PackageService packageService;
+    @Autowired private BenefitService benefitService;
+    @Autowired private CourseService courseService;
     @Autowired private WebinarService webinarService;
     @Autowired private LessonService lessonService;
 
@@ -302,11 +302,11 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/package-feature/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackageFeature(
-            @RequestBody @Validated CreatePackageFeatureRequest body
+    @PostMapping("/benefit/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createBenefit(
+            @RequestBody @Validated CreateUpdateBenefitRequest body
     ) {
-        BaseResponse<CreateBaseResponse> response = packageFeatureService.createPackageFeature(body);
+        BaseResponse<CreateBaseResponse> response = benefitService.createBenefit(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -314,12 +314,12 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/package-feature/update")
-    ResponseEntity<BaseResponse<Boolean>> updatePackageFeature(
+    @PutMapping("/benefit/update")
+    ResponseEntity<BaseResponse<Boolean>> updateBenefit(
             @RequestParam @Validated String secureId,
-            @RequestBody @Validated UpdatePackageFeatureRequest body
+            @RequestBody @Validated CreateUpdateBenefitRequest body
     ) {
-        BaseResponse<Boolean> response = packageFeatureService.updatePackageFeature(secureId, body);
+        BaseResponse<Boolean> response = benefitService.updateBenefit(secureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -327,11 +327,11 @@ public class AdminApi {
                 .body(response);
     }
 
-    @DeleteMapping("/package-feature/delete")
-    ResponseEntity<BaseResponse<Boolean>> deletePackageFeature(
+    @DeleteMapping("/benefit/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteBenefit(
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<Boolean> response = packageFeatureService.deletePackageFeature(secureId);
+        BaseResponse<Boolean> response = benefitService.deleteBenefit(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -339,10 +339,10 @@ public class AdminApi {
                 .body(response);
     }
 
-    @GetMapping("/package-feature/list")
-    ResponseEntity<BaseResponse<List<PackageFeatureResponse>>> getPackageFeatureList(
+    @GetMapping("/benefit/list")
+    ResponseEntity<BaseResponse<List<BenefitResponse>>> getBenefitList(
     ) {
-        BaseResponse<List<PackageFeatureResponse>> response = packageFeatureService.getPackageFeatureList();
+        BaseResponse<List<BenefitResponse>> response = benefitService.getBenefitList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -350,12 +350,12 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/package/update")
-    ResponseEntity<BaseResponse<Boolean>> updatePackage(
+    @PutMapping("/course/update")
+    ResponseEntity<BaseResponse<Boolean>> updateCourse(
             @RequestParam @Validated String secureId,
-            @RequestBody @Validated CreateUpdatePackageRequest body
+            @RequestBody @Validated CreateUpdateCourseRequest body
     ) {
-        BaseResponse<Boolean> response = packageService.updatePackage(secureId, body);
+        BaseResponse<Boolean> response = courseService.updateCourse(secureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -402,9 +402,9 @@ public class AdminApi {
 
     @GetMapping("/webinar/list")
     ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList(
-            @RequestParam @Validated BimbelTypeEnum bimbelType
+            @RequestParam @Validated CourseTypeEnum courseType
     ) {
-        BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList(bimbelType);
+        BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList(courseType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -451,9 +451,9 @@ public class AdminApi {
 
     @GetMapping("/lesson/list")
     ResponseEntity<BaseResponse<List<LessonResponse>>> getLessonList(
-            @RequestParam @Validated BimbelTypeEnum bimbelType
+            @RequestParam @Validated CourseTypeEnum courseType
     ) {
-        BaseResponse<List<LessonResponse>> response = lessonService.getLessonList(bimbelType);
+        BaseResponse<List<LessonResponse>> response = lessonService.getLessonList(courseType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -471,11 +471,24 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/package/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createPackage(
-            @RequestBody @Validated CreateUpdatePackageRequest body
+    @PostMapping("/course/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createCourse(
+            @RequestBody @Validated CreateUpdateCourseRequest body
     ) {
-        BaseResponse<CreateBaseResponse> response = packageService.createPackage(body);
+        BaseResponse<CreateBaseResponse> response = courseService.createCourse(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("refresh")
+    ResponseEntity<BaseResponse<Boolean>> refresh() {
+        courseService.refreshActiveCourse();
+
+        BaseResponse<Boolean> response = new BaseResponse<>();
+        response.setSuccess(true);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

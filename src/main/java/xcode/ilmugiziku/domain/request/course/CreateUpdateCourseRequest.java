@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.request.lesson;
+package xcode.ilmugiziku.domain.request.course;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,19 +9,14 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class CreateLessonRequest {
+public class CreateUpdateCourseRequest {
     @NotBlank()
     private String title;
-    @NotBlank()
-    private String theory;
-    @NotBlank()
-    private String videoUri;
-    @NotBlank()
-    private String thumbnailUri;
     @NotNull()
+    private int price;
     private CourseTypeEnum courseType;
+    private CourseBenefitRequest[] benefits;
 
-    public CreateLessonRequest() {
+    public CreateUpdateCourseRequest() {
     }
-
 }

@@ -1,6 +1,6 @@
 package xcode.ilmugiziku.domain.enums;
 
-public enum BimbelTypeEnum {
+public enum CourseTypeEnum {
     UKOM,
-    SKB_GIZI
+    SKB
 }

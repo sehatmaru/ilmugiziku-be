@@ -2,7 +2,7 @@ package xcode.ilmugiziku.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 
@@ -15,11 +15,11 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, String> {
 
    List<PaymentModel> findAllByUserSecureIdAndPaymentStatusAndDeletedAtIsNull(String secureId, String status);
 
-   PaymentModel findByUserSecureIdAndPackageSecureIdAndDeletedAtIsNull(String user, String pack);
+   PaymentModel findByUserSecureIdAndCourseAndDeletedAtIsNull(String user, String course);
 
    PaymentModel findByInvoiceIdAndDeletedAtIsNull(String invoice);
 
-   PaymentModel findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(String secureId, PackageTypeEnum type);
+   PaymentModel findByUserSecureIdAndPackageTypeAndDeletedAtIsNull(String secureId, CourseTypeEnum type);
 
-   PaymentModel findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(String secureId, PackageTypeEnum type, PaymentStatusEnum status);
+   PaymentModel findByUserSecureIdAndPackageTypeAndPaymentStatusAndDeletedAtIsNull(String secureId, CourseTypeEnum type, PaymentStatusEnum status);
 }

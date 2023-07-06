@@ -16,5 +16,4 @@ public class LoginResponse {
     private String accessToken;
     private RegistrationTypeEnum type;
     private RoleEnum role;
-    private boolean isPremium;
 }

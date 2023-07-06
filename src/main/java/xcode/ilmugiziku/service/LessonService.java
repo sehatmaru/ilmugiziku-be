@@ -3,7 +3,7 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
-import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.model.LessonModel;
 import xcode.ilmugiziku.domain.repository.LessonRepository;
 import xcode.ilmugiziku.domain.request.lesson.CreateLessonRequest;
@@ -17,8 +17,8 @@ import xcode.ilmugiziku.mapper.LessonMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.BimbelTypeEnum.SKB_GIZI;
-import static xcode.ilmugiziku.domain.enums.BimbelTypeEnum.UKOM;
+import static xcode.ilmugiziku.domain.enums.CourseTypeEnum.SKB;
+import static xcode.ilmugiziku.domain.enums.CourseTypeEnum.UKOM;
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.PARAMS_ERROR_MESSAGE;
 
@@ -30,11 +30,11 @@ public class LessonService {
 
    private final LessonMapper lessonMapper = new LessonMapper();
 
-   public BaseResponse<List<LessonResponse>> getLessonList(BimbelTypeEnum bimbelType) {
+   public BaseResponse<List<LessonResponse>> getLessonList(CourseTypeEnum courseType) {
       BaseResponse<List<LessonResponse>> response = new BaseResponse<>();
 
-      if (bimbelType == UKOM || bimbelType == SKB_GIZI) {
-         List<LessonModel> models = lessonRepository.findAllByBimbelTypeAndDeletedAtIsNull(bimbelType);
+      if (courseType == UKOM || courseType == SKB) {
+         List<LessonModel> models = lessonRepository.findAllByCourseTypeAndDeletedAtIsNull(courseType);
          List<LessonResponse> responses = lessonMapper.modelsToResponses(models);
 
          for (LessonResponse lesson : responses) {

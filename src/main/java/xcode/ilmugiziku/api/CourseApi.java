@@ -6,29 +6,27 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.enums.BimbelTypeEnum;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.bimbel.BimbelInformationResponse;
-import xcode.ilmugiziku.domain.response.bimbel.BimbelResponse;
+import xcode.ilmugiziku.domain.response.course.CourseInformationResponse;
+import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
-import xcode.ilmugiziku.domain.response.pack.PackageResponse;
 import xcode.ilmugiziku.service.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "bimbel")
-public class BimbelApi {
+@RequestMapping(value = "course")
+public class CourseApi {
 
-    @Autowired private PackageService packageService;
     @Autowired private RatingService ratingService;
-    @Autowired private BimbelService bimbelService;
+    @Autowired private CourseService courseService;
     @Autowired private LessonService lessonService;
 
-    @GetMapping("/package/list")
-    ResponseEntity<BaseResponse<List<PackageResponse>>> list() {
-        BaseResponse<List<PackageResponse>> response = packageService.getPackageList();
+    @GetMapping("/course/list")
+    ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
+        BaseResponse<List<CourseResponse>> response = courseService.getCourseList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -50,10 +48,8 @@ public class BimbelApi {
     }
 
     @GetMapping("")
-    ResponseEntity<BaseResponse<BimbelResponse>> getBimbel(
-            @RequestParam @Validated BimbelTypeEnum bimbelType
-    ) {
-        BaseResponse<BimbelResponse> response = bimbelService.getBimbel(bimbelType);
+    ResponseEntity<BaseResponse<List<CourseResponse>>> getUserCourses() {
+        BaseResponse<List<CourseResponse>> response = courseService.getUserCourses();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -74,10 +70,10 @@ public class BimbelApi {
     }
 
     @GetMapping("/package")
-    ResponseEntity<BaseResponse<PackageResponse>> getPackage(
+    ResponseEntity<BaseResponse<CourseResponse>> getCourse(
             @RequestParam @Validated String secureId
     ) {
-        BaseResponse<PackageResponse> response = packageService.getPackage(secureId);
+        BaseResponse<CourseResponse> response = courseService.getCourse(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -85,21 +81,22 @@ public class BimbelApi {
                 .body(response);
     }
 
-    @GetMapping("/information")
-    ResponseEntity<BaseResponse<BimbelInformationResponse>> getBimbelInformation() {
-        BaseResponse<BimbelInformationResponse> response = bimbelService.getBimbelInformation();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
+    // TODO: 05/07/23  
+//    @GetMapping("/information")
+//    ResponseEntity<BaseResponse<CourseInformationResponse>> getCourseInformation() {
+//        BaseResponse<CourseInformationResponse> response = courseService.getCourseInformation();
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(response);
+//    }
 
     @PostMapping("/webinar/reminder")
     ResponseEntity<BaseResponse<Boolean>> sendWebinarReminder(
             @RequestParam @Validated String webinarSecureId
     ) {
-        BaseResponse<Boolean> response = bimbelService.sendWebinarReminder(webinarSecureId);
+        BaseResponse<Boolean> response = courseService.sendWebinarReminder(webinarSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

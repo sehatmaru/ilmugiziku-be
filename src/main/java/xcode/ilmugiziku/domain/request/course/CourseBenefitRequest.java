@@ -1,14 +1,14 @@
-package xcode.ilmugiziku.domain.request.pack;
+package xcode.ilmugiziku.domain.request.course;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PackageFeatureRequest {
+public class CourseBenefitRequest {
     private String secureId;
     private boolean isAvailable;
 
-    public PackageFeatureRequest() {
+    public CourseBenefitRequest() {
     }
 }

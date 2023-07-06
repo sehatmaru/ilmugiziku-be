@@ -26,7 +26,6 @@ public class UserMapper {
             response.setGender(profileModel.getGender());
             response.setEmail(profileModel.getEmail());
             response.setAccessToken(token);
-            response.setPremium(userModel.isPremium());
 
             return response;
         } else {

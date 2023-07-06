@@ -8,5 +8,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface TimeLimitRefs {
     int TIME_LIMIT_UKOM = 180;
-    int TIME_LIMIT_SKB_GIZI = 100;
+    int TIME_LIMIT_SKB = 100;
 }

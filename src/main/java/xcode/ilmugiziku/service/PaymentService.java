@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
-import xcode.ilmugiziku.domain.enums.PackageTypeEnum;
-import xcode.ilmugiziku.domain.model.PackageModel;
+import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
+import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
 import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.repository.PackageRepository;
+import xcode.ilmugiziku.domain.repository.CourseRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
@@ -25,7 +25,6 @@ import xcode.ilmugiziku.mapper.PaymentMapper;
 
 import java.util.Date;
 
-import static xcode.ilmugiziku.domain.enums.PackageTypeEnum.*;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 import static xcode.ilmugiziku.shared.Utils.stringToArray;
@@ -36,32 +35,26 @@ public class PaymentService {
    @Autowired private ProfileService profileService;
    @Autowired private UserRepository userRepository;
    @Autowired private PaymentRepository paymentRepository;
-   @Autowired private PackageRepository packageRepository;
+   @Autowired private CourseRepository courseRepository;
    @Autowired private Environment environment;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
 
-   public BaseResponse<PaymentResponse> detailPayment(PackageTypeEnum packageType) {
+   public BaseResponse<PaymentResponse> detailPayment(CourseTypeEnum packageType) {
       BaseResponse<PaymentResponse> response = new BaseResponse<>();
 
-      PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
+      CourseModel model = courseRepository.findByCourseTypeAndDeletedAtIsNull(packageType);
 
-      if (packageModel == null) {
+      if (model == null) {
          throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
       }
 
       try {
-         PackageModel model = packageRepository.findByPackageTypeAndDeletedAtIsNull(packageType);
+         PaymentResponse payment = new PaymentResponse();
+         payment.setTotalAmount(model.getPrice());
+         payment.setPackageName(model.getTitle());
 
-         if (model == null) {
-            throw new AppException(NOT_FOUND_MESSAGE);
-         } else {
-            PaymentResponse payment = new PaymentResponse();
-            payment.setTotalAmount(packageModel.getPrice());
-            payment.setPackageName(model.getTitle());
-
-            response.setSuccess(payment);
-         }
+         response.setSuccess(payment);
       } catch (Exception e){
          throw new AppException(e.toString());
       }
@@ -73,20 +66,20 @@ public class PaymentService {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      PackageModel packageModel = packageRepository.findByPackageTypeAndDeletedAtIsNull(request.getPackageType());
+      CourseModel courseModel = courseRepository.findByCourseTypeAndDeletedAtIsNull(request.getPackageType());
 
-      if (packageModel == null) throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
+      if (courseModel == null) throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
 
       try {
          String secureId = generateSecureId();
 
-         CreatePaymentResponse payment = createInvoice(userModel, request, packageModel, packageModel.getPrice(), secureId);
+         CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), secureId);
 
          PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
          model.setSecureId(secureId);
-         model.setPackageSecureId(packageModel.getSecureId());
+         model.setCourse(courseModel.getSecureId());
          model.setUserSecureId(userModel.getSecureId());
-         model.setTotalAmount(packageModel.getPrice());
+         model.setTotalAmount(courseModel.getPrice());
 
          paymentRepository.save(model);
 
@@ -109,11 +102,12 @@ public class PaymentService {
       if (payment != null) {
          UserModel userModel = userRepository.findBySecureId(payment.getUserSecureId());
 
+         // TODO: 05/07/23
          if (request.isPaid()) {
-            String packages = userModel.getPackages() != null ? userModel.getPackages() : "";
-            packages += String.valueOf(payment.getPackageType());
+//            String packages = userModel.getPackages() != null ? userModel.getPackages() : "";
+//            packages += String.valueOf(payment.getPackageType());
 
-            userModel.setPackages(packages);
+//            userModel.setPackages(packages);
 
             payment.setPaidDate(new Date());
          } else if (request.isExpired()) {
@@ -142,7 +136,7 @@ public class PaymentService {
    }
    private CreatePaymentResponse createInvoice(UserModel user,
                                                CreatePaymentRequest request,
-                                               PackageModel packageModel,
+                                               CourseModel courseModel,
                                                int totalAmount,
                                                String secureId) {
       CreatePaymentResponse response = new CreatePaymentResponse();
@@ -152,7 +146,7 @@ public class PaymentService {
               .build();
 
       try {
-         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, packageModel, totalAmount, secureId));
+         Invoice invoice = xenditClient.invoice.create(paymentMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, courseModel, totalAmount, secureId));
 
          System.out.println(invoice.toString());
 
@@ -166,29 +160,31 @@ public class PaymentService {
       return response;
    }
 
+   // TODO: 05/07/23
    @Deprecated
-   public boolean isUpgradePackage(UserModel userModel, PackageTypeEnum packageType) {
+   public boolean isUpgradePackage(UserModel userModel, CourseTypeEnum packageType) {
       boolean result = false;
 
-      if (userModel.isPremium()) {
-         if (packageType == UKOM_EXPERT) {
-            result = checkPackage(userModel, UKOM_NEWBIE);
-         }
-
-         if (packageType == SKB_EXPERT) {
-            result = checkPackage(userModel, SKB_NEWBIE);
-         }
-      }
+//      if (userModel.isPremium()) {
+//         if (packageType == UKOM_EXPERT) {
+//            result = checkPackage(userModel, UKOM_NEWBIE);
+//         }
+//
+//         if (packageType == SKB_EXPERT) {
+//            result = checkPackage(userModel, SKB_NEWBIE);
+//         }
+//      }
 
       return result;
    }
 
-   private boolean checkPackage(UserModel userModel, PackageTypeEnum packageType) {
-      for (String type : stringToArray(userModel.getPackages())) {
-         if (PackageTypeEnum.valueOf(type) == packageType) {
-            return true;
-         }
-      }
+   // TODO: 05/07/23
+   private boolean checkPackage(UserModel userModel, CourseTypeEnum packageType) {
+//      for (String type : stringToArray(userModel.getPackages())) {
+//         if (CourseTypeEnum.valueOf(type) == packageType) {
+//            return true;
+//         }
+//      }
 
       return false;
    }
