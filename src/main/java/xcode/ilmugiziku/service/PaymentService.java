@@ -46,7 +46,7 @@ public class PaymentService {
       CourseModel model = courseRepository.findByCourseTypeAndDeletedAtIsNull(packageType);
 
       if (model == null) {
-         throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
+         throw new AppException(COURSE_NOT_FOUND_MESSAGE);
       }
 
       try {
@@ -68,7 +68,7 @@ public class PaymentService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findByCourseTypeAndDeletedAtIsNull(request.getPackageType());
 
-      if (courseModel == null) throw new AppException(PACKAGE_NOT_FOUND_MESSAGE);
+      if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
 
       try {
          String secureId = generateSecureId();

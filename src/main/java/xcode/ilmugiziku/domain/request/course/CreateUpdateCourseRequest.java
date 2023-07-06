@@ -6,6 +6,7 @@ import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,8 +15,9 @@ public class CreateUpdateCourseRequest {
     private String title;
     @NotNull()
     private int price;
+    private boolean open;
     private CourseTypeEnum courseType;
-    private CourseBenefitRequest[] benefits;
+    private List<BenefitRequest> benefits;
 
     public CreateUpdateCourseRequest() {
     }

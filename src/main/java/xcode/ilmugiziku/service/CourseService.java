@@ -9,6 +9,7 @@ import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
+import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 
 @Service
@@ -89,6 +91,7 @@ public class CourseService {
       try {
          CourseModel model = courseMapper.createRequestToModel(request);
          courseRepository.save(model);
+         courseBenefitRepository.saveAll(benefitMapper.benefitRequestToCourseBenefitModels(request.getBenefits(), model.getSecureId()));
 
          createResponse.setSecureId(model.getSecureId());
 
@@ -105,8 +108,14 @@ public class CourseService {
 
       CourseModel model = courseRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
+      if (model == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+
       try {
          courseRepository.save(courseMapper.updateRequestToModel(model, request));
+
+         List<CourseBenefitRelModel> previousCourseBenefitModel = courseBenefitRepository.getCourseBenefits(secureId);
+         checkPreviousCourseBenefit(previousCourseBenefitModel, request.getBenefits());
+         checkNewCourseBenefit(previousCourseBenefitModel, request.getBenefits(), secureId);
 
          response.setSuccess(true);
       } catch (Exception e){
@@ -114,6 +123,41 @@ public class CourseService {
       }
 
       return response;
+   }
+
+   private void checkPreviousCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits) {
+      for (CourseBenefitRelModel prev : models) {
+         boolean isAdded = false;
+
+         for (BenefitRequest benefit : benefits) {
+            if (prev.getBenefit().equals(benefit.getSecureId())) {
+               isAdded = true;
+               break;
+            }
+         }
+
+         if (isAdded) {
+            prev.setDeleted(true);
+            courseBenefitRepository.save(prev);
+         }
+      }
+   }
+
+   private void checkNewCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits, String secureId) {
+      for (BenefitRequest current : benefits) {
+         boolean isAdded = false;
+
+         for (CourseBenefitRelModel model : models) {
+            if (current.getSecureId().equals(model.getBenefit())) {
+               isAdded = true;
+               break;
+            }
+         }
+
+         if (!isAdded) {
+            courseBenefitRepository.save(benefitMapper.benefitRequestToCourseBenefitModel(current, secureId));
+         }
+      }
    }
 
    public BaseResponse<List<CourseResponse>> getUserCourses() {

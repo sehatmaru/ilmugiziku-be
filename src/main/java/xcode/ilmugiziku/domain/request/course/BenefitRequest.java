@@ -5,10 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CourseBenefitRequest {
+public class BenefitRequest {
     private String secureId;
-    private boolean isAvailable;
 
-    public CourseBenefitRequest() {
+    public BenefitRequest() {
     }
 }

@@ -2,7 +2,7 @@ package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
-import xcode.ilmugiziku.domain.request.course.CourseBenefitRequest;
+import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 
@@ -72,10 +72,8 @@ public class CourseMapper {
             model.setSecureId(generateSecureId());
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
-            // TODO: 05/07/23
-//            model.setFeatures(arrayToString(request.getFeatures(), true));
-//            model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
+            model.setOpen(true);
             model.setCreatedAt(new Date());
 
             return model;
@@ -88,10 +86,8 @@ public class CourseMapper {
         if (request != null && model != null) {
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
-            // TODO: 05/07/23
-//            model.setFeatures(arrayToString(request.getFeatures(), true));
-//            model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
+            model.setOpen(request.isOpen());
             model.setUpdatedAt(new Date());
 
             return model;
@@ -129,11 +125,12 @@ public class CourseMapper {
         }
     }
 
-    private String arrayToString(CourseBenefitRequest[] requests, boolean isFeature) {
+    @Deprecated
+    private String arrayToString(BenefitRequest[] requests, boolean isFeature) {
         StringBuilder result = new StringBuilder();
 
         if (isFeature) {
-            for (CourseBenefitRequest feature: requests) {
+            for (BenefitRequest feature: requests) {
                 result.append(feature.getSecureId());
 
                 if (!feature.equals(requests[requests.length - 1])) {
@@ -141,8 +138,8 @@ public class CourseMapper {
                 }
             }
         } else {
-            for (CourseBenefitRequest feature: requests) {
-                result.append(feature.isAvailable());
+            for (BenefitRequest feature: requests) {
+//                result.append(feature.isAvailable());
 
                 if (!feature.equals(requests[requests.length - 1])) {
                     result.append(",");
@@ -153,6 +150,7 @@ public class CourseMapper {
         return result.toString();
     }
 
+    @Deprecated
     public String[] stringToArray(String requests) {
         return requests.isEmpty() ? new String [0] : requests.split(",");
     }
