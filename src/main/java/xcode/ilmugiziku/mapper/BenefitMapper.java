@@ -1,7 +1,9 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.BenefitModel;
+import xcode.ilmugiziku.domain.model.CourseBenefitRelModel;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
+import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 
@@ -84,6 +86,33 @@ public class BenefitMapper {
                     model.getSecureId(),
                     model.getDescription()
             );
+        } else {
+            return null;
+        }
+    }
+
+    public List<CourseBenefitRelModel> benefitRequestToCourseBenefitModels(List<BenefitRequest> models, String course) {
+        if (models != null) {
+            List<CourseBenefitRelModel> response = new ArrayList<>();
+
+            for (BenefitRequest model : models) {
+                response.add(benefitRequestToCourseBenefitModel(model, course));
+            }
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public CourseBenefitRelModel benefitRequestToCourseBenefitModel(BenefitRequest model, String course) {
+        if (model != null) {
+            CourseBenefitRelModel result = new CourseBenefitRelModel();
+            result.setSecureId(generateSecureId());
+            result.setBenefit(model.getSecureId());
+            result.setCourse(course);
+
+            return result;
         } else {
             return null;
         }

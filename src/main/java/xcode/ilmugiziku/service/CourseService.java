@@ -9,6 +9,7 @@ import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
+import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 
 @Service
@@ -31,6 +33,7 @@ public class CourseService {
 
    @Autowired private JavaMailSender javaMailSender;
    @Autowired private ProfileService profileService;
+   @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private UserRepository userRepository;
@@ -46,22 +49,16 @@ public class CourseService {
    public BaseResponse<List<CourseResponse>> getCourseList() {
       BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
 
-      // TODO: 05/07/23
-//      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
-      List<CourseResponse> responses = courseMapper.modelsToResponses(models);
+      try {
+         List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
+         List<CourseResponse> responses = courseMapper.modelsToResponses(models);
 
-      for (CourseResponse resp : responses) {
-//         resp.setOpen(!userModel.isPaidCourse(resp.getCourseType()));
+         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
-         for (CourseBenefitResponse feature: resp.getBenefits()) {
-            BenefitModel model = benefitRepository.findBySecureIdAndDeletedAtIsNull(feature.getSecureId());
-
-            feature.setDesc(model.getDescription());
-         }
+         response.setSuccess(responses);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
       }
-
-      response.setSuccess(responses);
 
       return response;
    }
@@ -94,6 +91,7 @@ public class CourseService {
       try {
          CourseModel model = courseMapper.createRequestToModel(request);
          courseRepository.save(model);
+         courseBenefitRepository.saveAll(benefitMapper.benefitRequestToCourseBenefitModels(request.getBenefits(), model.getSecureId()));
 
          createResponse.setSecureId(model.getSecureId());
 
@@ -110,8 +108,14 @@ public class CourseService {
 
       CourseModel model = courseRepository.findBySecureIdAndDeletedAtIsNull(secureId);
 
+      if (model == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+
       try {
          courseRepository.save(courseMapper.updateRequestToModel(model, request));
+
+         List<CourseBenefitRelModel> previousCourseBenefitModel = courseBenefitRepository.getCourseBenefits(secureId);
+         checkPreviousCourseBenefit(previousCourseBenefitModel, request.getBenefits());
+         checkNewCourseBenefit(previousCourseBenefitModel, request.getBenefits(), secureId);
 
          response.setSuccess(true);
       } catch (Exception e){
@@ -119,6 +123,41 @@ public class CourseService {
       }
 
       return response;
+   }
+
+   private void checkPreviousCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits) {
+      for (CourseBenefitRelModel prev : models) {
+         boolean isAdded = false;
+
+         for (BenefitRequest benefit : benefits) {
+            if (prev.getBenefit().equals(benefit.getSecureId())) {
+               isAdded = true;
+               break;
+            }
+         }
+
+         if (isAdded) {
+            prev.setDeleted(true);
+            courseBenefitRepository.save(prev);
+         }
+      }
+   }
+
+   private void checkNewCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits, String secureId) {
+      for (BenefitRequest current : benefits) {
+         boolean isAdded = false;
+
+         for (CourseBenefitRelModel model : models) {
+            if (current.getSecureId().equals(model.getBenefit())) {
+               isAdded = true;
+               break;
+            }
+         }
+
+         if (!isAdded) {
+            courseBenefitRepository.save(benefitMapper.benefitRequestToCourseBenefitModel(current, secureId));
+         }
+      }
    }
 
    public BaseResponse<List<CourseResponse>> getUserCourses() {
@@ -129,21 +168,11 @@ public class CourseService {
          List<UserCourseRelModel> userCourseModel = userCourseRepository.getUserActiveCourse(CurrentUser.get().getUserSecureId());
 
          List<CourseModel> courseModels = new ArrayList<>();
-         userCourseModel.forEach(e -> {
-            courseModels.add(courseRepository.findBySecureIdAndDeletedAtIsNull(e.getSecureId()));
-         });
+         userCourseModel.forEach(e -> courseModels.add(courseRepository.findBySecureIdAndDeletedAtIsNull(e.getSecureId())));
 
          result = courseMapper.userCoursesToResponses(courseModels);
 
-         result.forEach(e -> {
-            List<CourseBenefitRelModel> courseBenefitModel = courseBenefitRepository.getCourseBenefits(e.getSecureId());
-            List<BenefitModel> benefitModels = new ArrayList<>();
-            courseBenefitModel.forEach(f -> {
-               benefitModels.add(benefitRepository.findBySecureIdAndDeletedAtIsNull(f.getBenefit()));
-            });
-
-            e.setBenefits(benefitMapper.benefitsToResponses(benefitModels));
-         });
+         result.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
          response.setSuccess(result);
       } catch (Exception e) {
