@@ -24,7 +24,7 @@ public class CourseApi {
     @Autowired private CourseService courseService;
     @Autowired private LessonService lessonService;
 
-    @GetMapping("/course/list")
+    @GetMapping("/list")
     ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
         BaseResponse<List<CourseResponse>> response = courseService.getCourseList();
 

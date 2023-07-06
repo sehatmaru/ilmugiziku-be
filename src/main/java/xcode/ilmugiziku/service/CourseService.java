@@ -31,6 +31,7 @@ public class CourseService {
 
    @Autowired private JavaMailSender javaMailSender;
    @Autowired private ProfileService profileService;
+   @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private UserRepository userRepository;
@@ -46,22 +47,16 @@ public class CourseService {
    public BaseResponse<List<CourseResponse>> getCourseList() {
       BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
 
-      // TODO: 05/07/23
-//      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
-      List<CourseResponse> responses = courseMapper.modelsToResponses(models);
+      try {
+         List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
+         List<CourseResponse> responses = courseMapper.modelsToResponses(models);
 
-      for (CourseResponse resp : responses) {
-//         resp.setOpen(!userModel.isPaidCourse(resp.getCourseType()));
+         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
-         for (CourseBenefitResponse feature: resp.getBenefits()) {
-            BenefitModel model = benefitRepository.findBySecureIdAndDeletedAtIsNull(feature.getSecureId());
-
-            feature.setDesc(model.getDescription());
-         }
+         response.setSuccess(responses);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
       }
-
-      response.setSuccess(responses);
 
       return response;
    }
@@ -129,21 +124,11 @@ public class CourseService {
          List<UserCourseRelModel> userCourseModel = userCourseRepository.getUserActiveCourse(CurrentUser.get().getUserSecureId());
 
          List<CourseModel> courseModels = new ArrayList<>();
-         userCourseModel.forEach(e -> {
-            courseModels.add(courseRepository.findBySecureIdAndDeletedAtIsNull(e.getSecureId()));
-         });
+         userCourseModel.forEach(e -> courseModels.add(courseRepository.findBySecureIdAndDeletedAtIsNull(e.getSecureId())));
 
          result = courseMapper.userCoursesToResponses(courseModels);
 
-         result.forEach(e -> {
-            List<CourseBenefitRelModel> courseBenefitModel = courseBenefitRepository.getCourseBenefits(e.getSecureId());
-            List<BenefitModel> benefitModels = new ArrayList<>();
-            courseBenefitModel.forEach(f -> {
-               benefitModels.add(benefitRepository.findBySecureIdAndDeletedAtIsNull(f.getBenefit()));
-            });
-
-            e.setBenefits(benefitMapper.benefitsToResponses(benefitModels));
-         });
+         result.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
          response.setSuccess(result);
       } catch (Exception e) {

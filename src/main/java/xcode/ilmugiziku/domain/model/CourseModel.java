@@ -31,8 +31,8 @@ public class CourseModel {
    @Column(name = "price")
    private int price;
 
-   @Column(name = "availability")
-   private String availability;
+   @Column(name = "open")
+   private boolean open;
 
    @Column(name = "course_type")
    private CourseTypeEnum courseType;

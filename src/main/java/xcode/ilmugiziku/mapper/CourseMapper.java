@@ -45,6 +45,7 @@ public class CourseMapper {
             response.setTitle(model.getTitle());
             response.setPrice(model.getPrice());
             response.setBenefits(modelToBenefitResponses(model));
+            response.setOpen(model.isOpen());
             response.setCourseType(model.getCourseType());
 
             return response;
@@ -57,9 +58,7 @@ public class CourseMapper {
         if (models != null) {
             List<CourseResponse> response = new ArrayList<>();
 
-            for (CourseModel model : models) {
-                response.add(modelToResponse(model));
-            }
+            models.forEach(e -> response.add(modelToResponse(e)));
 
             return response;
         } else {
@@ -75,7 +74,7 @@ public class CourseMapper {
             model.setPrice(request.getPrice());
             // TODO: 05/07/23
 //            model.setFeatures(arrayToString(request.getFeatures(), true));
-            model.setAvailability(arrayToString(request.getBenefits(), false));
+//            model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
             model.setCreatedAt(new Date());
 
@@ -91,7 +90,7 @@ public class CourseMapper {
             model.setPrice(request.getPrice());
             // TODO: 05/07/23
 //            model.setFeatures(arrayToString(request.getFeatures(), true));
-            model.setAvailability(arrayToString(request.getBenefits(), false));
+//            model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
             model.setUpdatedAt(new Date());
 
