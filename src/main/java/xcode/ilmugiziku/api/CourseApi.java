@@ -47,18 +47,15 @@ public class CourseApi {
                 .body(response);
     }
 
-    // TODO: 05/07/23  
-//    @GetMapping("")
-//    ResponseEntity<BaseResponse<CourseResponse>> getCourse(
-//            @RequestParam @Validated CourseTypeEnum courseType
-//    ) {
-//        BaseResponse<CourseResponse> response = courseService.getUserCourse(courseType);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
+    @GetMapping("")
+    ResponseEntity<BaseResponse<List<CourseResponse>>> getUserCourses() {
+        BaseResponse<List<CourseResponse>> response = courseService.getUserCourses();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 
     @GetMapping("/lesson")
     ResponseEntity<BaseResponse<LessonResponse>> getLesson(

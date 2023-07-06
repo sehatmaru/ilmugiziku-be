@@ -15,10 +15,12 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.exception.AppException;
+import xcode.ilmugiziku.mapper.BenefitMapper;
 import xcode.ilmugiziku.mapper.CourseMapper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,9 +37,11 @@ public class CourseService {
    @Autowired private LessonRepository lessonRepository;
    @Autowired private WebinarRepository webinarRepository;
    @Autowired private UserCourseRepository userCourseRepository;
+   @Autowired private CourseBenefitRepository courseBenefitRepository;
    @Autowired private CronJobRepository cronJobRepository;
 
    private final CourseMapper courseMapper = new CourseMapper();
+   private final BenefitMapper benefitMapper = new BenefitMapper();
 
    public BaseResponse<List<CourseResponse>> getCourseList() {
       BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
@@ -117,15 +121,37 @@ public class CourseService {
       return response;
    }
 
-   // TODO: 05/07/23
-//   public BaseResponse<CourseResponse> getUserCourse(CourseTypeEnum courseType) {
-//      BaseResponse<CourseResponse> response = new BaseResponse<>();
-//
-//      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-//      response.setSuccess(setCourse(userModel, courseType));
-//
-//      return response;
-//   }
+   public BaseResponse<List<CourseResponse>> getUserCourses() {
+      BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
+      List<CourseResponse> result;
+
+      try {
+         List<UserCourseRelModel> userCourseModel = userCourseRepository.getUserActiveCourse(CurrentUser.get().getUserSecureId());
+
+         List<CourseModel> courseModels = new ArrayList<>();
+         userCourseModel.forEach(e -> {
+            courseModels.add(courseRepository.findBySecureIdAndDeletedAtIsNull(e.getSecureId()));
+         });
+
+         result = courseMapper.userCoursesToResponses(courseModels);
+
+         result.forEach(e -> {
+            List<CourseBenefitRelModel> courseBenefitModel = courseBenefitRepository.getCourseBenefits(e.getSecureId());
+            List<BenefitModel> benefitModels = new ArrayList<>();
+            courseBenefitModel.forEach(f -> {
+               benefitModels.add(benefitRepository.findBySecureIdAndDeletedAtIsNull(f.getBenefit()));
+            });
+
+            e.setBenefits(benefitMapper.benefitsToResponses(benefitModels));
+         });
+
+         response.setSuccess(result);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
 
    // TODO: 05/07/23
 //   private CourseResponse setCourse(UserModel userModel, CourseTypeEnum courseType) {

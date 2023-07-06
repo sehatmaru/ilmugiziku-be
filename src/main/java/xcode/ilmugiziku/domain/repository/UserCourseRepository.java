@@ -11,7 +11,7 @@ import java.util.List;
 public interface UserCourseRepository extends JpaRepository<UserCourseRelModel, String> {
 
    @Query(value = "SELECT * FROM t_user_course_rel" +
-           " WHERE user_secure_id = :username AND active = TRUE" +
+           " WHERE user_secure_id = :user AND active = TRUE" +
            " AND deleted = FALSE", nativeQuery = true)
    List<UserCourseRelModel> getUserActiveCourse(String user);
 

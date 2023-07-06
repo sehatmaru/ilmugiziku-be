@@ -18,6 +18,7 @@ public class CourseMapper {
         if (model != null) {
             List<CourseBenefitResponse> response = new ArrayList<>();
 
+            // TODO: 05/07/23
 //            String[] features = stringToArray(model.getBenefits());
 //            String[] availability = stringToArray(model.getAvailability());
 //
@@ -72,6 +73,7 @@ public class CourseMapper {
             model.setSecureId(generateSecureId());
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
+            // TODO: 05/07/23
 //            model.setFeatures(arrayToString(request.getFeatures(), true));
             model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
@@ -87,12 +89,42 @@ public class CourseMapper {
         if (request != null && model != null) {
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
+            // TODO: 05/07/23
 //            model.setFeatures(arrayToString(request.getFeatures(), true));
             model.setAvailability(arrayToString(request.getBenefits(), false));
             model.setCourseType(request.getCourseType());
             model.setUpdatedAt(new Date());
 
             return model;
+        } else {
+            return null;
+        }
+    }
+
+    public List<CourseResponse> userCoursesToResponses(List<CourseModel> models) {
+        if (models != null) {
+            List<CourseResponse> response = new ArrayList<>();
+
+            for (CourseModel model : models) {
+                response.add(userCourseToResponse(model));
+            }
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public CourseResponse userCourseToResponse(CourseModel model) {
+        if (model != null) {
+            CourseResponse response = new CourseResponse();
+            response.setTitle(model.getTitle());
+            response.setSecureId(model.getSecureId());
+            response.setTitle(model.getTitle());
+            response.setPrice(model.getPrice());
+            response.setCourseType(model.getCourseType());
+
+            return response;
         } else {
             return null;
         }
