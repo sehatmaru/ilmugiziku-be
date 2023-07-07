@@ -168,33 +168,4 @@ public class PaymentService {
       return response;
    }
 
-   // TODO: 05/07/23
-   @Deprecated
-   public boolean isUpgradePackage(UserModel userModel, CourseTypeEnum packageType) {
-      boolean result = false;
-
-//      if (userModel.isPremium()) {
-//         if (packageType == UKOM_EXPERT) {
-//            result = checkPackage(userModel, UKOM_NEWBIE);
-//         }
-//
-//         if (packageType == SKB_EXPERT) {
-//            result = checkPackage(userModel, SKB_NEWBIE);
-//         }
-//      }
-
-      return result;
-   }
-
-   // TODO: 05/07/23
-   private boolean checkPackage(UserModel userModel, CourseTypeEnum packageType) {
-//      for (String type : stringToArray(userModel.getPackages())) {
-//         if (CourseTypeEnum.valueOf(type) == packageType) {
-//            return true;
-//         }
-//      }
-
-      return false;
-   }
-
 }

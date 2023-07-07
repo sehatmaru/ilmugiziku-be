@@ -10,5 +10,5 @@ import java.util.Date;
 public class CreatePaymentResponse {
     private String invoiceId;
     private String invoiceUrl;
-    private String paymentDeadline;
+    private Date paymentDeadline;
 }
