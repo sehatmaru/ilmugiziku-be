@@ -203,21 +203,6 @@ public class CourseService {
 //      return result;
 //   }
 
-   // TODO: 05/07/23
-//   public BaseResponse<CourseInformationResponse> getCourseInformation() {
-//      BaseResponse<CourseInformationResponse> response = new BaseResponse<>();
-//
-//      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-//
-//      if (userModel.isPremium()) {
-//         refreshPremiumPackage(userModel);
-//      }
-//
-//      response.setSuccess(new CourseInformationResponse(userModel.isUKOMPackage(), userModel.isSKBPackage()));
-//
-//      return response;
-//   }
-
    public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

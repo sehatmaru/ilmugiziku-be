@@ -31,12 +31,12 @@ public class UserCourseRelModel {
    private String course;
 
    @Column(name = "active")
-   private boolean active;
+   private boolean active = false;
 
    @Column(name = "expire_at")
    private Date expireAt;
 
    @Column(name = "deleted")
-   private boolean deleted;
+   private boolean deleted = false;
 
 }

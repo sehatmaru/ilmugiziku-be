@@ -10,9 +10,11 @@ import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.PaymentModel;
+import xcode.ilmugiziku.domain.model.UserCourseRelModel;
 import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
 import xcode.ilmugiziku.domain.repository.PaymentRepository;
+import xcode.ilmugiziku.domain.repository.UserCourseRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
@@ -26,8 +28,7 @@ import xcode.ilmugiziku.mapper.PaymentMapper;
 import java.util.Date;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
-import static xcode.ilmugiziku.shared.Utils.stringToArray;
+import static xcode.ilmugiziku.shared.Utils.*;
 
 @Service
 public class PaymentService {
@@ -36,6 +37,7 @@ public class PaymentService {
    @Autowired private UserRepository userRepository;
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private CourseRepository courseRepository;
+   @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private Environment environment;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
@@ -62,26 +64,33 @@ public class PaymentService {
       return response;
    }
 
-   public BaseResponse<CreatePaymentResponse> createPayment(CreatePaymentRequest request) {
+   public BaseResponse<CreatePaymentResponse> createPayment(String courseSecureId, CreatePaymentRequest request) {
       BaseResponse<CreatePaymentResponse> response = new BaseResponse<>();
 
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      CourseModel courseModel = courseRepository.findByCourseTypeAndDeletedAtIsNull(request.getPackageType());
+      CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
 
       if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+      if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
 
       try {
-         String secureId = generateSecureId();
+         String paymentSecureId = generateSecureId();
+         String userCourseSecureId = generateSecureId();
 
-         CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), secureId);
+         CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), paymentSecureId);
+
+         UserCourseRelModel userCourse = new UserCourseRelModel();
+         userCourse.setSecureId(userCourseSecureId);
+         userCourse.setUser(CurrentUser.get().getUserSecureId());
+         userCourse.setCourse(courseSecureId);
 
          PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
-         model.setSecureId(secureId);
-         model.setCourse(courseModel.getSecureId());
-         model.setUserSecureId(userModel.getSecureId());
+         model.setSecureId(paymentSecureId);
+         model.setUserCourse(userCourseSecureId);
          model.setTotalAmount(courseModel.getPrice());
 
          paymentRepository.save(model);
+         userCourseRepository.save(userCourse);
 
          response.setSuccess(payment);
       } catch (Exception e){
@@ -100,17 +109,15 @@ public class PaymentService {
       PaymentModel payment = paymentRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
       if (payment != null) {
-         UserModel userModel = userRepository.findBySecureId(payment.getUserSecureId());
+         UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(payment.getUserCourse());
 
-         // TODO: 05/07/23
          if (request.isPaid()) {
-//            String packages = userModel.getPackages() != null ? userModel.getPackages() : "";
-//            packages += String.valueOf(payment.getPackageType());
-
-//            userModel.setPackages(packages);
+            userCourse.setActive(true);
+            userCourse.setExpireAt(getNextMonthDate());
 
             payment.setPaidDate(new Date());
          } else if (request.isExpired()) {
+            userCourse.setDeleted(true);
             payment.setDeletedAt(new Date());
          }
 
@@ -118,7 +125,7 @@ public class PaymentService {
 
          try {
             paymentRepository.save(payment);
-            userRepository.save(userModel);
+            userCourseRepository.save(userCourse);
 
             result.setInvoiceId(request.getId());
             result.setStatus(request.getStatus());
@@ -134,6 +141,7 @@ public class PaymentService {
 
       return response;
    }
+
    private CreatePaymentResponse createInvoice(UserModel user,
                                                CreatePaymentRequest request,
                                                CourseModel courseModel,
@@ -152,7 +160,7 @@ public class PaymentService {
 
          response.setInvoiceId(invoice.getId());
          response.setInvoiceUrl(invoice.getInvoiceUrl());
-         response.setPaymentDeadline(invoice.getExpiryDate());
+         response.setPaymentDeadline(stringToDate(invoice.getExpiryDate()));
       } catch (XenditException e) {
          throw new AppException(e.toString());
       }

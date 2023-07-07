@@ -2,16 +2,12 @@ package xcode.ilmugiziku.domain.request.payment;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 public class CreatePaymentRequest {
-    @NotNull()
-    private CourseTypeEnum packageType;
     @NotBlank()
     private String successRedirectUrl;
     @NotBlank()

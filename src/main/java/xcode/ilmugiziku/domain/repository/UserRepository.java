@@ -21,12 +21,6 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
    List<UserModel> findByRoleAndDeletedAtIsNull(RoleEnum role);
 
    @Query(value = "SELECT * FROM t_user" +
-           " WHERE username = :username AND active IS TRUE" +
-           " AND deleted_at IS NULL" +
-           " LIMIT 1", nativeQuery = true)
-   Optional<UserModel> getActiveUserByUsername(String username);
-
-   @Query(value = "SELECT * FROM t_user" +
            " WHERE secure_id = :secureId AND deleted_at IS NULL" +
            " LIMIT 1", nativeQuery = true)
    UserModel getUserBySecureId(String secureId);
@@ -38,10 +32,11 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
    Optional<UserModel> getActiveUserBySecureId(String secureId);
 
    @Query(value = "SELECT u.* FROM t_user u" +
-           " LEFT JOIN t_group_member m ON u.secure_id = m.member_secure_id" +
-           " WHERE m.group_secure_id <> :group AND u.secure_id <> :user" +
+           " LEFT JOIN t_user_course_rel uc ON uc.user_secure_id = u.secure_id" +
+           " WHERE uc.secure_id = :userCourse" +
            " AND u.deleted_at IS NULL" +
            " AND u.active IS TRUE" +
-           " OR leave_at IS NOT NULL", nativeQuery = true)
-   List<UserModel> getGroupNonMemberList(String group, String user);
+           " AND uc.deleted IS FALSE", nativeQuery = true)
+   UserModel getUserByUserCourse(String userCourse);
+
 }
