@@ -68,20 +68,24 @@ public class PaymentService {
 
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
+      UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
 
       if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
       if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
+      if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
       try {
+         checkCurrentPendingPayment();
+
          String paymentSecureId = generateSecureId();
          String userCourseSecureId = generateSecureId();
 
          CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), paymentSecureId);
 
-         UserCourseRelModel userCourse = new UserCourseRelModel();
-         userCourse.setSecureId(userCourseSecureId);
-         userCourse.setUser(CurrentUser.get().getUserSecureId());
-         userCourse.setCourse(courseSecureId);
+         UserCourseRelModel userCourseModel = new UserCourseRelModel();
+         userCourseModel.setSecureId(userCourseSecureId);
+         userCourseModel.setUser(CurrentUser.get().getUserSecureId());
+         userCourseModel.setCourse(courseSecureId);
 
          PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
          model.setSecureId(paymentSecureId);
@@ -89,7 +93,7 @@ public class PaymentService {
          model.setTotalAmount(courseModel.getPrice());
 
          paymentRepository.save(model);
-         userCourseRepository.save(userCourse);
+         userCourseRepository.save(userCourseModel);
 
          response.setSuccess(payment);
       } catch (Exception e){
@@ -97,6 +101,17 @@ public class PaymentService {
       }
 
       return response;
+   }
+
+   private void checkCurrentPendingPayment() {
+      PaymentModel pendingPayment = paymentRepository.getPendingPayment(PaymentStatusEnum.PENDING);
+
+      if (pendingPayment != null) {
+         pendingPayment.setPaymentStatus(PaymentStatusEnum.EXPIRED);
+         pendingPayment.setDeletedAt(new Date());
+
+         paymentRepository.save(pendingPayment);
+      }
    }
 
    public BaseResponse<XenditPaymentResponse> xenditCallback(XenditPaymentRequest request) {
