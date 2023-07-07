@@ -5,17 +5,14 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.model.CourseModel;
-import xcode.ilmugiziku.domain.model.PaymentModel;
-import xcode.ilmugiziku.domain.model.UserCourseRelModel;
-import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.repository.CourseRepository;
-import xcode.ilmugiziku.domain.repository.PaymentRepository;
-import xcode.ilmugiziku.domain.repository.UserCourseRepository;
-import xcode.ilmugiziku.domain.repository.UserRepository;
+import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
+import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
+import xcode.ilmugiziku.domain.model.*;
+import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
 import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -26,6 +23,7 @@ import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.PaymentMapper;
 
 import java.util.Date;
+import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.*;
@@ -38,6 +36,7 @@ public class PaymentService {
    @Autowired private PaymentRepository paymentRepository;
    @Autowired private CourseRepository courseRepository;
    @Autowired private UserCourseRepository userCourseRepository;
+   @Autowired private CronJobRepository cronJobRepository;
    @Autowired private Environment environment;
 
    private final PaymentMapper paymentMapper = new PaymentMapper();
@@ -166,6 +165,39 @@ public class PaymentService {
       }
 
       return response;
+   }
+
+   /**
+    * will check all expired payment
+    * execute at 1 am every dat
+    */
+   @Scheduled(cron = "0 0 1 * * ?")
+   public void checkExpiredPayment() {
+      CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_EXPIRED_PAYMENT);
+
+      try {
+         List<PaymentModel> pendingPayments = paymentRepository.getAllPendingPayment(PaymentStatusEnum.PENDING);
+
+         int totalEffectedData = 0;
+
+         for (PaymentModel payment: pendingPayments) {
+            if (payment.getPaymentDeadline().before(new Date())) {
+               payment.setDeletedAt(new Date());
+               payment.setPaymentStatus(PaymentStatusEnum.EXPIRED);
+
+               totalEffectedData += 1;
+            }
+         }
+
+         paymentRepository.saveAll(pendingPayments);
+
+         cronJobModel.setSuccess(true);
+         cronJobModel.setTotalEffectedData(totalEffectedData);
+      } catch (Exception e) {
+         cronJobModel.setDescription(e.toString());
+      }
+
+      cronJobRepository.save(cronJobModel);
    }
 
 }
