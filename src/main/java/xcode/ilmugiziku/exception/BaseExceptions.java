@@ -74,6 +74,7 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case AUTH_ERROR_MESSAGE:
             case NOT_AUTHORIZED_MESSAGE:
             case INACTIVE_COURSE:
+            case LOGIN_EXIST_MESSAGE:
             case MEMBER_NOT_FOUND_MESSAGE: {
                 response.setNotAuthorized(ex.getMessage());
                 break;
