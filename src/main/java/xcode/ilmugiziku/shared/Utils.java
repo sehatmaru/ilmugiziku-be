@@ -1,11 +1,14 @@
 package xcode.ilmugiziku.shared;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import xcode.ilmugiziku.exception.AppException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -76,6 +79,25 @@ public class Utils {
 
     public static Date getTomorrowDate() {
         return new Date(System.currentTimeMillis() + EXPIRE_DURATION);
+    }
+
+    public static Date getNextMonthDate() {
+        Date currentDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.MONTH, 1);
+
+        return calendar.getTime();
+    }
+
+    public static Date stringToDate(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            throw new AppException(e.toString());
+        }
     }
 
 }

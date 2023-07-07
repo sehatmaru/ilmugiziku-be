@@ -6,13 +6,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.course.CourseInformationResponse;
-import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
-import xcode.ilmugiziku.service.*;
+import xcode.ilmugiziku.domain.response.course.CourseResponse;
+import xcode.ilmugiziku.service.CourseService;
+import xcode.ilmugiziku.service.LessonService;
+import xcode.ilmugiziku.service.RatingService;
 
 import java.util.List;
 
@@ -80,17 +80,6 @@ public class CourseApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-
-    // TODO: 05/07/23  
-//    @GetMapping("/information")
-//    ResponseEntity<BaseResponse<CourseInformationResponse>> getCourseInformation() {
-//        BaseResponse<CourseInformationResponse> response = courseService.getCourseInformation();
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
 
     @PostMapping("/webinar/reminder")
     ResponseEntity<BaseResponse<Boolean>> sendWebinarReminder(

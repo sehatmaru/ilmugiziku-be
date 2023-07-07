@@ -11,6 +11,7 @@ public class ResponseCode {
     public static final String MEMBER_NOT_FOUND_MESSAGE = "Member not found";
     public static final String PARAMS_ERROR_MESSAGE = "Wrong params";
     public static final String EXIST_MESSAGE = "Data exist";
+    public static final String INACTIVE_COURSE = "Course not available";
     public static final String LOGIN_EXIST_MESSAGE = "You already log in to system. Please log out on another device first.";
     public static final String EMAIL_NOT_FOUND = "Email not found. Please sign up.";
     public static final String EMAIL_EXIST = "Email already registered. Please sign in.";

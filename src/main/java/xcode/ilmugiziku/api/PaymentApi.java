@@ -23,9 +23,10 @@ public class PaymentApi {
 
     @PostMapping("/create")
     ResponseEntity<BaseResponse<CreatePaymentResponse>> create(
+            @RequestParam @Validated String courseSecureId,
             @RequestBody @Validated CreatePaymentRequest request
     ) {
-        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(request);
+        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(courseSecureId, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

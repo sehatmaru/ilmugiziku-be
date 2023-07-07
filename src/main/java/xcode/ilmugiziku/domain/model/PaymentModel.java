@@ -26,11 +26,8 @@ public class PaymentModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "user_secure_id")
-   private String userSecureId;
-
-   @Column(name = "course_secure_id")
-   private String course;
+   @Column(name = "user_course_secure_id")
+   private String userCourse;
 
    @Column(name = "invoice_id")
    private String invoiceId;
@@ -41,17 +38,11 @@ public class PaymentModel {
    @Column(name = "paid_date")
    private Date paidDate;
 
-   @Column(name = "package_type")
-   private CourseTypeEnum packageType;
-
    @Column(name = "payment_status")
    private PaymentStatusEnum paymentStatus;
 
    @Column(name = "payment_deadline")
-   private String paymentDeadline;
-
-   @Column(name = "expired_date")
-   private Date expiredDate;
+   private Date paymentDeadline;
 
    @Column(name = "total_amount")
    private int totalAmount;
