@@ -91,7 +91,7 @@ public class Utils {
     }
 
     public static Date stringToDate(String dateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         try {
             return dateFormat.parse(dateString);
