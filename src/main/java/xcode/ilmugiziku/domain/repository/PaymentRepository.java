@@ -15,8 +15,8 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, String> {
    PaymentModel findByInvoiceIdAndDeletedAtIsNull(String invoice);
 
    @Query(value = "SELECT * FROM t_payment" +
-           " WHERE payment_status = :status AND deleted_at IS NULL", nativeQuery = true)
-   List<PaymentModel> getAllPendingPayment(PaymentStatusEnum status);
+           " WHERE payment_status = 0 AND deleted_at IS NULL", nativeQuery = true)
+   List<PaymentModel> getAllPendingPayment();
 
    @Query(value = "SELECT * FROM t_payment" +
            " WHERE payment_status = :status AND deleted_at IS NULL", nativeQuery = true)
