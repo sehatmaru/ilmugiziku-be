@@ -247,7 +247,7 @@ public class CourseService {
       CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_COURSE);
 
       try {
-         List<UserCourseRelModel> userCourse = userCourseRepository.getAllActiveCourse(CurrentUser.get().getUserSecureId());
+         List<UserCourseRelModel> userCourse = userCourseRepository.getAllActiveCourse();
 
          int totalEffectedData = 0;
 

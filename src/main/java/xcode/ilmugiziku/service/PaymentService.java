@@ -191,7 +191,7 @@ public class PaymentService {
       CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_EXPIRED_PAYMENT);
 
       try {
-         List<PaymentModel> pendingPayments = paymentRepository.getAllPendingPayment(PaymentStatusEnum.PENDING);
+         List<PaymentModel> pendingPayments = paymentRepository.getAllPendingPayment();
 
          int totalEffectedData = 0;
 
