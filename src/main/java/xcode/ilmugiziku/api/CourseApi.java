@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
+import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
+import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 import xcode.ilmugiziku.service.CourseService;
 import xcode.ilmugiziku.service.LessonService;
 import xcode.ilmugiziku.service.RatingService;
@@ -27,6 +29,18 @@ public class CourseApi {
     @GetMapping("/list")
     ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
         BaseResponse<List<CourseResponse>> response = courseService.getCourseList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/cancel")
+    ResponseEntity<BaseResponse<Boolean>> cancelCourse(
+            @RequestParam @Validated String courseSecureId
+    ) {
+        BaseResponse<Boolean> response = courseService.cancelCourse(courseSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -69,8 +83,8 @@ public class CourseApi {
                 .body(response);
     }
 
-    @GetMapping("/package")
-    ResponseEntity<BaseResponse<CourseResponse>> getCourse(
+    @GetMapping("/detail")
+    ResponseEntity<BaseResponse<CourseResponse>> getCourseDetail(
             @RequestParam @Validated String secureId
     ) {
         BaseResponse<CourseResponse> response = courseService.getCourse(secureId);
@@ -86,6 +100,19 @@ public class CourseApi {
             @RequestParam @Validated String webinarSecureId
     ) {
         BaseResponse<Boolean> response = courseService.sendWebinarReminder(webinarSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/purchase")
+    ResponseEntity<BaseResponse<PurchaseCourseResponse>> purchase(
+            @RequestParam @Validated String courseSecureId,
+            @RequestBody @Validated PurchaseCourseRequest request
+    ) {
+        BaseResponse<PurchaseCourseResponse> response = courseService.purchase(courseSecureId, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

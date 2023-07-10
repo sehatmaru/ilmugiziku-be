@@ -47,6 +47,15 @@ public class InvoiceModel {
    @Column(name = "total_amount")
    private int totalAmount;
 
+   @Column(name = "payment_method")
+   private String paymentMethod;
+
+   @Column(name = "payment_channel")
+   private String paymentChannel;
+
+   @Column(name = "bank_code")
+   private String bankCode;
+
    @Column(name = "created_at")
    private Date createdAt;
 

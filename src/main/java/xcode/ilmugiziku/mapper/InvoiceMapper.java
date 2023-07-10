@@ -3,8 +3,8 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.InvoiceModel;
 import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.request.invoice.CreateInvoiceRequest;
-import xcode.ilmugiziku.domain.response.invoice.CreateInvoiceResponse;
+import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
+import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PENDING;
 
 public class InvoiceMapper {
 
-    public InvoiceModel createRequestToModel(CreateInvoiceRequest request, CreateInvoiceResponse invoice) {
+    public InvoiceModel createRequestToModel(PurchaseCourseRequest request, PurchaseCourseResponse invoice) {
         if (request != null) {
             InvoiceModel response = new InvoiceModel();
             response.setInvoiceStatus(PENDING);
@@ -29,7 +29,7 @@ public class InvoiceMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreateInvoiceRequest request, CourseModel courseModel, int totalAmount, String secureId) {
+    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, PurchaseCourseRequest request, CourseModel courseModel, String secureId) {
         Map<String, Object> customer = new HashMap<>();
         customer.put("given_names", fullName);
         customer.put("email", user.getEmail());
@@ -49,7 +49,7 @@ public class InvoiceMapper {
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", secureId);
-        params.put("amount", totalAmount);
+        params.put("amount", courseModel.getPrice());
         params.put("currency", "IDR");
         params.put("payer_email", user.getEmail());
         params.put("customer", customer);

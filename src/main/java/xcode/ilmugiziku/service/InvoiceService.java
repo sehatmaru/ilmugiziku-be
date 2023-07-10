@@ -5,19 +5,20 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 import xcode.ilmugiziku.domain.model.*;
-import xcode.ilmugiziku.domain.repository.*;
-import xcode.ilmugiziku.domain.request.invoice.CreateInvoiceRequest;
+import xcode.ilmugiziku.domain.repository.CourseRepository;
+import xcode.ilmugiziku.domain.repository.CronJobRepository;
+import xcode.ilmugiziku.domain.repository.InvoiceRepository;
+import xcode.ilmugiziku.domain.repository.UserCourseRepository;
+import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.invoice.CreateInvoiceResponse;
+import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
 import xcode.ilmugiziku.domain.response.invoice.XenditInvoiceResponse;
 import xcode.ilmugiziku.exception.AppException;
@@ -26,14 +27,15 @@ import xcode.ilmugiziku.mapper.InvoiceMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.*;
-import static xcode.ilmugiziku.shared.Utils.*;
+import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.INVOICE_NOT_FOUND_MESSAGE;
+import static xcode.ilmugiziku.shared.Utils.getNextMonthDate;
+import static xcode.ilmugiziku.shared.Utils.stringToDate;
 
 @Service
 public class InvoiceService {
 
    @Autowired private ProfileService profileService;
-   @Autowired private UserRepository userRepository;
    @Autowired private InvoiceRepository invoiceRepository;
    @Autowired private CourseRepository courseRepository;
    @Autowired private UserCourseRepository userCourseRepository;
@@ -64,77 +66,8 @@ public class InvoiceService {
       return response;
    }
 
-   public BaseResponse<CreateInvoiceResponse> createInvoice(String courseSecureId, CreateInvoiceRequest request) {
-      BaseResponse<CreateInvoiceResponse> response = new BaseResponse<>();
-
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
-      UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
-      InvoiceModel unpaidInvoice = invoiceRepository.getPendingCourseInvoice(courseSecureId);
-
-      if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
-      if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
-      if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
-
-      if (unpaidInvoice != null) {
-         CreateInvoiceResponse resp = new CreateInvoiceResponse();
-         resp.setInvoiceDeadline(unpaidInvoice.getInvoiceDeadline());
-         resp.setInvoiceId(unpaidInvoice.getInvoiceId());
-         resp.setInvoiceUrl(unpaidInvoice.getInvoiceUrl());
-
-         response.setSuccess(resp);
-         response.setMessage(INVOICE_EXIST);
-         response.setStatusCode(HttpStatus.CONFLICT.value());
-      } else {
-         try {
-            checkCurrentPendingInvoice(courseSecureId);
-
-            String invoiceSecureId = generateSecureId();
-            String userCourseSecureId = generateSecureId();
-
-            CreateInvoiceResponse invoice = createInvoice(userModel, request, courseModel, courseModel.getPrice(), invoiceSecureId);
-
-            UserCourseRelModel userCourseModel = new UserCourseRelModel();
-            userCourseModel.setSecureId(userCourseSecureId);
-            userCourseModel.setUser(CurrentUser.get().getUserSecureId());
-            userCourseModel.setCourse(courseSecureId);
-
-            InvoiceModel model = invoiceMapper.createRequestToModel(request ,invoice);
-            model.setSecureId(invoiceSecureId);
-            model.setUserCourse(userCourseSecureId);
-            model.setTotalAmount(courseModel.getPrice());
-
-            invoiceRepository.save(model);
-            userCourseRepository.save(userCourseModel);
-
-            response.setSuccess(invoice);
-         } catch (Exception e){
-            throw new AppException(e.toString());
-         }
-      }
-
-      return response;
-   }
-
-   private void checkCurrentPendingInvoice(String course) {
-      InvoiceModel pendingInvoice = invoiceRepository.getPendingCourseInvoice(course);
-
-      if (pendingInvoice != null) {
-         pendingInvoice.setInvoiceStatus(InvoiceStatusEnum.EXPIRED);
-         pendingInvoice.setDeletedAt(new Date());
-
-         UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(pendingInvoice.getUserCourse());
-         userCourse.setDeleted(true);
-
-         invoiceRepository.save(pendingInvoice);
-         userCourseRepository.save(userCourse);
-      }
-   }
-
    public BaseResponse<XenditInvoiceResponse> xenditCallback(XenditInvoiceRequest request) {
       BaseResponse<XenditInvoiceResponse> response = new BaseResponse<>();
-
-      System.out.println(request.toString());
 
       XenditInvoiceResponse result = new XenditInvoiceResponse();
       InvoiceModel invoice = invoiceRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
@@ -147,6 +80,9 @@ public class InvoiceService {
             userCourse.setExpireAt(getNextMonthDate());
 
             invoice.setPaidDate(new Date());
+            invoice.setPaymentMethod(request.getPaymentMethod());
+            invoice.setPaymentChannel(request.getPaymentChannel());
+            invoice.setBankCode(request.getBankCode());
          } else if (request.isExpired()) {
             userCourse.setDeleted(true);
             invoice.setDeletedAt(new Date());
@@ -173,19 +109,18 @@ public class InvoiceService {
       return response;
    }
 
-   private CreateInvoiceResponse createInvoice(UserModel user,
-                                               CreateInvoiceRequest request,
-                                               CourseModel courseModel,
-                                               int totalAmount,
-                                               String secureId) {
-      CreateInvoiceResponse response = new CreateInvoiceResponse();
+   public PurchaseCourseResponse createInvoice(UserModel user,
+                                                PurchaseCourseRequest request,
+                                                CourseModel courseModel,
+                                                String secureId) {
+      PurchaseCourseResponse response = new PurchaseCourseResponse();
 
       XenditClient xenditClient = new XenditClient.Builder()
               .setApikey(environment.getProperty("xendit.token"))
               .build();
 
       try {
-         Invoice invoice = xenditClient.invoice.create(invoiceMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, courseModel, totalAmount, secureId));
+         Invoice invoice = xenditClient.invoice.create(invoiceMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, courseModel, secureId));
 
          System.out.println(invoice.toString());
 
