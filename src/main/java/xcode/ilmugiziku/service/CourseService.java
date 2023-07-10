@@ -37,7 +37,6 @@ public class CourseService {
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private UserRepository userRepository;
-   @Autowired private LessonRepository lessonRepository;
    @Autowired private WebinarRepository webinarRepository;
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
@@ -181,27 +180,6 @@ public class CourseService {
 
       return response;
    }
-
-   // TODO: 05/07/23
-//   private CourseResponse setCourse(UserModel userModel, CourseTypeEnum courseType) {
-//      CourseResponse result = new CourseResponse();
-//
-//      List<LessonModel> lessons = lessonRepository.findAllByCourseTypeAndDeletedAtIsNull(courseType);
-//
-//      for (LessonModel lesson: lessons) {
-//         result.getLessons().add(lessonMapper.modelToResponse(lesson));
-//      }
-//
-//      if (userModel.isAdmin() || (courseType == UKOM && userModel.isUKOMExpert()) || (courseType == SKB && userModel.isSKBExpert())) {
-//         List<WebinarModel> webinars = webinarRepository.findAllByCourseTypeAndDeletedAtIsNull(courseType);
-//
-//         for (WebinarModel webinar: webinars) {
-//            result.getWebinars().add(webinarMapper.modelToResponse(webinar));
-//         }
-//      }
-//
-//      return result;
-//   }
 
    public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
