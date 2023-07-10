@@ -1,16 +1,16 @@
-package xcode.ilmugiziku.domain.request.payment;
+package xcode.ilmugiziku.domain.request.invoice;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
+import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 
-import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.EXPIRED;
-import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PAID;
+import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.EXPIRED;
+import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PAID;
 import com.google.gson.annotations.SerializedName;
 
 @Getter
 @Setter
-public class XenditPaymentRequest {
+public class XenditInvoiceRequest {
     private String id;
     @SerializedName("external_id")
     private String externalId;
@@ -20,7 +20,7 @@ public class XenditPaymentRequest {
     private boolean isHigh;
     @SerializedName("payment_method")
     private String paymentMethod;
-    private PaymentStatusEnum status;
+    private InvoiceStatusEnum status;
     @SerializedName("merchant_name")
     private String merchantName;
     private int amount;
@@ -45,7 +45,7 @@ public class XenditPaymentRequest {
     @SerializedName("payment_destination")
     private String paymentDestination;
 
-    public XenditPaymentRequest() {
+    public XenditInvoiceRequest() {
     }
 
     public boolean isPaid() {

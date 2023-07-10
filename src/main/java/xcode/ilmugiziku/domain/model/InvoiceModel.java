@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.enums.PaymentStatusEnum;
+import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,11 +13,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "t_payment")
+@Table(name = "t_invoice")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentModel {
+public class InvoiceModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -38,12 +37,12 @@ public class PaymentModel {
    @Column(name = "paid_date")
    private Date paidDate;
 
-   @Column(name = "payment_status")
+   @Column(name = "invoice_status")
    @Enumerated(EnumType.STRING)
-   private PaymentStatusEnum paymentStatus;
+   private InvoiceStatusEnum invoiceStatus;
 
-   @Column(name = "payment_deadline")
-   private Date paymentDeadline;
+   @Column(name = "invoice_deadline")
+   private Date invoiceDeadline;
 
    @Column(name = "total_amount")
    private int totalAmount;

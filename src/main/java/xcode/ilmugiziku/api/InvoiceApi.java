@@ -7,26 +7,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
-import xcode.ilmugiziku.domain.request.payment.XenditPaymentRequest;
+import xcode.ilmugiziku.domain.request.invoice.CreateInvoiceRequest;
+import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
-import xcode.ilmugiziku.domain.response.payment.PaymentResponse;
-import xcode.ilmugiziku.domain.response.payment.XenditPaymentResponse;
-import xcode.ilmugiziku.service.PaymentService;
+import xcode.ilmugiziku.domain.response.invoice.CreateInvoiceResponse;
+import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
+import xcode.ilmugiziku.domain.response.invoice.XenditInvoiceResponse;
+import xcode.ilmugiziku.service.InvoiceService;
 
 @RestController
-@RequestMapping(value = "payment")
-public class PaymentApi {
+@RequestMapping(value = "invoice")
+public class InvoiceApi {
 
-    @Autowired private PaymentService paymentService;
+    @Autowired private InvoiceService invoiceService;
 
     @PostMapping("/create")
-    ResponseEntity<BaseResponse<CreatePaymentResponse>> create(
+    ResponseEntity<BaseResponse<CreateInvoiceResponse>> create(
             @RequestParam @Validated String courseSecureId,
-            @RequestBody @Validated CreatePaymentRequest request
+            @RequestBody @Validated CreateInvoiceRequest request
     ) {
-        BaseResponse<CreatePaymentResponse> response = paymentService.createPayment(courseSecureId, request);
+        BaseResponse<CreateInvoiceResponse> response = invoiceService.createInvoice(courseSecureId, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -35,10 +35,10 @@ public class PaymentApi {
     }
 
     @GetMapping("/detail")
-    ResponseEntity<BaseResponse<PaymentResponse>> detail(
+    ResponseEntity<BaseResponse<InvoiceResponse>> detail(
             @RequestParam @Validated CourseTypeEnum packageType
     ) {
-        BaseResponse<PaymentResponse> response = paymentService.detailPayment(packageType);
+        BaseResponse<InvoiceResponse> response = invoiceService.detailInvoice(packageType);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -47,10 +47,10 @@ public class PaymentApi {
     }
 
     @PostMapping("/xendit/callback")
-    ResponseEntity<BaseResponse<XenditPaymentResponse>> xenditCallback(
-            @RequestBody @Validated XenditPaymentRequest request
+    ResponseEntity<BaseResponse<XenditInvoiceResponse>> xenditCallback(
+            @RequestBody @Validated XenditInvoiceRequest request
     ) {
-        BaseResponse<XenditPaymentResponse> response = paymentService.xenditCallback(request);
+        BaseResponse<XenditInvoiceResponse> response = invoiceService.xenditCallback(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
