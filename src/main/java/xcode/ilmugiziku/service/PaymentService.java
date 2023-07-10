@@ -5,6 +5,7 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
@@ -69,35 +70,47 @@ public class PaymentService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
       UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
+      PaymentModel unpaidPayment = paymentRepository.getPendingCoursePayment(courseSecureId);
 
       if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
       if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
       if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
-      try {
-         checkCurrentPendingPayment(courseSecureId);
+      if (unpaidPayment != null) {
+         CreatePaymentResponse resp = new CreatePaymentResponse();
+         resp.setPaymentDeadline(unpaidPayment.getPaymentDeadline());
+         resp.setInvoiceId(unpaidPayment.getInvoiceId());
+         resp.setInvoiceUrl(unpaidPayment.getInvoiceUrl());
 
-         String paymentSecureId = generateSecureId();
-         String userCourseSecureId = generateSecureId();
+         response.setSuccess(resp);
+         response.setMessage(PAYMENT_EXIST);
+         response.setStatusCode(HttpStatus.CONFLICT.value());
+      } else {
+         try {
+            checkCurrentPendingPayment(courseSecureId);
 
-         CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), paymentSecureId);
+            String paymentSecureId = generateSecureId();
+            String userCourseSecureId = generateSecureId();
 
-         UserCourseRelModel userCourseModel = new UserCourseRelModel();
-         userCourseModel.setSecureId(userCourseSecureId);
-         userCourseModel.setUser(CurrentUser.get().getUserSecureId());
-         userCourseModel.setCourse(courseSecureId);
+            CreatePaymentResponse payment = createInvoice(userModel, request, courseModel, courseModel.getPrice(), paymentSecureId);
 
-         PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
-         model.setSecureId(paymentSecureId);
-         model.setUserCourse(userCourseSecureId);
-         model.setTotalAmount(courseModel.getPrice());
+            UserCourseRelModel userCourseModel = new UserCourseRelModel();
+            userCourseModel.setSecureId(userCourseSecureId);
+            userCourseModel.setUser(CurrentUser.get().getUserSecureId());
+            userCourseModel.setCourse(courseSecureId);
 
-         paymentRepository.save(model);
-         userCourseRepository.save(userCourseModel);
+            PaymentModel model = paymentMapper.createRequestToModel(request ,payment);
+            model.setSecureId(paymentSecureId);
+            model.setUserCourse(userCourseSecureId);
+            model.setTotalAmount(courseModel.getPrice());
 
-         response.setSuccess(payment);
-      } catch (Exception e){
-         throw new AppException(e.toString());
+            paymentRepository.save(model);
+            userCourseRepository.save(userCourseModel);
+
+            response.setSuccess(payment);
+         } catch (Exception e){
+            throw new AppException(e.toString());
+         }
       }
 
       return response;

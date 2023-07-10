@@ -18,6 +18,7 @@ public class ResponseCode {
     public static final String EMAIL_EXIST = "Email already registered. Please sign in.";
     public static final String USER_EXIST_ON_GROUP = "User already on group.";
     public static final String USERNAME_EXIST = "Username already taken. Please put another one.";
+    public static final String PAYMENT_EXIST = "You have current bill. Please pay it first.";
     public static final String NOT_AUTHORIZED_MESSAGE = "Not Authorized";
     public static final String AUTH_ERROR_MESSAGE = "Wrong username/password";
     public static final String OTP_ERROR_MESSAGE = "Invalid OTP";
