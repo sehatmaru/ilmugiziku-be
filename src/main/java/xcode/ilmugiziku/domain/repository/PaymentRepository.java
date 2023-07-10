@@ -15,11 +15,15 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, String> {
    PaymentModel findByInvoiceIdAndDeletedAtIsNull(String invoice);
 
    @Query(value = "SELECT * FROM t_payment" +
-           " WHERE payment_status = 0 AND deleted_at IS NULL", nativeQuery = true)
+           " WHERE payment_status IN ('PENDING') AND deleted_at IS NULL", nativeQuery = true)
    List<PaymentModel> getAllPendingPayment();
 
-   @Query(value = "SELECT * FROM t_payment" +
-           " WHERE payment_status = :status AND deleted_at IS NULL", nativeQuery = true)
-   PaymentModel getPendingPayment(PaymentStatusEnum status);
+   @Query(value = "SELECT * FROM t_payment p" +
+           " LEFT JOIN t_user_course_rel uc ON uc.secure_id = p.user_course_secure_id" +
+           " WHERE p.payment_status IN ('PENDING')" +
+           " AND uc.course_secure_id = :course" +
+           " AND p.deleted_at IS NULL" +
+           " LIMIT 1", nativeQuery = true)
+   PaymentModel getPendingCoursePayment(String course);
 
 }

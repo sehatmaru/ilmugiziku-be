@@ -32,6 +32,7 @@ public class LessonModel {
    private String thumbnailUri;
 
    @Column(name = "course_type")
+   @Enumerated(EnumType.STRING)
    private CourseTypeEnum courseType;
 
    @Column(name = "title")

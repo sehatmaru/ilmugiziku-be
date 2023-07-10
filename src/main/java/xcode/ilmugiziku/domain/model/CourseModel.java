@@ -35,6 +35,7 @@ public class CourseModel {
    private boolean open;
 
    @Column(name = "course_type")
+   @Enumerated(EnumType.STRING)
    private CourseTypeEnum courseType;
 
    @Column(name = "created_at")

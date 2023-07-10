@@ -32,6 +32,7 @@ public class TheoryModel {
    private String uri;
 
    @Column(name = "theory_type")
+   @Enumerated(EnumType.STRING)
    private TheoryTypeEnum theoryType;
 
    @Column(name = "created_at")

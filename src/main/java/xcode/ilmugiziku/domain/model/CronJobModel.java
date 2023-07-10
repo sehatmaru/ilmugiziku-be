@@ -27,6 +27,7 @@ public class CronJobModel {
    private boolean success = false;
 
    @Column(name = "cron_job_type")
+   @Enumerated(EnumType.STRING)
    private CronJobTypeEnum cronJobType;
 
    @Column(name = "executed_at")

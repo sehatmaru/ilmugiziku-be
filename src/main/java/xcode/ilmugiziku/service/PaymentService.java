@@ -75,7 +75,7 @@ public class PaymentService {
       if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
       try {
-         checkCurrentPendingPayment();
+         checkCurrentPendingPayment(courseSecureId);
 
          String paymentSecureId = generateSecureId();
          String userCourseSecureId = generateSecureId();
@@ -103,14 +103,18 @@ public class PaymentService {
       return response;
    }
 
-   private void checkCurrentPendingPayment() {
-      PaymentModel pendingPayment = paymentRepository.getPendingPayment(PaymentStatusEnum.PENDING);
+   private void checkCurrentPendingPayment(String course) {
+      PaymentModel pendingPayment = paymentRepository.getPendingCoursePayment(course);
 
       if (pendingPayment != null) {
          pendingPayment.setPaymentStatus(PaymentStatusEnum.EXPIRED);
          pendingPayment.setDeletedAt(new Date());
 
+         UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(pendingPayment.getUserCourse());
+         userCourse.setDeleted(true);
+
          paymentRepository.save(pendingPayment);
+         userCourseRepository.save(userCourse);
       }
    }
 

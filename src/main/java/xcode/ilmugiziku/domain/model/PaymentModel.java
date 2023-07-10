@@ -39,6 +39,7 @@ public class PaymentModel {
    private Date paidDate;
 
    @Column(name = "payment_status")
+   @Enumerated(EnumType.STRING)
    private PaymentStatusEnum paymentStatus;
 
    @Column(name = "payment_deadline")

@@ -29,6 +29,7 @@ public class WebinarModel {
    private String link;
 
    @Column(name = "course_type")
+   @Enumerated(EnumType.STRING)
    private CourseTypeEnum courseType;
 
    @Column(name = "title")
