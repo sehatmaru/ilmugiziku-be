@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.request.invoice;
+package xcode.ilmugiziku.domain.request.course;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,13 +7,13 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class CreateInvoiceRequest {
+public class PurchaseCourseRequest {
     @NotBlank()
     private String successRedirectUrl;
     @NotBlank()
     private String failureRedirectUrl;
 
-    public CreateInvoiceRequest() {
+    public PurchaseCourseRequest() {
     }
 
 }

@@ -7,10 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.request.invoice.CreateInvoiceRequest;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.invoice.CreateInvoiceResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
 import xcode.ilmugiziku.domain.response.invoice.XenditInvoiceResponse;
 import xcode.ilmugiziku.service.InvoiceService;
@@ -20,19 +18,6 @@ import xcode.ilmugiziku.service.InvoiceService;
 public class InvoiceApi {
 
     @Autowired private InvoiceService invoiceService;
-
-    @PostMapping("/create")
-    ResponseEntity<BaseResponse<CreateInvoiceResponse>> create(
-            @RequestParam @Validated String courseSecureId,
-            @RequestBody @Validated CreateInvoiceRequest request
-    ) {
-        BaseResponse<CreateInvoiceResponse> response = invoiceService.createInvoice(courseSecureId, request);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
 
     @GetMapping("/detail")
     ResponseEntity<BaseResponse<InvoiceResponse>> detail(

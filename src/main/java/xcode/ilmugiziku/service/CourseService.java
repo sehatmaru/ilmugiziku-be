@@ -1,6 +1,7 @@
 package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,13 +12,16 @@ import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
+import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
+import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.BenefitMapper;
 import xcode.ilmugiziku.mapper.CourseMapper;
+import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,13 +29,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
-import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
+import static xcode.ilmugiziku.shared.ResponseCode.*;
+import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
 public class CourseService {
 
    @Autowired private JavaMailSender javaMailSender;
+   @Autowired private InvoiceService invoiceService;
    @Autowired private ProfileService profileService;
    @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
@@ -41,9 +46,11 @@ public class CourseService {
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
    @Autowired private CronJobRepository cronJobRepository;
+   @Autowired private InvoiceRepository invoiceRepository;
 
    private final CourseMapper courseMapper = new CourseMapper();
    private final BenefitMapper benefitMapper = new BenefitMapper();
+   private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
    public BaseResponse<List<CourseResponse>> getCourseList() {
       BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
@@ -212,6 +219,75 @@ public class CourseService {
          response.setSuccess(true);
       } else {
          throw new AppException(NOT_FOUND_MESSAGE);
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> cancelCourse(String courseSecureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(courseSecureId);
+
+      if (userCourse == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+
+      try {
+         userCourse.setDeleted(true);
+         userCourseRepository.save(userCourse);
+
+         response.setSuccess(true);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<PurchaseCourseResponse> purchase(String courseSecureId, PurchaseCourseRequest request) {
+      BaseResponse<PurchaseCourseResponse> response = new BaseResponse<>();
+
+      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
+      CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
+      UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
+      InvoiceModel unpaidInvoice = invoiceRepository.getPendingCourseInvoice(courseSecureId);
+
+      if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+      if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
+      if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
+
+      if (unpaidInvoice != null) {
+         PurchaseCourseResponse resp = new PurchaseCourseResponse();
+         resp.setInvoiceDeadline(unpaidInvoice.getInvoiceDeadline());
+         resp.setInvoiceId(unpaidInvoice.getInvoiceId());
+         resp.setInvoiceUrl(unpaidInvoice.getInvoiceUrl());
+
+         response.setSuccess(resp);
+         response.setMessage(INVOICE_EXIST);
+         response.setStatusCode(HttpStatus.CONFLICT.value());
+      } else {
+         try {
+            String invoiceSecureId = generateSecureId();
+            String userCourseSecureId = generateSecureId();
+
+            PurchaseCourseResponse invoice = invoiceService.createInvoice(userModel, request, courseModel, invoiceSecureId);
+
+            UserCourseRelModel userCourseModel = new UserCourseRelModel();
+            userCourseModel.setSecureId(userCourseSecureId);
+            userCourseModel.setUser(CurrentUser.get().getUserSecureId());
+            userCourseModel.setCourse(courseSecureId);
+
+            InvoiceModel model = invoiceMapper.createRequestToModel(request ,invoice);
+            model.setSecureId(invoiceSecureId);
+            model.setUserCourse(userCourseSecureId);
+            model.setTotalAmount(courseModel.getPrice());
+
+            invoiceRepository.save(model);
+            userCourseRepository.save(userCourseModel);
+
+            response.setSuccess(invoice);
+         } catch (Exception e){
+            throw new AppException(e.toString());
+         }
       }
 
       return response;
