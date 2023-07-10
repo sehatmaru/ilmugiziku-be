@@ -30,9 +30,11 @@ public class DiscussionVideoModel {
    private String uri;
 
    @Column(name = "question_type")
+   @Enumerated(EnumType.STRING)
    private QuestionTypeEnum questionType;
 
    @Column(name = "question_sub_type")
+   @Enumerated(EnumType.STRING)
    private QuestionSubTypeEnum questionSubType;
 
    @Column(name = "template_secure_id")

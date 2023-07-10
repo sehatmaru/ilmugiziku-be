@@ -36,6 +36,7 @@ public class UserModel {
    private String password;
 
    @Column(name = "type")
+   @Enumerated(EnumType.STRING)
    private RegistrationTypeEnum type;
 
    @Column(name = "role")
@@ -52,48 +53,6 @@ public class UserModel {
 
    @Column(name = "deleted_at")
    private Date deletedAt;
-
-//   public boolean isPremium() {
-//      return packages != null && !packages.isEmpty();
-//   }
-//
-//   public boolean isUKOMPackage() {
-//      return packages != null && (packages.contains("1") || packages.contains("2"));
-//   }
-//
-//   public boolean isSKBPackage() {
-//      return packages != null && (packages.contains("3") || packages.contains("4"));
-//   }
-//
-//   public boolean isPaidPackage(CourseTypeEnum course) {
-//      boolean result;
-//
-//      if (course == CourseTypeEnum.UKOM_NEWBIE) {
-//         if (isUKOMExpert()) {
-//            result = true;
-//         } else {
-//            result = isPremium() && packages.contains(String.valueOf(course));
-//         }
-//      } else if (course == CourseTypeEnum.SKB_NEWBIE) {
-//         if (isSKBExpert()) {
-//            result = true;
-//         } else {
-//            result = isPremium() && packages.contains(String.valueOf(course));
-//         }
-//      } else {
-//         result = isPremium() && packages.contains(String.valueOf(course));
-//      }
-//
-//      return result;
-//   }
-//
-//   public boolean isUKOMExpert() {
-//      return isPremium() && packages.contains("2");
-//   }
-//
-//   public boolean isSKBExpert() {
-//      return isPremium() && packages.contains("4");
-//   }
 
    public boolean isAdmin() {
       return role == ADMIN;

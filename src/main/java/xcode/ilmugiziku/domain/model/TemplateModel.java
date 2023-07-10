@@ -33,9 +33,11 @@ public class TemplateModel {
    private boolean isUsed;
 
    @Column(name = "question_type")
+   @Enumerated(EnumType.STRING)
    private QuestionTypeEnum questionType;
 
    @Column(name = "question_sub_type")
+   @Enumerated(EnumType.STRING)
    private QuestionSubTypeEnum questionSubType;
 
    @Column(name = "created_at")

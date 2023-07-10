@@ -1,27 +1,27 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.CourseModel;
-import xcode.ilmugiziku.domain.model.PaymentModel;
+import xcode.ilmugiziku.domain.model.InvoiceModel;
 import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.request.payment.CreatePaymentRequest;
-import xcode.ilmugiziku.domain.response.payment.CreatePaymentResponse;
+import xcode.ilmugiziku.domain.request.invoice.CreateInvoiceRequest;
+import xcode.ilmugiziku.domain.response.invoice.CreateInvoiceResponse;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xcode.ilmugiziku.domain.enums.PaymentStatusEnum.PENDING;
+import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PENDING;
 
-public class PaymentMapper {
+public class InvoiceMapper {
 
-    public PaymentModel createRequestToModel(CreatePaymentRequest request, CreatePaymentResponse payment) {
+    public InvoiceModel createRequestToModel(CreateInvoiceRequest request, CreateInvoiceResponse invoice) {
         if (request != null) {
-            PaymentModel response = new PaymentModel();
-            response.setPaymentStatus(PENDING);
+            InvoiceModel response = new InvoiceModel();
+            response.setInvoiceStatus(PENDING);
             response.setCreatedAt(new Date());
-            response.setInvoiceId(payment.getInvoiceId());
-            response.setInvoiceUrl(payment.getInvoiceUrl());
-            response.setPaymentDeadline(payment.getPaymentDeadline());
+            response.setInvoiceId(invoice.getInvoiceId());
+            response.setInvoiceUrl(invoice.getInvoiceUrl());
+            response.setInvoiceDeadline(invoice.getInvoiceDeadline());
 
             return response;
         } else {
@@ -29,7 +29,7 @@ public class PaymentMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreatePaymentRequest request, CourseModel courseModel, int totalAmount, String secureId) {
+    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, CreateInvoiceRequest request, CourseModel courseModel, int totalAmount, String secureId) {
         Map<String, Object> customer = new HashMap<>();
         customer.put("given_names", fullName);
         customer.put("email", user.getEmail());
