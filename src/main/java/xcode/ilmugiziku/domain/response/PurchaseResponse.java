@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.response.course;
+package xcode.ilmugiziku.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class PurchaseCourseResponse {
+public class PurchaseResponse {
     private String invoiceId;
     private String invoiceUrl;
     private Date invoiceDeadline;

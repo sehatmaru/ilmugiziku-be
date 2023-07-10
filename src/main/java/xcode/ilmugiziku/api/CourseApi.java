@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
-import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
+import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
-import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
+import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.service.CourseService;
 import xcode.ilmugiziku.service.LessonService;
 import xcode.ilmugiziku.service.RatingService;
@@ -95,24 +95,12 @@ public class CourseApi {
                 .body(response);
     }
 
-    @PostMapping("/webinar/reminder")
-    ResponseEntity<BaseResponse<Boolean>> sendWebinarReminder(
-            @RequestParam @Validated String webinarSecureId
-    ) {
-        BaseResponse<Boolean> response = courseService.sendWebinarReminder(webinarSecureId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
-
     @PostMapping("/purchase")
-    ResponseEntity<BaseResponse<PurchaseCourseResponse>> purchase(
+    ResponseEntity<BaseResponse<PurchaseResponse>> purchase(
             @RequestParam @Validated String courseSecureId,
-            @RequestBody @Validated PurchaseCourseRequest request
+            @RequestBody @Validated PurchaseRequest request
     ) {
-        BaseResponse<PurchaseCourseResponse> response = courseService.purchase(courseSecureId, request);
+        BaseResponse<PurchaseResponse> response = courseService.purchase(courseSecureId, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

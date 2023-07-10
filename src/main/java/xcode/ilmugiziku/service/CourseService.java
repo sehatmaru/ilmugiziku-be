@@ -10,14 +10,14 @@ import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
+import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
-import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
-import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.BenefitMapper;
 import xcode.ilmugiziku.mapper.CourseMapper;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -243,8 +244,8 @@ public class CourseService {
       return response;
    }
 
-   public BaseResponse<PurchaseCourseResponse> purchase(String courseSecureId, PurchaseCourseRequest request) {
-      BaseResponse<PurchaseCourseResponse> response = new BaseResponse<>();
+   public BaseResponse<PurchaseResponse> purchase(String courseSecureId, PurchaseRequest request) {
+      BaseResponse<PurchaseResponse> response = new BaseResponse<>();
 
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
@@ -256,7 +257,7 @@ public class CourseService {
       if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
       if (unpaidInvoice != null) {
-         PurchaseCourseResponse resp = new PurchaseCourseResponse();
+         PurchaseResponse resp = new PurchaseResponse();
          resp.setInvoiceDeadline(unpaidInvoice.getInvoiceDeadline());
          resp.setInvoiceId(unpaidInvoice.getInvoiceId());
          resp.setInvoiceUrl(unpaidInvoice.getInvoiceUrl());
@@ -269,7 +270,7 @@ public class CourseService {
             String invoiceSecureId = generateSecureId();
             String userCourseSecureId = generateSecureId();
 
-            PurchaseCourseResponse invoice = invoiceService.createInvoice(userModel, request, courseModel, invoiceSecureId);
+            PurchaseResponse invoice = invoiceService.createInvoice(userModel, request, null, courseModel, COURSE, invoiceSecureId);
 
             UserCourseRelModel userCourseModel = new UserCourseRelModel();
             userCourseModel.setSecureId(userCourseSecureId);
@@ -280,6 +281,7 @@ public class CourseService {
             model.setSecureId(invoiceSecureId);
             model.setUserCourse(userCourseSecureId);
             model.setTotalAmount(courseModel.getPrice());
+            model.setInvoiceType(COURSE);
 
             invoiceRepository.save(model);
             userCourseRepository.save(userCourseModel);

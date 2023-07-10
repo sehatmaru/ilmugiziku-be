@@ -25,4 +25,12 @@ public interface InvoiceRepository extends JpaRepository<InvoiceModel, String> {
            " LIMIT 1", nativeQuery = true)
    InvoiceModel getPendingCourseInvoice(String course);
 
+   @Query(value = "SELECT * FROM t_invoice p" +
+           " LEFT JOIN t_user_webinar_rel uw ON uw.secure_id = p.user_webinar_secure_id" +
+           " WHERE p.invoice_status IN ('PENDING')" +
+           " AND uw.webinar_secure_id = :webinar" +
+           " AND p.deleted_at IS NULL" +
+           " LIMIT 1", nativeQuery = true)
+   InvoiceModel getPendingWebinarInvoice(String webinar);
+
 }

@@ -1,20 +1,24 @@
 package xcode.ilmugiziku.mapper;
 
+import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.InvoiceModel;
 import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
-import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
+import xcode.ilmugiziku.domain.model.WebinarModel;
+import xcode.ilmugiziku.domain.request.PurchaseRequest;
+import xcode.ilmugiziku.domain.response.PurchaseResponse;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PENDING;
+import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
 
 public class InvoiceMapper {
 
-    public InvoiceModel createRequestToModel(PurchaseCourseRequest request, PurchaseCourseResponse invoice) {
+    public InvoiceModel createRequestToModel(PurchaseRequest request, PurchaseResponse invoice) {
         if (request != null) {
             InvoiceModel response = new InvoiceModel();
             response.setInvoiceStatus(PENDING);
@@ -29,7 +33,18 @@ public class InvoiceMapper {
         }
     }
 
-    public Map<String, Object> createInvoiceRequest(UserModel user, String fullName, PurchaseCourseRequest request, CourseModel courseModel, String secureId) {
+    public Map<String, Object> createInvoiceRequest(
+            UserModel user,
+            String fullName,
+            PurchaseRequest request,
+            InvoiceTypeEnum type,
+            WebinarModel webinarModel,
+            CourseModel courseModel,
+            String secureId
+    ) {
+        String title = type == COURSE ? courseModel.getTitle() : webinarModel.getTitle();
+        BigDecimal price = type == COURSE ? courseModel.getPrice() : webinarModel.getPrice();
+
         Map<String, Object> customer = new HashMap<>();
         customer.put("given_names", fullName);
         customer.put("email", user.getEmail());
@@ -42,21 +57,21 @@ public class InvoiceMapper {
         notification.put("invoice_expired", preferences);
 
         Map<String, Object> item = new HashMap<>();
-        item.put("name", courseModel.getTitle());
+        item.put("name", title);
         item.put("quantity", 1);
-        item.put("price", courseModel.getPrice());
+        item.put("price", price);
         Map[] items = new Map[]{item};
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", secureId);
-        params.put("amount", courseModel.getPrice());
+        params.put("amount", price);
         params.put("currency", "IDR");
         params.put("payer_email", user.getEmail());
         params.put("customer", customer);
         params.put("customer_notification_preference", notification);
         params.put("items", items);
         params.put("should_send_email", true);
-        params.put("description", "Paket " + courseModel.getTitle() + " selama 6 bulan");
+        params.put("description", "Paket " + title + " selama 6 bulan");
         params.put("success_redirect_url", request.getSuccessRedirectUrl());
         params.put("failure_redirect_url", request.getFailureRedirectUrl());
 

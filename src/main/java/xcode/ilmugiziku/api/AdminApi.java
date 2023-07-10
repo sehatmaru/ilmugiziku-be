@@ -25,8 +25,7 @@ import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
 import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
 import xcode.ilmugiziku.domain.request.theory.CreateTheoryRequest;
 import xcode.ilmugiziku.domain.request.theory.UpdateTheoryRequest;
-import xcode.ilmugiziku.domain.request.webinar.CreateWebinarRequest;
-import xcode.ilmugiziku.domain.request.webinar.UpdateWebinarRequest;
+import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.*;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
@@ -365,7 +364,7 @@ public class AdminApi {
 
     @PostMapping("/webinar/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createWebinar(
-            @RequestBody @Validated CreateWebinarRequest body
+            @RequestBody @Validated CreateUpdateWebinarRequest body
     ) {
         BaseResponse<CreateBaseResponse> response = webinarService.createWebinar(body);
 
@@ -378,7 +377,7 @@ public class AdminApi {
     @PutMapping("/webinar/update")
     ResponseEntity<BaseResponse<Boolean>> updateWebinar(
             @RequestParam @Validated String secureId,
-            @RequestBody @Validated UpdateWebinarRequest body
+            @RequestBody @Validated CreateUpdateWebinarRequest body
     ) {
         BaseResponse<Boolean> response = webinarService.updateWebinar(secureId, body);
 
@@ -401,10 +400,8 @@ public class AdminApi {
     }
 
     @GetMapping("/webinar/list")
-    ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList(
-            @RequestParam @Validated CourseTypeEnum courseType
-    ) {
-        BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList(courseType);
+    ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList() {
+        BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
