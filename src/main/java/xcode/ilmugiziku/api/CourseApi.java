@@ -9,11 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.LessonResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.service.CourseService;
-import xcode.ilmugiziku.service.LessonService;
 import xcode.ilmugiziku.service.RatingService;
 
 import java.util.List;
@@ -24,7 +22,6 @@ public class CourseApi {
 
     @Autowired private RatingService ratingService;
     @Autowired private CourseService courseService;
-    @Autowired private LessonService lessonService;
 
     @GetMapping("/list")
     ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
@@ -48,34 +45,23 @@ public class CourseApi {
                 .body(response);
     }
 
-    @PostMapping("/lesson/rating/set")
-    ResponseEntity<BaseResponse<Double>> submitRating(
-            @RequestParam @Validated String lessonSecureId,
-            @RequestBody @Validated SubmitRatingRequest body
-    ) {
-        BaseResponse<Double> response = ratingService.submitRating(lessonSecureId, body);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
+    // TODO: 11/07/23  
+//    @PostMapping("/lesson/rating/set")
+//    ResponseEntity<BaseResponse<Double>> submitRating(
+//            @RequestParam @Validated String lessonSecureId,
+//            @RequestBody @Validated SubmitRatingRequest body
+//    ) {
+//        BaseResponse<Double> response = ratingService.submitRating(lessonSecureId, body);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(response);
+//    }
 
     @GetMapping("")
     ResponseEntity<BaseResponse<List<CourseResponse>>> getUserCourses() {
         BaseResponse<List<CourseResponse>> response = courseService.getUserCourses();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
-
-    @GetMapping("/lesson")
-    ResponseEntity<BaseResponse<LessonResponse>> getLesson(
-            @RequestParam @Validated String secureId
-    ) {
-        BaseResponse<LessonResponse> response = lessonService.getLesson(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

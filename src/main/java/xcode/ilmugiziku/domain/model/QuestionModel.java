@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
-import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -29,13 +27,14 @@ public class QuestionModel {
    @Column(name = "content")
    private String content;
 
-   @Column(name = "question_type")
-   @Enumerated(EnumType.STRING)
-   private QuestionTypeEnum questionType;
-
-   @Column(name = "question_sub_type")
-   @Enumerated(EnumType.STRING)
-   private QuestionSubTypeEnum questionSubType;
+   // TODO: 11/07/23  
+//   @Column(name = "question_type")
+//   @Enumerated(EnumType.STRING)
+//   private QuestionTypeEnum questionType;
+//
+//   @Column(name = "question_sub_type")
+//   @Enumerated(EnumType.STRING)
+//   private QuestionSubTypeEnum questionSubType;
 
    @Column(name = "discussion")
    private String discussion;

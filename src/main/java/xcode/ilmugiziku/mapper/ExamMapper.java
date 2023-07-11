@@ -21,9 +21,10 @@ public class ExamMapper {
             result.setQuestions(arrayToString(request.getExams(), "question"));
             result.setAnswers(arrayToString(request.getExams(), "answer"));
             result.setBlank(response.getBlank());
-            result.setQuestionType(request.getQuestionType());
-            result.setQuestionSubType(request.getQuestionSubType());
-            result.setQuestionSubType(request.getQuestionSubType());
+            // TODO: 11/07/23  
+//            result.setQuestionType(request.getQuestionType());
+//            result.setQuestionSubType(request.getQuestionSubType());
+//            result.setQuestionSubType(request.getQuestionSubType());
             result.setCreatedAt(new Date());
 
             return result;
@@ -35,7 +36,8 @@ public class ExamMapper {
     public ExamResultResponse modelToResultResponse(ExamModel model) {
         if (model != null) {
             ExamResultResponse result = new ExamResultResponse();
-            result.setQuestionSubType(model.getQuestionSubType());
+            // TODO: 11/07/23  
+//            result.setQuestionSubType(model.getQuestionSubType());
             result.setDate(model.getCreatedAt());
             result.setCorrect(model.getCorrect());
             result.setScore(model.getScore());

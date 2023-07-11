@@ -51,8 +51,9 @@ public class QuestionMapper {
             model.setSecureId(generateSecureId());
             model.setTemplateSecureId(request.getTemplateSecureId());
             model.setContent(request.getContent());
-            model.setQuestionType(request.getQuestionType());
-            model.setQuestionSubType(request.getQuestionSubType());
+            // TODO: 11/07/23  
+//            model.setQuestionType(request.getQuestionType());
+//            model.setQuestionSubType(request.getQuestionSubType());
             model.setDiscussion(request.getDiscussion());
             model.setLabel(request.getLabel());
             model.setType(request.getType());
@@ -67,8 +68,9 @@ public class QuestionMapper {
     public QuestionModel updateRequestToModel(QuestionModel model, UpdateQuestionRequest request) {
         if (request != null && model != null) {
             model.setContent(request.getContent());
-            model.setQuestionType(request.getQuestionType());
-            model.setQuestionSubType(request.getQuestionSubType());
+            // TODO: 11/07/23  
+//            model.setQuestionType(request.getQuestionType());
+//            model.setQuestionSubType(request.getQuestionSubType());
             model.setDiscussion(request.getDiscussion());
             model.setLabel(request.getLabel());
             model.setType(request.getType());
