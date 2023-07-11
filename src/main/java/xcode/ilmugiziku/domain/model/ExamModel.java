@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
-import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -50,13 +48,14 @@ public class ExamModel {
    @Column(name = "schedule_secure_id")
    private String scheduleSecureId;
 
-   @Column(name = "question_type")
-   @Enumerated(EnumType.STRING)
-   private QuestionTypeEnum questionType;
-
-   @Column(name = "question_sub_type")
-   @Enumerated(EnumType.STRING)
-   private QuestionSubTypeEnum questionSubType;
+   // TODO: 11/07/23  
+//   @Column(name = "question_type")
+//   @Enumerated(EnumType.STRING)
+//   private QuestionTypeEnum questionType;
+//
+//   @Column(name = "question_sub_type")
+//   @Enumerated(EnumType.STRING)
+//   private QuestionSubTypeEnum questionSubType;
 
    @Column(name = "created_at")
    private Date createdAt;

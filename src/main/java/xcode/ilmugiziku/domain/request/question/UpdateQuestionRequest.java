@@ -2,15 +2,10 @@ package xcode.ilmugiziku.domain.request.question;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum;
-import xcode.ilmugiziku.domain.enums.QuestionTypeEnum;
 import xcode.ilmugiziku.domain.request.answer.UpdateAnswerRequest;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-
-import static xcode.ilmugiziku.domain.enums.QuestionTypeEnum.*;
-import static xcode.ilmugiziku.domain.enums.QuestionSubTypeEnum.NONE;
 
 @Getter
 @Setter
@@ -19,8 +14,9 @@ public class UpdateQuestionRequest {
     private String secureId;
     @NotBlank()
     private String content;
-    private QuestionTypeEnum questionType;
-    private QuestionSubTypeEnum questionSubType;
+    // TODO: 11/07/23
+//    private QuestionTypeEnum questionType;
+//    private QuestionSubTypeEnum questionSubType;
     @NotBlank()
     private String discussion;
     private String label;
@@ -30,21 +26,21 @@ public class UpdateQuestionRequest {
     public UpdateQuestionRequest() {
     }
 
-    public boolean isValid() {
-        boolean result;
-
-        if (answers.size() != 5) {
-            result = false;
-        } else {
-            result = checkAnswer();
-        }
-
-        if (questionType == QUIZ || questionType == PRACTICE && (questionSubType != NONE)) {
-            result = false;
-        }
-
-        return result;
-    }
+//    public boolean isValid() {
+//        boolean result;
+//
+//        if (answers.size() != 5) {
+//            result = false;
+//        } else {
+//            result = checkAnswer();
+//        }
+//
+//        if (questionType == QUIZ || questionType == PRACTICE && (questionSubType != NONE)) {
+//            result = false;
+//        }
+//
+//        return result;
+//    }
 
     private boolean checkAnswer() {
         boolean result = true;

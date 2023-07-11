@@ -45,8 +45,9 @@ public class TemplateMapper {
             TemplateModel response = new TemplateModel();
             response.setSecureId(generateSecureId());
             response.setName(request.getName());
-            response.setQuestionType(request.getQuestionType());
-            response.setQuestionSubType(request.getQuestionSubType());
+            // TODO: 11/07/23  
+//            response.setQuestionType(request.getQuestionType());
+//            response.setQuestionSubType(request.getQuestionSubType());
             response.setUsed(false);
             response.setCreatedAt(new Date());
 
@@ -59,8 +60,9 @@ public class TemplateMapper {
     public TemplateModel updateRequestToModel(TemplateModel model, UpdateTemplateRequest request) {
         if (request != null && model != null) {
             model.setName(request.getName());
-            model.setQuestionType(request.getQuestionType());
-            model.setQuestionSubType(request.getQuestionSubType());
+            // TODO: 11/07/23  
+//            model.setQuestionType(request.getQuestionType());
+//            model.setQuestionSubType(request.getQuestionSubType());
             model.setUpdatedAt(new Date());
 
             return model;
