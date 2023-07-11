@@ -39,9 +39,62 @@ public class CronService {
     * execute every 30 minutes
     * start from 9am to 11pm
     */
-   @Scheduled(cron = "0,30 9-23 * * 1-5 ?")
+   @Scheduled(cron = "44 15 * * * ?")
    public void sendWebinarReminders() {
       CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.WEBINAR_REMINDER);
+
+      try {
+         List<UserWebinarRelModel> userWebinarList = userWebinarRepository.getAllUpcomingWebinar();
+
+         int totalEffectedData = 0;
+
+         Calendar calendar = Calendar.getInstance();
+         calendar.add(Calendar.MINUTE, -30);
+         Date thirtyMinutesBeforeNow = calendar.getTime();
+
+         for (UserWebinarRelModel userWebinar: userWebinarList) {
+            WebinarModel webinar = webinarRepository.findBySecureIdAndDeletedAtIsNull(userWebinar.getWebinar());
+
+            if (webinar.getDate().after(thirtyMinutesBeforeNow) && webinar.getDate().before(new Date())) {
+               UserModel user = userRepository.getActiveUserBySecureId(userWebinar.getUser());
+
+               DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+               DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+               String date = dateFormat.format(webinar.getDate());
+               String time = timeFormat.format(webinar.getDate());
+
+               SimpleMailMessage msg = new SimpleMailMessage();
+               msg.setTo(user.getEmail());
+               msg.setSubject("Zoom Meeting Reminder");
+               msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getUserSecureId()) + ",\n\n" +
+                       "Ini adalah reminder untuk kelas webinar anda\n\n" +
+                       "Judul: " + webinar.getTitle() + "\n" +
+                       "Tanggal: " + date + "\n" +
+                       "Waktu: " + time + " WIB\n" +
+                       "Link: " + webinar.getLink() + "\n" +
+                       "Meeting ID: " + webinar.getMeetingId() + "\n" +
+                       "Passcode: " + webinar.getPasscode() + "\n\n" +
+                       "Pastikan hadir tepat waktu ya !\n\n" +
+                       "Note: Ini adalah email otomatis, jangan reply ke email ini.");
+
+               javaMailSender.send(msg);
+
+               totalEffectedData += 1;
+            }
+         }
+
+         cronJobModel.setSuccess(true);
+         cronJobModel.setTotalEffectedData(totalEffectedData);
+      } catch (Exception e) {
+         cronJobModel.setDescription(e.toString());
+      }
+
+      cronJobRepository.save(cronJobModel);
+   }
+
+   @Scheduled(cron = "0 0 1 * * ?")
+   public void sendWebinarReminders2() {
+      CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.WEBINAR_REMINDER2);
 
       try {
          List<UserWebinarRelModel> userWebinarList = userWebinarRepository.getAllUpcomingWebinar();
