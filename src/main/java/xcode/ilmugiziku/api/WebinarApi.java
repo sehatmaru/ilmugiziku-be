@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
+import xcode.ilmugiziku.service.CronService;
 import xcode.ilmugiziku.service.WebinarService;
 
 @RestController
@@ -16,6 +17,7 @@ import xcode.ilmugiziku.service.WebinarService;
 public class WebinarApi {
 
     @Autowired private WebinarService webinarService;
+    @Autowired private CronService cronService;
 
     @PostMapping("/purchase")
     ResponseEntity<BaseResponse<PurchaseResponse>> purchase(
@@ -41,5 +43,16 @@ public class WebinarApi {
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
+    }
+
+    @GetMapping("/schedule")
+    ResponseEntity<BaseResponse<Boolean>> schedule(
+    ) {
+        cronService.sendWebinarReminders();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new BaseResponse<>());
     }
 }

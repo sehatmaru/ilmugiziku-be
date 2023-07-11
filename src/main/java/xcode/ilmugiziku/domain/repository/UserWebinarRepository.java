@@ -30,7 +30,7 @@ public interface UserWebinarRepository extends JpaRepository<UserWebinarRelModel
 
    @Query(value = "SELECT * FROM t_user_webinar_rel uw" +
            " LEFT JOIN t_webinar w ON w.secure_id = uw.webinar_secure_id" +
-           " WHERE uw.active = TRUE AND uw.is_open = TRUE" +
+           " WHERE uw.active = TRUE AND w.available = TRUE" +
            " AND uw.deleted = FALSE", nativeQuery = true)
    List<UserWebinarRelModel> getAllUpcomingWebinar();
 }
