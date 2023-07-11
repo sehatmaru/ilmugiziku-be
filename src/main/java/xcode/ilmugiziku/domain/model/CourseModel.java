@@ -32,8 +32,8 @@ public class CourseModel {
    @Column(name = "price")
    private BigDecimal price;
 
-   @Column(name = "open")
-   private boolean open;
+   @Column(name = "available")
+   private boolean available;
 
    @Column(name = "course_type")
    @Enumerated(EnumType.STRING)

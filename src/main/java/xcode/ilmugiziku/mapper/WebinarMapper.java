@@ -54,7 +54,7 @@ public class WebinarMapper {
             response.setLink(request.getLink());
             response.setPasscode(request.getPasscode());
             response.setPrice(request.getPrice());
-            response.setOpen(true);
+            response.setAvailable(true);
             response.setCreatedAt(new Date());
 
             return response;

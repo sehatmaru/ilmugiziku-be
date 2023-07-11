@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
-import xcode.ilmugiziku.domain.model.InvoiceModel;
-import xcode.ilmugiziku.domain.model.UserModel;
-import xcode.ilmugiziku.domain.model.UserWebinarRelModel;
-import xcode.ilmugiziku.domain.model.WebinarModel;
+import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.InvoiceRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
 import xcode.ilmugiziku.domain.repository.UserWebinarRepository;
@@ -116,10 +113,10 @@ public class WebinarService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(webinarSecureId);
       UserWebinarRelModel userWebinar = userWebinarRepository.getActiveUserWebinar(CurrentUser.get().getUserSecureId(), webinarSecureId);
-      InvoiceModel unpaidInvoice = invoiceRepository.getPendingWebinarInvoice(webinarSecureId);
+      InvoiceModel unpaidInvoice = invoiceRepository.getPendingWebinarInvoice(CurrentUser.get().getUserSecureId(), webinarSecureId);
 
       if (webinarModel == null) throw new AppException(WEBINAR_NOT_FOUND_MESSAGE);
-      if (!webinarModel.isOpen()) throw new AppException(INACTIVE_WEBINAR);
+      if (!webinarModel.isAvailable()) throw new AppException(INACTIVE_WEBINAR);
       if (userWebinar != null) throw new AppException(USER_WEBINAR_EXIST);
 
       if (unpaidInvoice != null) {
@@ -156,6 +153,32 @@ public class WebinarService {
          } catch (Exception e){
             throw new AppException(e.toString());
          }
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> deactivate(String webinarSecureId, boolean isAvailable) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(webinarSecureId);
+      List<InvoiceModel> unpaidInvoice = invoiceRepository.getPendingCourseInvoice(webinarSecureId);
+
+      if (webinarModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+
+      if (isAvailable) {
+         if (webinarModel.isAvailable()) throw new AppException(ACTIVE_WEBINAR_EXIST);
+      } else {
+         if (!webinarModel.isAvailable()) throw new AppException(INACTIVE_WEBINAR_EXIST);
+         if (!unpaidInvoice.isEmpty()) throw new AppException(UNPAID_INVOICE_EXIST);
+      }
+
+      try {
+         webinarModel.setAvailable(isAvailable);
+         webinarModel.setUpdatedAt(new Date());
+         webinarRepository.save(webinarModel);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;
