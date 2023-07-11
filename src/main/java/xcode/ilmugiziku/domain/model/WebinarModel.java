@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -40,6 +41,12 @@ public class WebinarModel {
 
    @Column(name = "meeting_id")
    private String meetingId;
+
+   @Column(name = "open")
+   private boolean open;
+
+   @Column(name = "price")
+   private BigDecimal price;
 
    @Column(name = "passcode")
    private String passcode;

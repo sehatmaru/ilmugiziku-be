@@ -29,7 +29,6 @@ import static xcode.ilmugiziku.shared.Utils.encrypt;
 public class UserService {
 
    @Autowired private JwtService jwtService;
-   @Autowired private CourseService courseService;
    @Autowired private UserRepository userRepository;
    @Autowired private TokenRepository tokenRepository;
    @Autowired private ProfileRepository profileRepository;

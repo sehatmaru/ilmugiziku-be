@@ -10,15 +10,16 @@ import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
+import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
 import xcode.ilmugiziku.domain.repository.CronJobRepository;
 import xcode.ilmugiziku.domain.repository.InvoiceRepository;
 import xcode.ilmugiziku.domain.repository.UserCourseRepository;
-import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
+import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
+import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
 import xcode.ilmugiziku.domain.response.invoice.XenditInvoiceResponse;
 import xcode.ilmugiziku.exception.AppException;
@@ -109,18 +110,22 @@ public class InvoiceService {
       return response;
    }
 
-   public PurchaseCourseResponse createInvoice(UserModel user,
-                                                PurchaseCourseRequest request,
-                                                CourseModel courseModel,
-                                                String secureId) {
-      PurchaseCourseResponse response = new PurchaseCourseResponse();
+   public PurchaseResponse createInvoice(UserModel user,
+                                         PurchaseRequest request,
+                                         WebinarModel webinarModel,
+                                         CourseModel courseModel,
+                                         InvoiceTypeEnum type,
+                                         String secureId) {
+      PurchaseResponse response = new PurchaseResponse();
 
       XenditClient xenditClient = new XenditClient.Builder()
               .setApikey(environment.getProperty("xendit.token"))
               .build();
 
       try {
-         Invoice invoice = xenditClient.invoice.create(invoiceMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, courseModel, secureId));
+         Invoice invoice = xenditClient.invoice.create(
+                 invoiceMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, type, webinarModel, courseModel, secureId)
+         );
 
          System.out.println(invoice.toString());
 

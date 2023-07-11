@@ -6,13 +6,16 @@ public class ResponseCode {
     public static final String NOT_FOUND_MESSAGE = "Data not found";
     public static final String INVOICE_NOT_FOUND_MESSAGE = "Invoice not found";
     public static final String COURSE_NOT_FOUND_MESSAGE = "Course not found";
+    public static final String WEBINAR_NOT_FOUND_MESSAGE = "Webinar not found";
     public static final String GROUP_NOT_FOUND_MESSAGE = "Group not found";
     public static final String BILL_NOT_FOUND_MESSAGE = "Bill not found";
     public static final String MEMBER_NOT_FOUND_MESSAGE = "Member not found";
     public static final String PARAMS_ERROR_MESSAGE = "Wrong params";
     public static final String EXIST_MESSAGE = "Data exist";
     public static final String USER_COURSE_EXIST = "Course already purchased.";
-    public static final String INACTIVE_COURSE = "Course not available";
+    public static final String USER_WEBINAR_EXIST = "You already registered.";
+    public static final String INACTIVE_COURSE = "Course is not available";
+    public static final String INACTIVE_WEBINAR = "Webinar is not available";
     public static final String LOGIN_EXIST_MESSAGE = "You already log in to system. Please log out on another device first.";
     public static final String EMAIL_NOT_FOUND = "Email not found. Please sign up.";
     public static final String EMAIL_EXIST = "Email already registered. Please sign in.";

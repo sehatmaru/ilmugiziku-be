@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -11,7 +12,7 @@ import java.util.List;
 public class CourseResponse {
     private String secureId;
     private String title;
-    private int price;
+    private BigDecimal price;
     private CourseTypeEnum courseType;
     private boolean isOpen;
     private List<CourseBenefitResponse> benefits;

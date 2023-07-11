@@ -2,47 +2,41 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
+import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.course.BenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
-import xcode.ilmugiziku.domain.request.course.PurchaseCourseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
-import xcode.ilmugiziku.domain.response.course.PurchaseCourseResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.BenefitMapper;
 import xcode.ilmugiziku.mapper.CourseMapper;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
 public class CourseService {
 
-   @Autowired private JavaMailSender javaMailSender;
    @Autowired private InvoiceService invoiceService;
-   @Autowired private ProfileService profileService;
    @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private UserRepository userRepository;
-   @Autowired private WebinarRepository webinarRepository;
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
    @Autowired private CronJobRepository cronJobRepository;
@@ -188,42 +182,6 @@ public class CourseService {
       return response;
    }
 
-   public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-      if (webinarModel != null) {
-         DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-         DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-         String date = dateFormat.format(webinarModel.getDate());
-         String time = timeFormat.format(webinarModel.getDate());
-
-         SimpleMailMessage msg = new SimpleMailMessage();
-         msg.setTo(userModel.getEmail());
-         msg.setSubject("Zoom Meeting Reminder");
-         msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getUserSecureId()) + ",\n\n" +
-                 "Ini adalah reminder untuk kelas webinar anda\n\n" +
-                 "Judul: " + webinarModel.getTitle() + "\n" +
-                 "Tanggal: " + date + "\n" +
-                 "Waktu: " + time + " WIB\n" +
-                 "Link: " + webinarModel.getLink() + "\n" +
-                 "Meeting ID: " + webinarModel.getMeetingId() + "\n" +
-                 "Passcode: " + webinarModel.getPasscode() + "\n\n" +
-                 "Pastikan hadir tepat waktu ya !\n\n" +
-                 "Note: Ini adalah email otomatis, jangan reply ke email ini.");
-
-         javaMailSender.send(msg);
-
-         response.setSuccess(true);
-      } else {
-         throw new AppException(NOT_FOUND_MESSAGE);
-      }
-
-      return response;
-   }
-
    public BaseResponse<Boolean> cancelCourse(String courseSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -243,8 +201,8 @@ public class CourseService {
       return response;
    }
 
-   public BaseResponse<PurchaseCourseResponse> purchase(String courseSecureId, PurchaseCourseRequest request) {
-      BaseResponse<PurchaseCourseResponse> response = new BaseResponse<>();
+   public BaseResponse<PurchaseResponse> purchase(String courseSecureId, PurchaseRequest request) {
+      BaseResponse<PurchaseResponse> response = new BaseResponse<>();
 
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
@@ -256,7 +214,7 @@ public class CourseService {
       if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
       if (unpaidInvoice != null) {
-         PurchaseCourseResponse resp = new PurchaseCourseResponse();
+         PurchaseResponse resp = new PurchaseResponse();
          resp.setInvoiceDeadline(unpaidInvoice.getInvoiceDeadline());
          resp.setInvoiceId(unpaidInvoice.getInvoiceId());
          resp.setInvoiceUrl(unpaidInvoice.getInvoiceUrl());
@@ -269,7 +227,7 @@ public class CourseService {
             String invoiceSecureId = generateSecureId();
             String userCourseSecureId = generateSecureId();
 
-            PurchaseCourseResponse invoice = invoiceService.createInvoice(userModel, request, courseModel, invoiceSecureId);
+            PurchaseResponse invoice = invoiceService.createInvoice(userModel, request, null, courseModel, COURSE, invoiceSecureId);
 
             UserCourseRelModel userCourseModel = new UserCourseRelModel();
             userCourseModel.setSecureId(userCourseSecureId);
@@ -280,6 +238,7 @@ public class CourseService {
             model.setSecureId(invoiceSecureId);
             model.setUserCourse(userCourseSecureId);
             model.setTotalAmount(courseModel.getPrice());
+            model.setInvoiceType(COURSE);
 
             invoiceRepository.save(model);
             userCourseRepository.save(userCourseModel);

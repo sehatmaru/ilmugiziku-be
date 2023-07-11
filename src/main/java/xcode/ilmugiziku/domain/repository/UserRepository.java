@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
            " WHERE secure_id = :secureId AND active IS TRUE" +
            " AND deleted_at IS NULL" +
            " LIMIT 1", nativeQuery = true)
-   Optional<UserModel> getActiveUserBySecureId(String secureId);
+   UserModel getActiveUserBySecureId(String secureId);
 
    @Query(value = "SELECT u.* FROM t_user u" +
            " LEFT JOIN t_user_course_rel uc ON uc.user_secure_id = u.secure_id" +
