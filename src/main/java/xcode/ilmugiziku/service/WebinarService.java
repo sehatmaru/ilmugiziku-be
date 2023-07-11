@@ -168,8 +168,9 @@ public class WebinarService {
    /**
     * will send webinar reminders
     * execute every 30 minutes
+    * start from 9am to 11pm
     */
-   @Scheduled(cron = "0/30 9-23 * * *")
+   @Scheduled(cron = "0 0/30 9-23 * * ?")
    public void checkExpiredInvoice() {
       CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.WEBINAR_REMINDER);
 
