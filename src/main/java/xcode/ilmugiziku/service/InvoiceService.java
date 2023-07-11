@@ -5,15 +5,11 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
-import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
-import xcode.ilmugiziku.domain.repository.CronJobRepository;
 import xcode.ilmugiziku.domain.repository.InvoiceRepository;
 import xcode.ilmugiziku.domain.repository.UserCourseRepository;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
@@ -26,7 +22,6 @@ import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.Date;
-import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.INVOICE_NOT_FOUND_MESSAGE;
@@ -40,7 +35,6 @@ public class InvoiceService {
    @Autowired private InvoiceRepository invoiceRepository;
    @Autowired private CourseRepository courseRepository;
    @Autowired private UserCourseRepository userCourseRepository;
-   @Autowired private CronJobRepository cronJobRepository;
    @Autowired private Environment environment;
 
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
@@ -137,39 +131,6 @@ public class InvoiceService {
       }
 
       return response;
-   }
-
-   /**
-    * will check all expired invoice
-    * execute at 1 am every dat
-    */
-   @Scheduled(cron = "0 0 1 * * ?")
-   public void checkExpiredInvoice() {
-      CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_EXPIRED_PAYMENT);
-
-      try {
-         List<InvoiceModel> pendingInvoices = invoiceRepository.getAllPendingInvoice();
-
-         int totalEffectedData = 0;
-
-         for (InvoiceModel invoice: pendingInvoices) {
-            if (invoice.getInvoiceDeadline().before(new Date())) {
-               invoice.setDeletedAt(new Date());
-               invoice.setInvoiceStatus(InvoiceStatusEnum.EXPIRED);
-
-               totalEffectedData += 1;
-            }
-         }
-
-         invoiceRepository.saveAll(pendingInvoices);
-
-         cronJobModel.setSuccess(true);
-         cronJobModel.setTotalEffectedData(totalEffectedData);
-      } catch (Exception e) {
-         cronJobModel.setDescription(e.toString());
-      }
-
-      cronJobRepository.save(cronJobModel);
    }
 
 }

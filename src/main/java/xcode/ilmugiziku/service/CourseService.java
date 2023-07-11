@@ -2,10 +2,8 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
-import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
@@ -22,7 +20,6 @@ import xcode.ilmugiziku.mapper.CourseMapper;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
@@ -39,7 +36,6 @@ public class CourseService {
    @Autowired private UserRepository userRepository;
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
-   @Autowired private CronJobRepository cronJobRepository;
    @Autowired private InvoiceRepository invoiceRepository;
 
    private final CourseMapper courseMapper = new CourseMapper();
@@ -250,36 +246,6 @@ public class CourseService {
       }
 
       return response;
-   }
-
-   /**
-    * will execute at 1 am every dat
-    */
-   @Scheduled(cron = "0 0 1 * * ?")
-   public void refreshActiveCourse() {
-      CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.CHECKING_COURSE);
-
-      try {
-         List<UserCourseRelModel> userCourse = userCourseRepository.getAllActiveCourse();
-
-         int totalEffectedData = 0;
-
-         for (UserCourseRelModel course : userCourse) {
-            if (course.getExpireAt().before(new Date())) {
-               course.setActive(false);
-               totalEffectedData += 1;
-            }
-         }
-
-         userCourseRepository.saveAll(userCourse);
-
-         cronJobModel.setSuccess(true);
-         cronJobModel.setTotalEffectedData(totalEffectedData);
-      } catch (Exception e) {
-         cronJobModel.setDescription(e.toString());
-      }
-
-      cronJobRepository.save(cronJobModel);
    }
 
 }
