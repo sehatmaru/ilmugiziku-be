@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
+import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -15,6 +16,7 @@ import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.WebinarResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.service.*;
 
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping(value = "admin")
 public class AdminApi {
 
+    @Autowired private ExamService examService;
     @Autowired private QuestionService questionService;
     @Autowired private UserService userService;
     @Autowired private TemplateService templateService;
@@ -127,6 +130,66 @@ public class AdminApi {
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .body(response);
 //    }
+
+    @PostMapping("/exam/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createExam(
+            @RequestBody @Validated CreateUpdateExamRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = examService.createExam(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/exam/update")
+    ResponseEntity<BaseResponse<Boolean>> updateExam(
+            @RequestParam @Validated String examSecureId,
+            @RequestBody @Validated CreateUpdateExamRequest body
+    ) {
+        BaseResponse<Boolean> response = examService.updateExam(examSecureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/exam/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteExam(
+            @RequestParam @Validated String examSecureId
+    ) {
+        BaseResponse<Boolean> response = examService.deleteExam(examSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/exam/list")
+    ResponseEntity<BaseResponse<List<ExamResponse>>> getExamToList() {
+        BaseResponse<List<ExamResponse>> response = examService.getExamList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/exam/template")
+    ResponseEntity<BaseResponse<Boolean>> setTemplate(
+            @RequestParam @Validated String examSecureId,
+            @RequestParam @Validated String templateSecureId
+    ) {
+        BaseResponse<Boolean> response = examService.setTemplate(examSecureId, templateSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 
     @PostMapping("/benefit/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createBenefit(

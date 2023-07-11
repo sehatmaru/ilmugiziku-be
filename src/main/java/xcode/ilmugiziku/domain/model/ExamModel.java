@@ -24,6 +24,9 @@ public class ExamModel {
    @Column(name = "secure_id")
    private String secureId;
 
+   @Column(name = "title")
+   private String title;
+
    @Column(name = "template_secure_id")
    private String template;
 
@@ -51,4 +54,7 @@ public class ExamModel {
    @Column(name = "deleted_at")
    private Date deletedAt;
 
+   public boolean isFull() {
+      return currentParticipant > maxParticipant;
+   }
 }

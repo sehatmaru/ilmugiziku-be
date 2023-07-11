@@ -13,6 +13,7 @@ public class ResponseCode {
     public static final String USER_COURSE_EXIST = "Course already purchased.";
     public static final String USER_WEBINAR_EXIST = "You already registered.";
     public static final String INACTIVE_COURSE = "Course is not available";
+    public static final String EXAM_FULL = "This exam is full";
     public static final String INACTIVE_COURSE_EXIST = "Course already non available.";
     public static final String ACTIVE_COURSE_EXIST = "Course already available.";
     public static final String ACTIVE_WEBINAR_EXIST = "Webinar already available.";
