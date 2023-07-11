@@ -24,21 +24,19 @@ public class RatingModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "lesson_secure_id")
-   private String lessonSecureId;
+   @Column(name = "webinar_secure_id")
+   private String webinar;
+
+   @Column(name = "course_secure_id")
+   private String course;
 
    @Column(name = "user_secure_id")
-   private String userSecureId;
+   private String user;
 
    @Column(name = "rating")
    private int rating;
 
-   @Column(name = "created_at")
-   private Date createdAt;
+   @Column(name = "rated_at")
+   private Date ratedAt;
 
-   @Column(name = "updated_at")
-   private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
 }

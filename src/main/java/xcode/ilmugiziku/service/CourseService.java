@@ -2,7 +2,6 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.*;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
+import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.COURSE;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -32,6 +31,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 public class CourseService {
 
    @Autowired private InvoiceService invoiceService;
+   @Autowired private RatingService ratingService;
    @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
@@ -39,6 +39,7 @@ public class CourseService {
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
    @Autowired private InvoiceRepository invoiceRepository;
+   @Autowired private RatingRepository ratingRepository;
 
    private final CourseMapper courseMapper = new CourseMapper();
    private final BenefitMapper benefitMapper = new BenefitMapper();
@@ -268,6 +269,39 @@ public class CourseService {
       try {
          courseModel.setAvailable(isAvailable);
          courseModel.setUpdatedAt(new Date());
+         courseRepository.save(courseModel);
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> giveRating(String courseSecureId, int rating) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
+      RatingModel prevRating = ratingRepository.getCourseRating(courseSecureId, CurrentUser.get().getUserSecureId());
+      UserCourseRelModel userCourse = userCourseRepository.getPaidUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
+
+      if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+      if (prevRating != null) throw new AppException(RATING_EXIST);
+      if (userCourse == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+
+      try {
+         RatingModel ratingModel = new RatingModel();
+         ratingModel.setRating(rating);
+         ratingModel.setCourse(courseSecureId);
+         ratingModel.setUser(CurrentUser.get().getUserSecureId());
+         ratingModel.setRatedAt(new Date());
+
+         ratingRepository.save(ratingModel);
+
+         List<RatingModel> ratingList = ratingRepository.getAllCourseRating(courseSecureId);
+         courseModel.setRating(ratingService.calculateRatings(ratingList));
+
          courseRepository.save(courseModel);
       } catch (Exception e){
          throw new AppException(e.toString());

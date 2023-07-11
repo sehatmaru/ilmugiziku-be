@@ -21,6 +21,8 @@ public class CourseMapper {
             response.setPrice(model.getPrice());
             response.setAvailable(model.isAvailable());
             response.setCourseType(model.getCourseType());
+            response.setAvailable(model.isAvailable());
+            response.setRating(model.getRating());
 
             return response;
         } else {

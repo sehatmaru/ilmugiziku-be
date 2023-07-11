@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.*;
-import xcode.ilmugiziku.domain.repository.InvoiceRepository;
-import xcode.ilmugiziku.domain.repository.UserRepository;
-import xcode.ilmugiziku.domain.repository.UserWebinarRepository;
-import xcode.ilmugiziku.domain.repository.WebinarRepository;
+import xcode.ilmugiziku.domain.repository.*;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -22,7 +19,7 @@ import xcode.ilmugiziku.mapper.WebinarMapper;
 import java.util.Date;
 import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.WEBINAR;
+import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.WEBINAR;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -30,10 +27,12 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 public class WebinarService {
 
    @Autowired private InvoiceService invoiceService;
+   @Autowired private RatingService ratingService;
    @Autowired private WebinarRepository webinarRepository;
    @Autowired private UserRepository userRepository;
    @Autowired private UserWebinarRepository userWebinarRepository;
    @Autowired private InvoiceRepository invoiceRepository;
+   @Autowired private RatingRepository ratingRepository;
 
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
@@ -158,7 +157,7 @@ public class WebinarService {
       return response;
    }
 
-   public BaseResponse<Boolean> deactivate(String webinarSecureId, boolean isAvailable) {
+   public BaseResponse<Boolean> setAvailability(String webinarSecureId, boolean isAvailable) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
       WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(webinarSecureId);
@@ -176,6 +175,39 @@ public class WebinarService {
       try {
          webinarModel.setAvailable(isAvailable);
          webinarModel.setUpdatedAt(new Date());
+         webinarRepository.save(webinarModel);
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> giveRating(String webinarSecureId, int rating) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(webinarSecureId);
+      RatingModel prevRating = ratingRepository.getWebinarRating(webinarSecureId, CurrentUser.get().getUserSecureId());
+      UserWebinarRelModel userWebinar = userWebinarRepository.getPaidUserWebinar(CurrentUser.get().getUserSecureId(), webinarSecureId);
+
+      if (webinarModel == null) throw new AppException(WEBINAR_NOT_FOUND_MESSAGE);
+      if (prevRating != null) throw new AppException(RATING_EXIST);
+      if (userWebinar == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+
+      try {
+         RatingModel ratingModel = new RatingModel();
+         ratingModel.setRating(rating);
+         ratingModel.setWebinar(webinarSecureId);
+         ratingModel.setUser(CurrentUser.get().getUserSecureId());
+         ratingModel.setRatedAt(new Date());
+
+         ratingRepository.save(ratingModel);
+
+         List<RatingModel> ratingList = ratingRepository.getAllCourseRating(webinarSecureId);
+         webinarModel.setRating(ratingService.calculateRatings(ratingList));
+
          webinarRepository.save(webinarModel);
       } catch (Exception e){
          throw new AppException(e.toString());

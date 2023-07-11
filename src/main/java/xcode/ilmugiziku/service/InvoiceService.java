@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
+import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
 import xcode.ilmugiziku.domain.repository.InvoiceRepository;
 import xcode.ilmugiziku.domain.repository.UserCourseRepository;
+import xcode.ilmugiziku.domain.repository.UserWebinarRepository;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -35,6 +36,7 @@ public class InvoiceService {
    @Autowired private InvoiceRepository invoiceRepository;
    @Autowired private CourseRepository courseRepository;
    @Autowired private UserCourseRepository userCourseRepository;
+   @Autowired private UserWebinarRepository userWebinarRepository;
    @Autowired private Environment environment;
 
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
@@ -69,17 +71,17 @@ public class InvoiceService {
 
       if (invoice != null) {
          UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(invoice.getUserCourse());
+         UserWebinarRelModel userWebinar = userWebinarRepository.getUserWebinarBySecureId(invoice.getUserWebinar());
+
+         if (invoice.isCourseInvoice()) setUserCourse(userCourse, request.isPaid());
+         else setUserWebinar(userWebinar, request.isPaid());
 
          if (request.isPaid()) {
-            userCourse.setActive(true);
-            userCourse.setExpireAt(getNextMonthDate());
-
             invoice.setPaidDate(new Date());
             invoice.setPaymentMethod(request.getPaymentMethod());
             invoice.setPaymentChannel(request.getPaymentChannel());
             invoice.setBankCode(request.getBankCode());
          } else if (request.isExpired()) {
-            userCourse.setDeleted(true);
             invoice.setDeletedAt(new Date());
          }
 
@@ -87,7 +89,9 @@ public class InvoiceService {
 
          try {
             invoiceRepository.save(invoice);
-            userCourseRepository.save(userCourse);
+
+            if (invoice.isCourseInvoice()) userCourseRepository.save(userCourse);
+            else userWebinarRepository.save(userWebinar);
 
             result.setInvoiceId(request.getId());
             result.setStatus(request.getStatus());
@@ -104,11 +108,25 @@ public class InvoiceService {
       return response;
    }
 
+   private void setUserWebinar(UserWebinarRelModel model, boolean isPaid) {
+      if (isPaid) {
+         model.setActive(true);
+         model.setExpireAt(getNextMonthDate());
+      } else model.setDeleted(true);
+   }
+
+   private void setUserCourse(UserCourseRelModel model, boolean isPaid) {
+      if (isPaid) {
+         model.setActive(true);
+         model.setExpireAt(getNextMonthDate());
+      } else model.setDeleted(true);
+   }
+
    public PurchaseResponse createInvoice(UserModel user,
                                          PurchaseRequest request,
                                          WebinarModel webinarModel,
                                          CourseModel courseModel,
-                                         InvoiceTypeEnum type,
+                                         LearningTypeEnum type,
                                          String secureId) {
       PurchaseResponse response = new PurchaseResponse();
 

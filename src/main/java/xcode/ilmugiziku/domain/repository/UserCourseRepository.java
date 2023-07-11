@@ -20,11 +20,12 @@ public interface UserCourseRepository extends JpaRepository<UserCourseRelModel, 
            " AND deleted = FALSE", nativeQuery = true)
    List<UserCourseRelModel> getUserActiveCourse(String user);
 
-   @Query(value = "SELECT * FROM t_user_course_rel" +
-           " WHERE user_secure_id = :user AND course_secure_id = :course" +
-           " AND deleted = FALSE" +
+   @Query(value = "SELECT * FROM t_user_course_rel uc" +
+           " LEFT JOIN t_invoice i ON i.user_course_secure_id = uc.secure_id" +
+           " WHERE uc.user_secure_id = :user AND uc.course_secure_id = :course" +
+           " AND i.invoice_status IN ('PAID')" +
            " LIMIT 1", nativeQuery = true)
-   UserCourseRelModel getUserCourse(String user, String course);
+   UserCourseRelModel getPaidUserCourse(String user, String course);
 
    @Query(value = "SELECT * FROM t_user_course_rel" +
            " WHERE user_secure_id = :user AND course_secure_id = :course" +

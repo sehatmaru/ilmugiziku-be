@@ -35,6 +35,9 @@ public class CourseModel {
    @Column(name = "available")
    private boolean available;
 
+   @Column(name = "rating")
+   private double rating;
+
    @Column(name = "course_type")
    @Enumerated(EnumType.STRING)
    private CourseTypeEnum courseType;

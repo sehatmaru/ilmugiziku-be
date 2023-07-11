@@ -93,4 +93,17 @@ public class CourseApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/rate")
+    ResponseEntity<BaseResponse<Boolean>> rate(
+            @RequestParam @Validated String courseSecureId,
+            @RequestParam @Validated int rating
+    ) {
+        BaseResponse<Boolean> response = courseService.giveRating(courseSecureId, rating);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

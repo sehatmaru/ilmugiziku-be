@@ -266,7 +266,7 @@ public class AdminApi {
             @RequestParam @Validated String webinarSecureId,
             @RequestParam @Validated boolean isAvailable
     ) {
-        BaseResponse<Boolean> response = webinarService.deactivate(webinarSecureId, isAvailable);
+        BaseResponse<Boolean> response = webinarService.setAvailability(webinarSecureId, isAvailable);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -1,6 +1,6 @@
 package xcode.ilmugiziku.domain.enums;
 
-public enum InvoiceTypeEnum {
+public enum LearningTypeEnum {
     COURSE,
     WEBINAR
 }
