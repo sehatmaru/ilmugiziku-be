@@ -198,6 +198,7 @@ public class WebinarService {
 
       try {
          RatingModel ratingModel = new RatingModel();
+         ratingModel.setSecureId(generateSecureId());
          ratingModel.setRating(rating);
          ratingModel.setWebinar(webinarSecureId);
          ratingModel.setUser(CurrentUser.get().getUserSecureId());
@@ -205,10 +206,12 @@ public class WebinarService {
 
          ratingRepository.save(ratingModel);
 
-         List<RatingModel> ratingList = ratingRepository.getAllCourseRating(webinarSecureId);
+         List<RatingModel> ratingList = ratingRepository.getAllWebinarRating(webinarSecureId);
          webinarModel.setRating(ratingService.calculateRatings(ratingList));
 
          webinarRepository.save(webinarModel);
+
+         response.setSuccess(true);
       } catch (Exception e){
          throw new AppException(e.toString());
       }
