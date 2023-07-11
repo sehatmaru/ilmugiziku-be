@@ -480,4 +480,29 @@ public class AdminApi {
                 .body(response);
     }
 
+    @GetMapping("/webinar/availability")
+    ResponseEntity<BaseResponse<Boolean>> webinarAvailability(
+            @RequestParam @Validated String webinarSecureId,
+            @RequestParam @Validated boolean isAvailable
+    ) {
+        BaseResponse<Boolean> response = webinarService.deactivate(webinarSecureId, isAvailable);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/course/availability")
+    ResponseEntity<BaseResponse<Boolean>> courseAvailability(
+            @RequestParam @Validated String courseSecureId,
+            @RequestParam @Validated boolean isAvailable
+    ) {
+        BaseResponse<Boolean> response = courseService.setAvailability(courseSecureId, isAvailable);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

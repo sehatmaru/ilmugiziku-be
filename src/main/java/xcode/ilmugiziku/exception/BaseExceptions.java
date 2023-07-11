@@ -92,6 +92,10 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case EXIST_MESSAGE:
             case EMAIL_EXIST:
             case USERNAME_EXIST:
+            case UNPAID_INVOICE_EXIST:
+            case INACTIVE_COURSE_EXIST:
+            case ACTIVE_COURSE_EXIST:
+            case ACTIVE_WEBINAR_EXIST:
             case USER_COURSE_EXIST:
             case USER_EXIST_ON_GROUP: {
                 response.setExistData(ex.getMessage());

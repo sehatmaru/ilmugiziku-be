@@ -15,6 +15,11 @@ public class ResponseCode {
     public static final String USER_COURSE_EXIST = "Course already purchased.";
     public static final String USER_WEBINAR_EXIST = "You already registered.";
     public static final String INACTIVE_COURSE = "Course is not available";
+    public static final String INACTIVE_COURSE_EXIST = "Course already non available.";
+    public static final String ACTIVE_COURSE_EXIST = "Course already available.";
+    public static final String ACTIVE_WEBINAR_EXIST = "Webinar already available.";
+    public static final String INACTIVE_WEBINAR_EXIST = "Webinar already non available.";
+    public static final String UNPAID_INVOICE_EXIST = "There are some unpaid invoice. Please try again later.";
     public static final String INACTIVE_WEBINAR = "Webinar is not available";
     public static final String LOGIN_EXIST_MESSAGE = "You already log in to system. Please log out on another device first.";
     public static final String EMAIL_NOT_FOUND = "Email not found. Please sign up.";

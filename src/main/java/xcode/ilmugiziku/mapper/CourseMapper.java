@@ -19,7 +19,7 @@ public class CourseMapper {
             response.setSecureId(model.getSecureId());
             response.setTitle(model.getTitle());
             response.setPrice(model.getPrice());
-            response.setOpen(model.isOpen());
+            response.setAvailable(model.isAvailable());
             response.setCourseType(model.getCourseType());
 
             return response;
@@ -47,7 +47,7 @@ public class CourseMapper {
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
             model.setCourseType(request.getCourseType());
-            model.setOpen(true);
+            model.setAvailable(true);
             model.setCreatedAt(new Date());
 
             return model;
@@ -61,7 +61,7 @@ public class CourseMapper {
             model.setTitle(request.getTitle());
             model.setPrice(request.getPrice());
             model.setCourseType(request.getCourseType());
-            model.setOpen(request.isOpen());
+            model.setAvailable(request.isOpen());
             model.setUpdatedAt(new Date());
 
             return model;

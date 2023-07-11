@@ -2,6 +2,7 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.*;
@@ -20,6 +21,7 @@ import xcode.ilmugiziku.mapper.CourseMapper;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
@@ -203,10 +205,10 @@ public class CourseService {
       UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
       CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
       UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourse(CurrentUser.get().getUserSecureId(), courseSecureId);
-      InvoiceModel unpaidInvoice = invoiceRepository.getPendingCourseInvoice(courseSecureId);
+      InvoiceModel unpaidInvoice = invoiceRepository.getPendingUserCourseInvoice(CurrentUser.get().getUserSecureId(), courseSecureId);
 
       if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
-      if (!courseModel.isOpen()) throw new AppException(INACTIVE_COURSE);
+      if (!courseModel.isAvailable()) throw new AppException(INACTIVE_COURSE);
       if (userCourse != null) throw new AppException(USER_COURSE_EXIST);
 
       if (unpaidInvoice != null) {
@@ -243,6 +245,32 @@ public class CourseService {
          } catch (Exception e){
             throw new AppException(e.toString());
          }
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> setAvailability(String courseSecureId, boolean isAvailable) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      CourseModel courseModel = courseRepository.findBySecureIdAndDeletedAtIsNull(courseSecureId);
+      List<InvoiceModel> unpaidInvoice = invoiceRepository.getPendingCourseInvoice(courseSecureId);
+
+      if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
+
+      if (isAvailable) {
+         if (courseModel.isAvailable()) throw new AppException(ACTIVE_COURSE_EXIST);
+      } else {
+         if (!courseModel.isAvailable()) throw new AppException(INACTIVE_COURSE_EXIST);
+         if (!unpaidInvoice.isEmpty()) throw new AppException(UNPAID_INVOICE_EXIST);
+      }
+
+      try {
+         courseModel.setAvailable(isAvailable);
+         courseModel.setUpdatedAt(new Date());
+         courseRepository.save(courseModel);
+      } catch (Exception e){
+         throw new AppException(e.toString());
       }
 
       return response;

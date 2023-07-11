@@ -42,8 +42,8 @@ public class WebinarModel {
    @Column(name = "meeting_id")
    private String meetingId;
 
-   @Column(name = "open")
-   private boolean open;
+   @Column(name = "available")
+   private boolean available;
 
    @Column(name = "price")
    private BigDecimal price;

@@ -14,7 +14,7 @@ public class CourseResponse {
     private String title;
     private BigDecimal price;
     private CourseTypeEnum courseType;
-    private boolean isOpen;
+    private boolean isAvailable;
     private List<CourseBenefitResponse> benefits;
 
     public CourseResponse() {}
