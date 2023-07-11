@@ -195,6 +195,7 @@ public class WebinarService {
       if (webinarModel == null) throw new AppException(WEBINAR_NOT_FOUND_MESSAGE);
       if (prevRating != null) throw new AppException(RATING_EXIST);
       if (userWebinar == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+      if (rating < 0 || rating > 5) throw new AppException(PARAMS_ERROR_MESSAGE);
 
       try {
          RatingModel ratingModel = new RatingModel();

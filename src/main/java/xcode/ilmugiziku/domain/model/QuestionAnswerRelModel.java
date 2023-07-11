@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "t_template")
+@Table(name = "t_question_answer_rel")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class TemplateModel {
+public class QuestionAnswerRelModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -24,16 +24,13 @@ public class TemplateModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "name")
-   private String name;
+   @Column(name = "question_secure_id")
+   private String question;
 
-   @Column(name = "created_at")
-   private Date createdAt;
+   @Column(name = "answer_secure_id")
+   private String answer;
 
-   @Column(name = "updated_at")
-   private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
+   @Column(name = "correct_answer")
+   private boolean correctAnswer;
 
 }

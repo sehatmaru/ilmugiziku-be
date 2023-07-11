@@ -19,8 +19,9 @@ public class AnswerMapper {
             AnswerModel response = new AnswerModel();
             response.setSecureId(generateSecureId());
             response.setContent(request.getContent());
-            response.setQuestionSecureId(questionSecureId);
-            response.setValue(request.isValue());
+            // TODO: 11/07/23  
+//            response.setQuestionSecureId(questionSecureId);
+//            response.setValue(request.isValue());
             response.setCreatedAt(new Date());
 
             return response;
@@ -32,7 +33,8 @@ public class AnswerMapper {
     public AnswerModel updateRequestToModel(AnswerModel model, UpdateAnswerRequest request) {
         if (model != null && request != null) {
             model.setContent(request.getContent());
-            model.setValue(request.isValue());
+            // TODO: 11/07/23  
+//            model.setValue(request.isValue());
             model.setUpdatedAt(new Date());
 
             return model;
@@ -74,7 +76,8 @@ public class AnswerMapper {
             AnswerValueResponse response = new AnswerValueResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
-            response.setValue(model.isValue());
+            // TODO: 11/07/23  
+//            response.setValue(model.isValue());
 
             return response;
         } else {

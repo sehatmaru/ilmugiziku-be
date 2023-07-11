@@ -76,12 +76,13 @@ public class ExamService {
       for (ExamRequest exam: exams) {
          boolean res = false;
 
-         for (AnswerModel answer: answerRepository.findAllByQuestionSecureId(exam.getQuestionsSecureId())) {
-            if (answer.isValue() && (answer.getSecureId().equals(exam.getAnswersSecureId()))) {
-               res = true;
-               break;
-            }
-         }
+         // TODO: 11/07/23
+//         for (AnswerModel answer: answerRepository.findAllByQuestionSecureId(exam.getQuestionsSecureId())) {
+//            if (answer.isValue() && (answer.getSecureId().equals(exam.getAnswersSecureId()))) {
+//               res = true;
+//               break;
+//            }
+//         }
 
          if (res) correct += 1;
          else incorrect += 1;
@@ -92,9 +93,10 @@ public class ExamService {
          score = (int) Math.round(tmp * 100);
       }
 
-      model.setScore(score);
-      model.setCorrect(correct);
-      model.setIncorrect(incorrect);
+      // TODO: 11/07/23  
+//      model.setScore(score);
+//      model.setCorrect(correct);
+//      model.setIncorrect(incorrect);
 
       return model;
    }
@@ -156,21 +158,22 @@ public class ExamService {
    private List<ExamKeyResponse> getExamKeys(ExamModel exam) {
       List<ExamKeyResponse> results = new ArrayList<>();
 
-      for (String questionSecureId: examMapper.stringToArray(exam.getQuestions())) {
-         ExamKeyResponse examKeyResponse = new ExamKeyResponse();
-         QuestionModel questionModel = questionRepository.findBySecureId(questionSecureId);
-         List<AnswerModel> answerModels = answerRepository.findAllByQuestionSecureId(questionSecureId);
-
-         for (AnswerModel model: answerModels) {
-            if (model.isValue()) {
-               examKeyResponse.setAnswer(model.getContent());
-               examKeyResponse.setQuestion(questionModel.getContent());
-               examKeyResponse.setDiscussion(questionModel.getDiscussion());
-            }
-         }
-
-         results.add(examKeyResponse);
-      }
+      // TODO: 11/07/23  
+//      for (String questionSecureId: examMapper.stringToArray(exam.getQuestions())) {
+//         ExamKeyResponse examKeyResponse = new ExamKeyResponse();
+//         QuestionModel questionModel = questionRepository.findBySecureId(questionSecureId);
+//         List<AnswerModel> answerModels = answerRepository.findAllByQuestionSecureId(questionSecureId);
+//
+//         for (AnswerModel model: answerModels) {
+//            if (model.isValue()) {
+//               examKeyResponse.setAnswer(model.getContent());
+//               examKeyResponse.setQuestion(questionModel.getContent());
+//               examKeyResponse.setDiscussion(questionModel.getDiscussion());
+//            }
+//         }
+//
+//         results.add(examKeyResponse);
+//      }
       
       return results;
    }

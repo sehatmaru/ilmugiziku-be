@@ -27,34 +27,16 @@ public class QuestionModel {
    @Column(name = "content")
    private String content;
 
-   // TODO: 11/07/23  
-//   @Column(name = "question_type")
-//   @Enumerated(EnumType.STRING)
-//   private QuestionTypeEnum questionType;
-//
-//   @Column(name = "question_sub_type")
-//   @Enumerated(EnumType.STRING)
-//   private QuestionSubTypeEnum questionSubType;
-
-   @Column(name = "discussion")
-   private String discussion;
-
-   @Column(name = "label")
-   private String label;
-
-   @Column(name = "type")
-   private String type;
-
-   @Column(name = "template_secure_id")
-   private String templateSecureId;
+   @Column(name = "created_by")
+   private String createdBy;
 
    @Column(name = "created_at")
    private Date createdAt;
 
+   @Column(name = "edited_by")
+   private String editedBy;
+
    @Column(name = "updated_at")
    private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
 
 }

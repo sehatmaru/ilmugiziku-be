@@ -18,7 +18,8 @@ public class TemplateMapper {
             TemplateResponse response = new TemplateResponse();
             response.setSecureId(model.getSecureId());
             response.setName(model.getName());
-            response.setUsed(model.isUsed());
+            // TODO: 11/07/23  
+//            response.setUsed(model.isUsed());
 
             return response;
         } else {
@@ -48,7 +49,7 @@ public class TemplateMapper {
             // TODO: 11/07/23  
 //            response.setQuestionType(request.getQuestionType());
 //            response.setQuestionSubType(request.getQuestionSubType());
-            response.setUsed(false);
+//            response.setUsed(false);
             response.setCreatedAt(new Date());
 
             return response;

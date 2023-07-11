@@ -27,18 +27,15 @@ public class AnswerModel {
    @Column(name = "content")
    private String content;
 
-   @Column(name = "question_secure_id")
-   private String questionSecureId;
-
-   @Column(name = "value")
-   private boolean value;
+   @Column(name = "created_by")
+   private String createdBy;
 
    @Column(name = "created_at")
    private Date createdAt;
 
+   @Column(name = "edited_by")
+   private String editedBy;
+
    @Column(name = "updated_at")
    private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
 }

@@ -18,10 +18,10 @@ public class ExamMapper {
         if (request != null) {
             ExamModel result = new ExamModel();
             result.setSecureId(generateSecureId());
-            result.setQuestions(arrayToString(request.getExams(), "question"));
-            result.setAnswers(arrayToString(request.getExams(), "answer"));
-            result.setBlank(response.getBlank());
-            // TODO: 11/07/23  
+            // TODO: 11/07/23
+//            result.setQuestions(arrayToString(request.getExams(), "question"));
+//            result.setAnswers(arrayToString(request.getExams(), "answer"));
+//            result.setBlank(response.getBlank());
 //            result.setQuestionType(request.getQuestionType());
 //            result.setQuestionSubType(request.getQuestionSubType());
 //            result.setQuestionSubType(request.getQuestionSubType());
@@ -39,9 +39,9 @@ public class ExamMapper {
             // TODO: 11/07/23  
 //            result.setQuestionSubType(model.getQuestionSubType());
             result.setDate(model.getCreatedAt());
-            result.setCorrect(model.getCorrect());
-            result.setScore(model.getScore());
-            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
+//            result.setCorrect(model.getCorrect());
+//            result.setScore(model.getScore());
+//            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
 
             return result;
         } else {
@@ -66,8 +66,9 @@ public class ExamMapper {
     public ExamRankResponse modelToRankResponse(ExamModel model) {
         if (model != null) {
             ExamRankResponse result = new ExamRankResponse();
-            result.setCorrect(model.getCorrect());
-            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
+            // TODO: 11/07/23
+//            result.setCorrect(model.getCorrect());
+//            result.setTotal(model.getBlank() + model.getCorrect() + model.getIncorrect());
 
             return result;
         } else {
