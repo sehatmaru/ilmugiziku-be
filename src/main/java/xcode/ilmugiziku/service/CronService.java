@@ -39,7 +39,7 @@ public class CronService {
     * execute every 30 minutes
     * start from 9am to 11pm
     */
-   @Scheduled(cron = "44 15 * * * ?")
+   @Scheduled(cron = "0,30 * * * * ?")
    public void sendWebinarReminders() {
       CronJobModel cronJobModel = new CronJobModel(CronJobTypeEnum.WEBINAR_REMINDER);
 
