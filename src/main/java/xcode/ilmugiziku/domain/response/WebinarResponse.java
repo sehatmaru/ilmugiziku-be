@@ -14,4 +14,6 @@ public class WebinarResponse {
     private Date date;
     private String meetingId;
     private String passcode;
+    private double rating;
+    private boolean available;
 }

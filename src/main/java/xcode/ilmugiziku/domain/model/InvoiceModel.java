@@ -6,14 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
-import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
+import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
-import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.WEBINAR;
+import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.COURSE;
+import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.WEBINAR;
 
 @Data
 @Builder
@@ -51,7 +51,7 @@ public class InvoiceModel {
 
    @Column(name = "invoice_type")
    @Enumerated(EnumType.STRING)
-   private InvoiceTypeEnum invoiceType;
+   private LearningTypeEnum invoiceType;
 
    @Column(name = "invoice_deadline")
    private Date invoiceDeadline;

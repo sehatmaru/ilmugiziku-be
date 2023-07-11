@@ -29,4 +29,17 @@ public class WebinarApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/rate")
+    ResponseEntity<BaseResponse<Boolean>> rate(
+            @RequestParam @Validated String webinarSecureId,
+            @RequestParam @Validated int rating
+    ) {
+        BaseResponse<Boolean> response = webinarService.giveRating(webinarSecureId, rating);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

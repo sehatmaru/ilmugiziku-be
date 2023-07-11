@@ -45,6 +45,9 @@ public class WebinarModel {
    @Column(name = "available")
    private boolean available;
 
+   @Column(name = "rating")
+   private double rating;
+
    @Column(name = "price")
    private BigDecimal price;
 

@@ -1,6 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.enums.InvoiceTypeEnum;
+import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.InvoiceModel;
 import xcode.ilmugiziku.domain.model.UserModel;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PENDING;
-import static xcode.ilmugiziku.domain.enums.InvoiceTypeEnum.COURSE;
+import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.COURSE;
 
 public class InvoiceMapper {
 
@@ -37,7 +37,7 @@ public class InvoiceMapper {
             UserModel user,
             String fullName,
             PurchaseRequest request,
-            InvoiceTypeEnum type,
+            LearningTypeEnum type,
             WebinarModel webinarModel,
             CourseModel courseModel,
             String secureId

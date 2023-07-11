@@ -2,18 +2,10 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.RatingModel;
 import xcode.ilmugiziku.domain.repository.RatingRepository;
-import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
-import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.exception.AppException;
 
-import java.util.Date;
 import java.util.List;
-
-import static xcode.ilmugiziku.shared.ResponseCode.EXIST_MESSAGE;
-import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 @Service
 public class RatingService  {
@@ -42,25 +34,22 @@ public class RatingService  {
 //      return response;
 //   }
 
-   public boolean isRatedByUserSecureId(String userSecureId, String lessonSecureId) {
-      return ratingRepository.findByUserSecureIdAndLessonSecureIdAndDeletedAtIsNull(userSecureId, lessonSecureId) != null;
-   }
-
    // TODO: 11/07/23
-//   private double calculateRating(String lessonSecureId) {
-//      double result;
-//
-//      double totalRating = 0.0;
-//      List<RatingModel> ratings = ratingRepository.findAllByLessonSecureIdAndDeletedAtIsNull(lessonSecureId);
-//
-//      for (RatingModel rating: ratings) {
-//         totalRating += rating.getRating();
-//      }
-//
-//      result = totalRating/ratings.size();
-//
-//      lessonService.saveLessonRating(lessonSecureId, result);
-//
-//      return result;
+//   public boolean isRatedByUserSecureId(String userSecureId, String lessonSecureId) {
+//      return ratingRepository.findByUserSecureIdAndLessonSecureIdAndDeletedAtIsNull(userSecureId, lessonSecureId) != null;
 //   }
+
+   public double calculateRatings(List<RatingModel> ratings) {
+      double result;
+
+      double totalRating = 0.0;
+
+      for (RatingModel rating: ratings) {
+         totalRating += rating.getRating();
+      }
+
+      result = totalRating/ratings.size();
+
+      return result;
+   }
 }

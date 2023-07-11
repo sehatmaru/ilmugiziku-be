@@ -22,6 +22,8 @@ public class WebinarMapper {
             response.setDate(model.getDate());
             response.setMeetingId(model.getMeetingId());
             response.setPasscode(model.getPasscode());
+            response.setAvailable(model.isAvailable());
+            response.setRating(model.getRating());
 
             return response;
         } else {
