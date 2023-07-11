@@ -18,7 +18,9 @@ public interface UserWebinarRepository extends JpaRepository<UserWebinarRelModel
            " LIMIT 1", nativeQuery = true)
    UserWebinarRelModel getActiveUserWebinar(String user, String webinar);
 
-   @Query(value = "SELECT * FROM t_user_course_rel" +
-           " WHERE active = TRUE AND deleted = FALSE", nativeQuery = true)
-   List<UserCourseRelModel> getAllActiveCourse();
+   @Query(value = "SELECT * FROM t_user_webinar_rel uw" +
+           " LEFT JOIN t_webinar w ON w.secure_id = uw.webinar_secure_id" +
+           " WHERE uw.active = TRUE AND uw.is_open = TRUE" +
+           " AND uw.deleted = FALSE", nativeQuery = true)
+   List<UserWebinarRelModel> getAllUpcomingWebinar();
 }

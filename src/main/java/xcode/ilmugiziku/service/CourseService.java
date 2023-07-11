@@ -2,8 +2,6 @@ package xcode.ilmugiziku.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
@@ -23,8 +21,6 @@ import xcode.ilmugiziku.mapper.BenefitMapper;
 import xcode.ilmugiziku.mapper.CourseMapper;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,14 +32,11 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class CourseService {
 
-   @Autowired private JavaMailSender javaMailSender;
    @Autowired private InvoiceService invoiceService;
-   @Autowired private ProfileService profileService;
    @Autowired private CourseBenefitService courseBenefitService;
    @Autowired private CourseRepository courseRepository;
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private UserRepository userRepository;
-   @Autowired private WebinarRepository webinarRepository;
    @Autowired private UserCourseRepository userCourseRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
    @Autowired private CronJobRepository cronJobRepository;
@@ -184,42 +177,6 @@ public class CourseService {
          response.setSuccess(result);
       } catch (Exception e) {
          throw new AppException(e.toString());
-      }
-
-      return response;
-   }
-
-   public BaseResponse<Boolean> sendWebinarReminder(String secureId) {
-      BaseResponse<Boolean> response = new BaseResponse<>();
-
-      UserModel userModel = userRepository.findBySecureId(CurrentUser.get().getUserSecureId());
-      WebinarModel webinarModel = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-
-      if (webinarModel != null) {
-         DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-         DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-         String date = dateFormat.format(webinarModel.getDate());
-         String time = timeFormat.format(webinarModel.getDate());
-
-         SimpleMailMessage msg = new SimpleMailMessage();
-         msg.setTo(userModel.getEmail());
-         msg.setSubject("Zoom Meeting Reminder");
-         msg.setText("Halo " + profileService.getUserFullName(CurrentUser.get().getUserSecureId()) + ",\n\n" +
-                 "Ini adalah reminder untuk kelas webinar anda\n\n" +
-                 "Judul: " + webinarModel.getTitle() + "\n" +
-                 "Tanggal: " + date + "\n" +
-                 "Waktu: " + time + " WIB\n" +
-                 "Link: " + webinarModel.getLink() + "\n" +
-                 "Meeting ID: " + webinarModel.getMeetingId() + "\n" +
-                 "Passcode: " + webinarModel.getPasscode() + "\n\n" +
-                 "Pastikan hadir tepat waktu ya !\n\n" +
-                 "Note: Ini adalah email otomatis, jangan reply ke email ini.");
-
-         javaMailSender.send(msg);
-
-         response.setSuccess(true);
-      } else {
-         throw new AppException(NOT_FOUND_MESSAGE);
       }
 
       return response;
