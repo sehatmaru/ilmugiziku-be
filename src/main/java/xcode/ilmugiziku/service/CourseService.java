@@ -303,6 +303,8 @@ public class CourseService {
          courseModel.setRating(ratingService.calculateRatings(ratingList));
 
          courseRepository.save(courseModel);
+
+         response.setSuccess(true);
       } catch (Exception e){
          throw new AppException(e.toString());
       }
