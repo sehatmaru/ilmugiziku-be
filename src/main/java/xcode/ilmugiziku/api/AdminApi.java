@@ -110,7 +110,7 @@ public class AdminApi {
     }
 
     @GetMapping("/template/list")
-    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateToList() {
+    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList() {
         BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList();
 
         return ResponseEntity
@@ -120,7 +120,7 @@ public class AdminApi {
     }
 
 //    @PutMapping("/template-to/set")
-//    ResponseEntity<BaseResponse<Boolean>> setTemplateToActive(
+//    ResponseEntity<BaseResponse<Boolean>> setTemplateActive(
 //            @RequestParam @Validated String secureId
 //    ) {
 //        BaseResponse<Boolean> response = templateService.setTemplateActive(secureId);
@@ -169,7 +169,7 @@ public class AdminApi {
     }
 
     @GetMapping("/exam/list")
-    ResponseEntity<BaseResponse<List<ExamResponse>>> getExamToList() {
+    ResponseEntity<BaseResponse<List<ExamResponse>>> getExamList() {
         BaseResponse<List<ExamResponse>> response = examService.getExamList();
 
         return ResponseEntity

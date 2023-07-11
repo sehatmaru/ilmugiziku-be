@@ -5,6 +5,7 @@ import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +33,9 @@ public class ExamMapper {
     public ExamResponse modelToResponse(ExamModel model) {
         if (model != null) {
             ExamResponse response = new ExamResponse();
+            response.setSecureId(model.getSecureId());
             response.setTitle(model.getTitle());
-            response.setMaxParticipant(model.getMaxParticipant());
-            response.setCurrentParticipant(model.getCurrentParticipant());
+            response.setAvailableSlot(model.getMaxParticipant() - model.getCurrentParticipant());
             response.setTemplate(model.getTemplate());
             response.setStartAt(model.getStartAt());
             response.setEndAt(model.getEndAt());
@@ -57,7 +58,7 @@ public class ExamMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

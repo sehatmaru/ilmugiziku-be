@@ -12,8 +12,7 @@ public class ExamResponse {
     private String title;
     private String template;
     private boolean available;
-    private int maxParticipant;
-    private int currentParticipant;
+    private int availableSlot;
     private Date startAt;
     private Date endAt;
     private Date createdAt;

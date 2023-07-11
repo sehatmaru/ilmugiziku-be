@@ -4,20 +4,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
 @Setter
 public class CreateUpdateExamRequest {
 
-    @NotEmpty()
+    @NotBlank()
     private String title;
     private String template;
 
     private boolean available;
 
-    @NotBlank()
+    @NotNull()
     private int maxParticipant;
 
     private Date startAt;

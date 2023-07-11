@@ -55,6 +55,6 @@ public class ExamModel {
    private Date deletedAt;
 
    public boolean isFull() {
-      return currentParticipant > maxParticipant;
+      return currentParticipant >= maxParticipant;
    }
 }
