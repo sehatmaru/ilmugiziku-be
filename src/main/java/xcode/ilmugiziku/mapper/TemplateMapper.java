@@ -1,8 +1,7 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.TemplateModel;
-import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
-import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
+import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
 
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class TemplateMapper {
             TemplateResponse response = new TemplateResponse();
             response.setSecureId(model.getSecureId());
             response.setName(model.getName());
-            // TODO: 11/07/23  
-//            response.setUsed(model.isUsed());
 
             return response;
         } else {
@@ -41,15 +38,11 @@ public class TemplateMapper {
         }
     }
 
-    public TemplateModel createRequestToModel(CreateTemplateRequest request) {
+    public TemplateModel createRequestToModel(CreateUpdateTemplateRequest request) {
         if (request != null) {
             TemplateModel response = new TemplateModel();
             response.setSecureId(generateSecureId());
             response.setName(request.getName());
-            // TODO: 11/07/23  
-//            response.setQuestionType(request.getQuestionType());
-//            response.setQuestionSubType(request.getQuestionSubType());
-//            response.setUsed(false);
             response.setCreatedAt(new Date());
 
             return response;
@@ -58,12 +51,9 @@ public class TemplateMapper {
         }
     }
 
-    public TemplateModel updateRequestToModel(TemplateModel model, UpdateTemplateRequest request) {
+    public TemplateModel updateRequestToModel(TemplateModel model, CreateUpdateTemplateRequest request) {
         if (request != null && model != null) {
             model.setName(request.getName());
-            // TODO: 11/07/23  
-//            model.setQuestionType(request.getQuestionType());
-//            model.setQuestionSubType(request.getQuestionSubType());
             model.setUpdatedAt(new Date());
 
             return model;

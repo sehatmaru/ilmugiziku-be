@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.repository.TemplateRepository;
-import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
-import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
+import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.TemplateMapper;
 
 import java.util.Date;
+import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 
@@ -22,43 +23,21 @@ public class TemplateService {
 
    private final TemplateMapper templateMapper = new TemplateMapper();
 
-//   public BaseResponse<List<TemplateResponse>> getTemplateList(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
-//      BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
-//
-//      if (questionType == TRY_OUT_UKOM || questionType == TRY_OUT_SKB) {
-//         List<TemplateModel> models = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
-//
-//         response.setSuccess(templateMapper.modelsToResponses(models));
-//      } else {
-//         throw new AppException(PARAMS_ERROR_MESSAGE);
-//      }
-//
-//      return response;
-//   }
+   public BaseResponse<List<TemplateResponse>> getTemplateList() {
+      BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
 
-//   public BaseResponse<Boolean> setTemplateActive(String secureId) {
-//      BaseResponse<Boolean> response = new BaseResponse<>();
-//
-//      TemplateModel templateModel = templateRepository.findBySecureIdAndDeletedAtIsNull(secureId);
-//
-//      if (templateModel != null) {
-//         List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(templateModel.getQuestionType(), templateModel.getQuestionSubType());
-//
-//         for (TemplateModel template : list) {
-//            template.setUsed(template.getSecureId().equals(secureId));
-//
-//            templateRepository.save(template);
-//         }
-//
-//         response.setSuccess(true);
-//      } else {
-//         throw new AppException(NOT_FOUND_MESSAGE);
-//      }
-//
-//      return response;
-//   }
+      try {
+         List<TemplateModel> models = templateRepository.findAllByDeletedAtIsNull();
 
-   public BaseResponse<CreateBaseResponse> createTemplate(CreateTemplateRequest request) {
+         response.setSuccess(templateMapper.modelsToResponses(models));
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<CreateBaseResponse> createTemplate(CreateUpdateTemplateRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
 
@@ -76,11 +55,14 @@ public class TemplateService {
       return response;
    }
 
-   public BaseResponse<Boolean> updateTemplate(UpdateTemplateRequest request) {
+   public BaseResponse<Boolean> updateTemplate(String templateSecureId, CreateUpdateTemplateRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
+      TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(templateSecureId);
+
+      if (model == null) throw new AppException(NOT_FOUND_MESSAGE);
+
       try {
-         TemplateModel model = templateRepository.findBySecureIdAndDeletedAtIsNull(request.getSecureId());
          templateRepository.save(templateMapper.updateRequestToModel(model, request));
 
          response.setSuccess(true);
@@ -113,16 +95,4 @@ public class TemplateService {
       return response;
    }
 
-//   public TemplateModel getActiveTemplate(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType) {
-//      TemplateModel result = new TemplateModel();
-//      List<TemplateModel> list = templateRepository.findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(questionType, questionSubType);
-//
-//      for (TemplateModel model : list) {
-//         if (model.isUsed()) {
-//            result = model;
-//         }
-//      }
-//
-//      return result;
-//   }
 }
