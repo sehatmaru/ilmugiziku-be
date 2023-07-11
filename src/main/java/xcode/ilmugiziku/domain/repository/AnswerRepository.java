@@ -10,8 +10,4 @@ import java.util.List;
 public interface AnswerRepository extends JpaRepository<AnswerModel, String> {
 
 
-   AnswerModel findBySecureId(String secureId);
-
-
-   List<AnswerModel> findAllByQuestionSecureId(String questionSecureId);
 }

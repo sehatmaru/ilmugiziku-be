@@ -24,38 +24,26 @@ public class ExamModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "questions_secure_id")
-   private String questions;
+   @Column(name = "title")
+   private String title;
 
-   @Column(name = "answers_secure_id")
-   private String answers;
+   @Column(name = "template_secure_id")
+   private String template;
 
-   @Column(name = "score")
-   private int score;
+   @Column(name = "available")
+   private boolean available;
 
-   @Column(name = "blank")
-   private int blank;
+   @Column(name = "max_participant")
+   private int maxParticipant;
 
-   @Column(name = "correct")
-   private int correct;
+   @Column(name = "current_participant")
+   private int currentParticipant;
 
-   @Column(name = "incorrect")
-   private int incorrect;
+   @Column(name = "start_at")
+   private Date startAt;
 
-   @Column(name = "user_secure_id")
-   private String userSecureId;
-
-   @Column(name = "schedule_secure_id")
-   private String scheduleSecureId;
-
-   // TODO: 11/07/23  
-//   @Column(name = "question_type")
-//   @Enumerated(EnumType.STRING)
-//   private QuestionTypeEnum questionType;
-//
-//   @Column(name = "question_sub_type")
-//   @Enumerated(EnumType.STRING)
-//   private QuestionSubTypeEnum questionSubType;
+   @Column(name = "end_at")
+   private Date endAt;
 
    @Column(name = "created_at")
    private Date createdAt;
@@ -66,4 +54,7 @@ public class ExamModel {
    @Column(name = "deleted_at")
    private Date deletedAt;
 
+   public boolean isFull() {
+      return currentParticipant >= maxParticipant;
+   }
 }

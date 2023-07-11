@@ -121,7 +121,7 @@ public class QuestionService {
       QuestionModel model = questionRepository.findBySecureId(secureId);
 
       if (model != null) {
-         model.setDeletedAt(new Date());
+//         model.setDeletedAt(new Date());
 
          try {
             questionRepository.save(model);

@@ -11,5 +11,6 @@ public interface TemplateRepository extends JpaRepository<TemplateModel, String>
 
    TemplateModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-//   List<TemplateModel> findByQuestionTypeAndQuestionSubTypeAndDeletedAtIsNull(QuestionTypeEnum questionType, QuestionSubTypeEnum questionSubType);
+   List<TemplateModel> findAllByDeletedAtIsNull();
+
 }

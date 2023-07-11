@@ -289,6 +289,7 @@ public class CourseService {
       if (courseModel == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
       if (prevRating != null) throw new AppException(RATING_EXIST);
       if (userCourse == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+      if (rating < 0 || rating > 5) throw new AppException(PARAMS_ERROR_MESSAGE);
 
       try {
          RatingModel ratingModel = new RatingModel();

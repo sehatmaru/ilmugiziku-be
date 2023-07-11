@@ -7,16 +7,15 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Data
 @Builder
 @Entity
-@Table(name = "t_template")
+@Table(name = "t_template_question_rel")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class TemplateModel {
+public class TemplateQuestionRelModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -24,16 +23,10 @@ public class TemplateModel {
    @Column(name = "secure_id")
    private String secureId;
 
-   @Column(name = "name")
-   private String name;
+   @Column(name = "template_secure_id")
+   private String tempalte;
 
-   @Column(name = "created_at")
-   private Date createdAt;
-
-   @Column(name = "updated_at")
-   private Date updatedAt;
-
-   @Column(name = "deleted_at")
-   private Date deletedAt;
+   @Column(name = "question_secure_id")
+   private String question;
 
 }

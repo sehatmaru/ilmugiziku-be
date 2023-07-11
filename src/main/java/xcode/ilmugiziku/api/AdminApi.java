@@ -8,13 +8,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
-import xcode.ilmugiziku.domain.request.template.CreateTemplateRequest;
-import xcode.ilmugiziku.domain.request.template.UpdateTemplateRequest;
+import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
+import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.WebinarResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.service.*;
 
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping(value = "admin")
 public class AdminApi {
 
+    @Autowired private ExamService examService;
     @Autowired private QuestionService questionService;
     @Autowired private UserService userService;
     @Autowired private TemplateService templateService;
@@ -69,9 +72,9 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/template-to/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createTemplateTo(
-            @RequestBody @Validated CreateTemplateRequest body
+    @PostMapping("/template/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createTemplate(
+            @RequestBody @Validated CreateUpdateTemplateRequest body
     ) {
         BaseResponse<CreateBaseResponse> response = templateService.createTemplate(body);
 
@@ -81,11 +84,12 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PutMapping("/template-to/update")
-    ResponseEntity<BaseResponse<Boolean>> updateTemplateTo(
-            @RequestBody @Validated UpdateTemplateRequest body
+    @PutMapping("/template/update")
+    ResponseEntity<BaseResponse<Boolean>> updateTemplate(
+            @RequestParam @Validated String templateSecureId,
+            @RequestBody @Validated CreateUpdateTemplateRequest body
     ) {
-        BaseResponse<Boolean> response = templateService.updateTemplate(body);
+        BaseResponse<Boolean> response = templateService.updateTemplate(templateSecureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -93,11 +97,11 @@ public class AdminApi {
                 .body(response);
     }
 
-    @DeleteMapping("/template-to/delete")
-    ResponseEntity<BaseResponse<Boolean>> deleteTemplateTo(
-            @RequestParam @Validated String secureId
+    @DeleteMapping("/template/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteTemplate(
+            @RequestParam @Validated String templateSecureId
     ) {
-        BaseResponse<Boolean> response = templateService.deleteTemplate(secureId);
+        BaseResponse<Boolean> response = templateService.deleteTemplate(templateSecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -105,22 +109,18 @@ public class AdminApi {
                 .body(response);
     }
 
-    // TODO: 11/07/23
-//    @GetMapping("/template-to/list")
-//    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateToList(
-//            @RequestParam @Validated QuestionTypeEnum questionType,
-//            @RequestParam @Validated QuestionSubTypeEnum questionSubType
-//    ) {
-//        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList(questionType, questionSubType);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
+    @GetMapping("/template/list")
+    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList() {
+        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 
 //    @PutMapping("/template-to/set")
-//    ResponseEntity<BaseResponse<Boolean>> setTemplateToActive(
+//    ResponseEntity<BaseResponse<Boolean>> setTemplateActive(
 //            @RequestParam @Validated String secureId
 //    ) {
 //        BaseResponse<Boolean> response = templateService.setTemplateActive(secureId);
@@ -130,6 +130,66 @@ public class AdminApi {
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .body(response);
 //    }
+
+    @PostMapping("/exam/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createExam(
+            @RequestBody @Validated CreateUpdateExamRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = examService.createExam(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/exam/update")
+    ResponseEntity<BaseResponse<Boolean>> updateExam(
+            @RequestParam @Validated String examSecureId,
+            @RequestBody @Validated CreateUpdateExamRequest body
+    ) {
+        BaseResponse<Boolean> response = examService.updateExam(examSecureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/exam/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteExam(
+            @RequestParam @Validated String examSecureId
+    ) {
+        BaseResponse<Boolean> response = examService.deleteExam(examSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/exam/list")
+    ResponseEntity<BaseResponse<List<ExamResponse>>> getExamList() {
+        BaseResponse<List<ExamResponse>> response = examService.getExamList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/exam/template")
+    ResponseEntity<BaseResponse<Boolean>> setTemplate(
+            @RequestParam @Validated String examSecureId,
+            @RequestParam @Validated String templateSecureId
+    ) {
+        BaseResponse<Boolean> response = examService.setTemplate(examSecureId, templateSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 
     @PostMapping("/benefit/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createBenefit(
