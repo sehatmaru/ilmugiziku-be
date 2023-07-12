@@ -103,8 +103,10 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
                 response.setExistData(ex.getMessage());
                 break;
             }
+            case ANSWER_LENGTH_ERROR_MESSAGE:
+            case MULTIPLE_CORRECT_ANSWER_ERROR_MESSAGE:
             case PARAMS_ERROR_MESSAGE: {
-                response.setWrongParams();
+                response.setWrongParams(ex.getMessage());
                 break;
             }
             case INVALID_PASSWORD: {

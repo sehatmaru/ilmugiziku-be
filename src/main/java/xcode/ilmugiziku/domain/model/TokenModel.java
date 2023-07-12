@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -34,6 +35,9 @@ public class TokenModel {
     @Column(name = "token")
     private String token;
 
+    @Column(name = "role")
+    private RoleEnum role;
+
     @Column(name = "temporary")
     private boolean temporary;
 
@@ -45,16 +49,19 @@ public class TokenModel {
 
     private String password;
 
-    public TokenModel(String token, String userSecureId, boolean temporary) {
+    public TokenModel(String token, String userSecureId, boolean temporary, RoleEnum role) {
         this.secureId = generateSecureId();
         this.token = token;
         this.userSecureId = userSecureId;
         this.createdAt = new Date();
         this.expireAt = getTomorrowDate();
         this.temporary = temporary;
+        this.role = role;
     }
 
     public boolean isValid() {
         return !expireAt.before(new Date());
     }
+
+    public boolean isAdmin() { return role == RoleEnum.ADMIN; }
 }

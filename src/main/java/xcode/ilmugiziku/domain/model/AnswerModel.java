@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Data
 @Builder
@@ -27,15 +26,10 @@ public class AnswerModel {
    @Column(name = "content")
    private String content;
 
-   @Column(name = "created_by")
-   private String createdBy;
+   @Column(name = "question_secure_id")
+   private String question;
 
-   @Column(name = "created_at")
-   private Date createdAt;
+   @Column(name = "correct_answer")
+   private boolean correctAnswer;
 
-   @Column(name = "edited_by")
-   private String editedBy;
-
-   @Column(name = "updated_at")
-   private Date updatedAt;
 }

@@ -1,63 +1,25 @@
 package xcode.ilmugiziku.mapper;
 
-import xcode.ilmugiziku.domain.enums.RoleEnum;
+import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.QuestionModel;
-import xcode.ilmugiziku.domain.request.question.CreateQuestionRequest;
-import xcode.ilmugiziku.domain.request.question.UpdateQuestionRequest;
-import xcode.ilmugiziku.domain.response.question.QuestionExamResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionAnswerResponse;
+import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
+import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
-import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class QuestionMapper {
 
-    // TODO: 11/07/23
-//    public QuestionExamResponse modelToQuestionExamResponse(QuestionModel model, RoleEnum role) {
-//        if (model != null) {
-//            QuestionExamResponse response = new QuestionExamResponse();
-//            response.setSecureId(model.getSecureId());
-//            response.setContent(model.getContent());
-//
-//            if (role == ADMIN) {
-//                response.setDiscussion(model.getDiscussion());
-//            }
-//
-//            return response;
-//        } else {
-//            return null;
-//        }
-//    }
-
-    public QuestionAnswerResponse modelToQuestionValueResponse(QuestionModel model) {
-        if (model != null) {
-            QuestionAnswerResponse response = new QuestionAnswerResponse();
-            response.setSecureId(model.getSecureId());
-            response.setContent(model.getContent());
-//            response.setDiscussion(model.getDiscussion());
-//            response.setLabel(model.getLabel());
-//            response.setType(model.getType());
-
-            return response;
-        } else {
-            return null;
-        }
-    }
-
-    public QuestionModel createRequestToModel(CreateQuestionRequest request) {
+    public QuestionModel createRequestToModel(CreateUpdateQuestionRequest request) {
         if (request != null) {
             QuestionModel model = new QuestionModel();
             model.setSecureId(generateSecureId());
-            // TODO: 11/07/23
-//            model.setTemplateSecureId(request.getTemplateSecureId());
             model.setContent(request.getContent());
-//            model.setQuestionType(request.getQuestionType());
-//            model.setQuestionSubType(request.getQuestionSubType());
-//            model.setDiscussion(request.getDiscussion());
-//            model.setLabel(request.getLabel());
-//            model.setType(request.getType());
+            model.setCreatedBy(CurrentUser.get().getUserSecureId());
             model.setCreatedAt(new Date());
 
             return model;
@@ -66,18 +28,39 @@ public class QuestionMapper {
         }
     }
 
-    public QuestionModel updateRequestToModel(QuestionModel model, UpdateQuestionRequest request) {
+    public QuestionModel updateRequestToModel(QuestionModel model, CreateUpdateQuestionRequest request) {
         if (request != null && model != null) {
             model.setContent(request.getContent());
-            // TODO: 11/07/23  
-//            model.setQuestionType(request.getQuestionType());
-//            model.setQuestionSubType(request.getQuestionSubType());
-//            model.setDiscussion(request.getDiscussion());
-//            model.setLabel(request.getLabel());
-//            model.setType(request.getType());
+            model.setEditedBy(CurrentUser.get().getUserSecureId());
             model.setUpdatedAt(new Date());
 
             return model;
+        } else {
+            return null;
+        }
+    }
+
+    public List<QuestionResponse> modelToResponses(List<QuestionModel> models) {
+        if (models != null) {
+            List<QuestionResponse> response = new ArrayList<>();
+
+            models.forEach(e -> response.add(modelToResponse(e)));
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public QuestionResponse modelToResponse(QuestionModel model) {
+        if (model != null) {
+            QuestionResponse response = new QuestionResponse();
+            response.setSecureId(model.getSecureId());
+            response.setContent(model.getContent());
+            response.setCreatedBy(model.getCreatedBy());
+            response.setEditedBy(model.getEditedBy());
+
+            return response;
         } else {
             return null;
         }

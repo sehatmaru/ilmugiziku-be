@@ -62,7 +62,8 @@ public class UserService {
       tokenRepository.save(new TokenModel(
               token,
               model.getSecureId(),
-              false
+              false,
+              model.getRole()
       ));
 
       return token;

@@ -42,9 +42,9 @@ public class BaseResponse<T> {
         this.message = message;
     }
 
-    public void setWrongParams() {
+    public void setWrongParams(String message) {
         this.statusCode = HttpStatus.BAD_REQUEST.value();
-        this.message = PARAMS_ERROR_MESSAGE;
+        this.message = message;
     }
 
     public void setInvalidPassword() {
