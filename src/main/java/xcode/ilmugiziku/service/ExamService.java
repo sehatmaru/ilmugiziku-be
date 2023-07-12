@@ -217,8 +217,10 @@ public class ExamService {
       UserExamRelModel userExam = userExamRepository.getUserExam(CurrentUser.get().getUserSecureId(), examSecureId);
 
       if (exam == null) throw new AppException(NOT_FOUND_MESSAGE);
+      if (exam.getStartAt().after(new Date())) throw new AppException(EXAM_NOT_STARTED_YET);
+      if (exam.getEndAt().before(new Date())) throw new AppException(EXAM_HAS_ENDED);
       if (userExam == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
-      if (userExam.getFinishTime() == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+      if (userExam.getFinishTime() != null) throw new AppException(USER_EXAM_EXIST);
 
       try {
          DoExamResponse examResponse = new DoExamResponse();

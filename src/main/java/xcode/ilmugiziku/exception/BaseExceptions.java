@@ -75,6 +75,8 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case NOT_AUTHORIZED_MESSAGE:
             case INACTIVE_COURSE:
             case EXAM_FULL:
+            case EXAM_NOT_STARTED_YET:
+            case EXAM_HAS_ENDED:
             case LOGIN_EXIST_MESSAGE: {
                 response.setNotAuthorized(ex.getMessage());
                 break;

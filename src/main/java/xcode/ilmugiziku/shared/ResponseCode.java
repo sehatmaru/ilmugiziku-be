@@ -31,6 +31,8 @@ public class ResponseCode {
     public static final String USERNAME_EXIST = "Username already taken. Please put another one.";
     public static final String INVOICE_EXIST = "You have current bill invoice. Please pay it first.";
     public static final String NOT_AUTHORIZED_MESSAGE = "Not Authorized";
+    public static final String EXAM_NOT_STARTED_YET = "The exam has not started yet, please try again when the exam starts";
+    public static final String EXAM_HAS_ENDED = "The exam has been over.";
     public static final String AUTH_ERROR_MESSAGE = "Wrong username/password";
     public static final String OTP_ERROR_MESSAGE = "Invalid OTP";
     public static final String TOKEN_ERROR_MESSAGE = "Invalid token";
