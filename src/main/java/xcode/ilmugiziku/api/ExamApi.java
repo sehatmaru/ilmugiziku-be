@@ -56,4 +56,16 @@ public class ExamApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/result")
+    ResponseEntity<BaseResponse<ExamResultResponse>> getExamResult (
+            @RequestParam @Validated String examSecureId
+    ) {
+        BaseResponse<ExamResultResponse> response = examService.getExamResult(examSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

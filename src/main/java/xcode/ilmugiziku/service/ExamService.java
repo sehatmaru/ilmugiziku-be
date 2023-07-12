@@ -48,6 +48,33 @@ public class ExamService {
 
       return response;
    }
+
+   public BaseResponse<ExamResultResponse> getExamResult(String examSecureId) {
+      BaseResponse<ExamResultResponse> response = new BaseResponse<>();
+
+      ExamModel examModel = examRepository.findBySecureId(examSecureId);
+      UserExamRelModel userExam = userExamRepository.getUserExam(CurrentUser.get().getUserSecureId(), examSecureId);
+
+      if (examModel == null) throw new AppException(NOT_FOUND_MESSAGE);
+      if (userExam == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+      if (userExam.getFinishTime() == null) throw new AppException(USER_EXAM_NOT_FOUND);
+
+      try {
+         ExamResultResponse result = new ExamResultResponse();
+         result.setDuration(userExam.getDuration());
+         result.setTitle(examModel.getTitle());
+         result.setBlank(userExam.getBlank());
+         result.setIncorrect(userExam.getIncorrect());
+         result.setCorrect(userExam.getCorrect());
+         result.setScore(userExam.getScore());
+
+         response.setSuccess(result);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
    
    public BaseResponse<CreateBaseResponse> createExam(CreateUpdateExamRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
