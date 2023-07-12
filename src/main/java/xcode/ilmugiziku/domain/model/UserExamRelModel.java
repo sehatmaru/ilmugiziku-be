@@ -51,6 +51,9 @@ public class UserExamRelModel {
    @Column(name = "duration")
    private int duration = 0;
 
+   @Column(name = "ranking")
+   private int ranking = 0;
+
    @Column(name = "deleted")
    private boolean deleted = false;
 

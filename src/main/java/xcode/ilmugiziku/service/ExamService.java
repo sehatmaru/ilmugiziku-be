@@ -13,9 +13,7 @@ import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.request.exam.ExamResultRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
-import xcode.ilmugiziku.domain.response.exam.DoExamResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+import xcode.ilmugiziku.domain.response.exam.*;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.ExamMapper;
 
@@ -29,6 +27,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 public class ExamService {
 
    @Autowired private QuestionService questionService;
+   @Autowired private ProfileService profileService;
    @Autowired private ExamRepository examRepository;
    @Autowired private TemplateRepository templateRepository;
    @Autowired private UserExamRepository userExamRepository;
@@ -262,11 +261,52 @@ public class ExamService {
 
          userExamRepository.save(userExam);
 
+         refreshRank(examSecureId);
+
          response.setSuccess(examResponse);
       } catch (Exception e){
          throw new AppException(e.toString());
       }
 
       return response;
+   }
+
+   public BaseResponse<ExamRankResponse> getExamRank(String examSecureId) {
+      BaseResponse<ExamRankResponse> response = new BaseResponse<>();
+
+      ExamModel exam = examRepository.findBySecureIdAndDeletedAtIsNull(examSecureId);
+      List<UserExamRelModel> userExam = userExamRepository.getUserExamRank(examSecureId);
+
+      if (exam == null) throw new AppException(NOT_FOUND_MESSAGE);
+
+      try {
+         ExamRankResponse result = new ExamRankResponse();
+         result.setTitle(exam.getTitle());
+         result.setParticipant(userExam.size());
+
+         for (UserExamRelModel model : userExam) {
+            RankResponse rankResponse = examMapper.modelToRankResponse(model, profileService.getUserFullName(model.getUser()));
+            result.getRanks().add(rankResponse);
+         }
+
+         response.setSuccess(result);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   private void refreshRank(String examSecureId) {
+      List<UserExamRelModel> userExam = userExamRepository.getUserExamRank(examSecureId);
+
+      int rank = 1;
+
+      for (UserExamRelModel model : userExam) {
+         model.setRanking(rank);
+         rank++;
+      }
+
+      userExamRepository.saveAll(userExam);
    }
 }
