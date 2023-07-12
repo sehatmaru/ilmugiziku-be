@@ -9,6 +9,8 @@ public class ResponseCode {
     public static final String WEBINAR_NOT_FOUND_MESSAGE = "Webinar not found";
     public static final String USER_NOT_FOUND_MESSAGE = "User not found";
     public static final String PARAMS_ERROR_MESSAGE = "Wrong params";
+    public static final String ANSWER_LENGTH_ERROR_MESSAGE = "Answer must be 5 option";
+    public static final String MULTIPLE_CORRECT_ANSWER_ERROR_MESSAGE = "There must be 1 correct answer";
     public static final String RATING_EXIST = "Already rated it before";
     public static final String EXIST_MESSAGE = "Data exist";
     public static final String USER_COURSE_EXIST = "Course already purchased.";
