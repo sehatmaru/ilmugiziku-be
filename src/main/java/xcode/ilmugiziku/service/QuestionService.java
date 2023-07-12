@@ -8,10 +8,12 @@ import xcode.ilmugiziku.domain.model.TemplateQuestionRelModel;
 import xcode.ilmugiziku.domain.repository.AnswerRepository;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
 import xcode.ilmugiziku.domain.repository.TemplateQuestionRepository;
+import xcode.ilmugiziku.domain.request.exam.ExamResultRequest;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateAnswerRequest;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
@@ -140,6 +142,29 @@ public class QuestionService {
 
          e.setAnswers(responses);
       });
+
+      return result;
+   }
+
+   public ExamResultResponse calculateScore(List<ExamResultRequest> request) {
+      ExamResultResponse result = new ExamResultResponse();
+
+      int correct = 0;
+      int incorrect = 0;
+      int blank = 0;
+
+      for (ExamResultRequest exam : request) {
+         if (exam.getAnswer().isEmpty()) blank += 1;
+         else {
+            if (answerRepository.getCorrectAnswer(exam.getQuestion()).getSecureId().equals(exam.getAnswer())) correct += 1;
+            else incorrect += 1;
+         }
+      }
+
+      result.setScore((correct / (request.size() * 1.0)) * 100);
+      result.setBlank(blank);
+      result.setCorrect(correct);
+      result.setIncorrect(incorrect);
 
       return result;
    }

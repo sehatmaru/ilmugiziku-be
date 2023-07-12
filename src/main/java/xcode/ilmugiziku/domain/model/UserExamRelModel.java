@@ -30,8 +30,26 @@ public class UserExamRelModel {
    @Column(name = "exam_secure_id")
    private String exam;
 
-   @Column(name = "finish_at")
-   private Date finishAt;
+   @Column(name = "score")
+   private double score = 0.0;
+
+   @Column(name = "correct_answer")
+   private int correct = 0;
+
+   @Column(name = "incorrect_answer")
+   private int incorrect = 0;
+
+   @Column(name = "blank_answer")
+   private int blank = 0;
+
+   @Column(name = "start_time")
+   private Date startTime;
+
+   @Column(name = "finish_time")
+   private Date finishTime;
+
+   @Column(name = "duration")
+   private int duration = 0;
 
    @Column(name = "deleted")
    private boolean deleted = false;
