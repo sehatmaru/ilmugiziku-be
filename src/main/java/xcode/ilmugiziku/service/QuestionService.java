@@ -49,23 +49,22 @@ public class QuestionService {
       return response;
    }
 
-   public BaseResponse<CreateBaseResponse> createQuestion(CreateUpdateQuestionRequest request) {
-      BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
-      CreateBaseResponse createResponse = new CreateBaseResponse();
-
-      if (!request.isValid()) throw new AppException(ANSWER_LENGTH_ERROR_MESSAGE);
-      if (!request.isOneCorrectAnswer()) throw new AppException(MULTIPLE_CORRECT_ANSWER_ERROR_MESSAGE);
+   public BaseResponse<Boolean> createQuestion(List<CreateUpdateQuestionRequest> request) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
 
       try {
-         QuestionModel model = questionMapper.createRequestToModel(request);
-         List<AnswerModel> answers = answerMapper.createRequestToModels(request.getAnswers(), model.getSecureId());
+         request.forEach(e-> {
+            if (!e.isValid()) throw new AppException(ANSWER_LENGTH_ERROR_MESSAGE);
+            if (!e.isOneCorrectAnswer()) throw new AppException(MULTIPLE_CORRECT_ANSWER_ERROR_MESSAGE);
 
-         questionRepository.save(model);
-         answerRepository.saveAll(answers);
+            QuestionModel model = questionMapper.createRequestToModel(e);
+            List<AnswerModel> answers = answerMapper.createRequestToModels(e.getAnswers(), model.getSecureId());
 
-         createResponse.setSecureId(model.getSecureId());
+            questionRepository.save(model);
+            answerRepository.saveAll(answers);
+         });
 
-         response.setSuccess(createResponse);
+         response.setSuccess(true);
       } catch (Exception e){
          throw new AppException(e.toString());
       }

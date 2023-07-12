@@ -40,7 +40,6 @@ public class CronService {
    /**
     * will send webinar reminders
     * execute every 30 minutes
-    * start from 9am to 11pm
     */
    @Scheduled(cron = "0 */30 * * * *")
    public void sendWebinarReminders() {

@@ -37,10 +37,10 @@ public class AdminApi {
     @Autowired private WebinarService webinarService;
 
     @PostMapping("/question/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (
-            @RequestBody @Validated CreateUpdateQuestionRequest body
+    ResponseEntity<BaseResponse<Boolean>> createQuestion (
+            @RequestBody @Validated List<CreateUpdateQuestionRequest> body
     ) {
-        BaseResponse<CreateBaseResponse> response = questionService.createQuestion(body);
+        BaseResponse<Boolean> response = questionService.createQuestion(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
