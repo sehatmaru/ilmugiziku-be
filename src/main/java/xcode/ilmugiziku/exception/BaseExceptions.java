@@ -84,6 +84,7 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case INVOICE_NOT_FOUND_MESSAGE:
             case COURSE_NOT_FOUND_MESSAGE:
             case WEBINAR_NOT_FOUND_MESSAGE:
+            case USER_NOT_FOUND_MESSAGE:
             case EMAIL_NOT_FOUND: {
                 response.setNotFound(ex.getMessage());
                 break;

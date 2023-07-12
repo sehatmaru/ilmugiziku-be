@@ -7,6 +7,7 @@ public class ResponseCode {
     public static final String INVOICE_NOT_FOUND_MESSAGE = "Invoice not found";
     public static final String COURSE_NOT_FOUND_MESSAGE = "Course not found";
     public static final String WEBINAR_NOT_FOUND_MESSAGE = "Webinar not found";
+    public static final String USER_NOT_FOUND_MESSAGE = "User not found";
     public static final String PARAMS_ERROR_MESSAGE = "Wrong params";
     public static final String RATING_EXIST = "Already rated it before";
     public static final String EXIST_MESSAGE = "Data exist";

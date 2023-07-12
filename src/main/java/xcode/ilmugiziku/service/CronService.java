@@ -10,12 +10,15 @@ import xcode.ilmugiziku.domain.enums.CronJobTypeEnum;
 import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.*;
+import xcode.ilmugiziku.exception.AppException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static xcode.ilmugiziku.shared.ResponseCode.USER_NOT_FOUND_MESSAGE;
 
 /**
  * this is cron job service,
@@ -57,6 +60,8 @@ public class CronService {
 
             if (webinar.getDate().after(thirtyMinutesBeforeNow) && webinar.getDate().before(new Date())) {
                UserModel user = userRepository.getActiveUserBySecureId(userWebinar.getUser());
+
+               if (user == null) throw new AppException(USER_NOT_FOUND_MESSAGE);
 
                DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
                DateFormat timeFormat = new SimpleDateFormat("HH:mm");
