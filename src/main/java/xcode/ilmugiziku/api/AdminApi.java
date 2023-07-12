@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.request.BaseRequest;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
@@ -22,6 +23,7 @@ import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.service.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,10 +39,10 @@ public class AdminApi {
     @Autowired private WebinarService webinarService;
 
     @PostMapping("/question/create")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> createQuestion (
-            @RequestBody @Validated CreateUpdateQuestionRequest body
+    ResponseEntity<BaseResponse<Boolean>> createQuestion (
+            @RequestBody @Validated List<CreateUpdateQuestionRequest> body
     ) {
-        BaseResponse<CreateBaseResponse> response = questionService.createQuestion(body);
+        BaseResponse<Boolean> response = questionService.createQuestion(body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -130,6 +132,19 @@ public class AdminApi {
                 .body(response);
     }
 
+    @PostMapping("/template/question")
+    ResponseEntity<BaseResponse<Boolean>> setTemplateQuestions(
+            @RequestParam @Validated String templateSecureId,
+            @RequestBody @Validated List<BaseRequest> request
+    ) {
+        BaseResponse<Boolean> response = templateService.setQuestions(templateSecureId, request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @PostMapping("/exam/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createExam(
             @RequestBody @Validated CreateUpdateExamRequest body
@@ -183,6 +198,20 @@ public class AdminApi {
             @RequestParam @Validated String templateSecureId
     ) {
         BaseResponse<Boolean> response = examService.setTemplate(examSecureId, templateSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/exam/time")
+    ResponseEntity<BaseResponse<Boolean>> setTime(
+            @RequestParam @Validated String examSecureId,
+            @RequestParam @Validated Date startTime,
+            @RequestParam @Validated Date endTime
+    ) {
+        BaseResponse<Boolean> response = examService.setTime(examSecureId, startTime, endTime);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -24,7 +24,7 @@ public class TemplateQuestionRelModel {
    private String secureId;
 
    @Column(name = "template_secure_id")
-   private String tempalte;
+   private String template;
 
    @Column(name = "question_secure_id")
    private String question;

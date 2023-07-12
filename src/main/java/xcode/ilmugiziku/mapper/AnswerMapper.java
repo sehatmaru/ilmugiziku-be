@@ -50,6 +50,8 @@ public class AnswerMapper {
 
             models.forEach(e -> response.add(modelToResponse(e)));
 
+            if (!CurrentUser.get().isAdmin()) Collections.shuffle(response, new Random(System.nanoTime()));
+
             return response;
         } else {
             return Collections.emptyList();

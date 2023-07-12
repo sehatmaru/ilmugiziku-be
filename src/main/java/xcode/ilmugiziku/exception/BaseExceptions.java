@@ -75,6 +75,8 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case NOT_AUTHORIZED_MESSAGE:
             case INACTIVE_COURSE:
             case EXAM_FULL:
+            case EXAM_NOT_STARTED_YET:
+            case EXAM_HAS_ENDED:
             case LOGIN_EXIST_MESSAGE: {
                 response.setNotAuthorized(ex.getMessage());
                 break;
@@ -85,6 +87,7 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case COURSE_NOT_FOUND_MESSAGE:
             case WEBINAR_NOT_FOUND_MESSAGE:
             case USER_NOT_FOUND_MESSAGE:
+            case USER_EXAM_NOT_FOUND:
             case EMAIL_NOT_FOUND: {
                 response.setNotFound(ex.getMessage());
                 break;
@@ -99,6 +102,7 @@ public class BaseExceptions extends ResponseEntityExceptionHandler {
             case ACTIVE_WEBINAR_EXIST:
             case USER_COURSE_EXIST:
             case USER_WEBINAR_EXIST:
+            case USER_EXAM_EXIST:
             case RATING_EXIST: {
                 response.setExistData(ex.getMessage());
                 break;

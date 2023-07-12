@@ -10,5 +10,7 @@ import java.util.List;
 public interface ExamRepository extends JpaRepository<ExamModel, String> {
     ExamModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
+    ExamModel findBySecureId(String secureId);
+
     List<ExamModel> findAllByDeletedAtIsNull();
 }

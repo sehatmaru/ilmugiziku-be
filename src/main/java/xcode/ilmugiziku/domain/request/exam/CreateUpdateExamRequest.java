@@ -20,6 +20,9 @@ public class CreateUpdateExamRequest {
     @NotNull()
     private int maxParticipant;
 
+    @NotNull()
+    private int time;
+
     private Date startAt;
 
     private Date endAt;

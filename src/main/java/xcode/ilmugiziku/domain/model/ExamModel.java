@@ -45,6 +45,9 @@ public class ExamModel {
    @Column(name = "end_at")
    private Date endAt;
 
+   @Column(name = "time")
+   private int time;
+
    @Column(name = "created_at")
    private Date createdAt;
 
