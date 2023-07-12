@@ -5,10 +5,7 @@ import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -45,6 +42,8 @@ public class QuestionMapper {
             List<QuestionResponse> response = new ArrayList<>();
 
             models.forEach(e -> response.add(modelToResponse(e)));
+
+            if (!CurrentUser.get().isAdmin()) Collections.shuffle(response, new Random(System.nanoTime()));
 
             return response;
         } else {

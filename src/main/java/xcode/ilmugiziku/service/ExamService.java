@@ -12,6 +12,7 @@ import xcode.ilmugiziku.domain.repository.UserExamRepository;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
+import xcode.ilmugiziku.domain.response.exam.DoExamResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.ExamMapper;
@@ -25,6 +26,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class ExamService {
 
+   @Autowired private QuestionService questionService;
    @Autowired private ExamRepository examRepository;
    @Autowired private TemplateRepository templateRepository;
    @Autowired private UserExamRepository userExamRepository;
@@ -125,6 +127,28 @@ public class ExamService {
       return response;
    }
 
+   public BaseResponse<Boolean> setTime(String examSecureId, Date startTime, Date endTime) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      ExamModel exam = examRepository.findBySecureIdAndDeletedAtIsNull(examSecureId);
+
+      if (exam == null) throw new AppException(NOT_FOUND_MESSAGE);
+
+      try {
+         exam.setStartAt(startTime);
+         exam.setEndAt(endTime);
+         exam.setUpdatedAt(new Date());
+         examRepository.save(exam);
+
+         response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+
+      return response;
+   }
+
    public BaseResponse<Boolean> apply(String examSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -153,6 +177,29 @@ public class ExamService {
          throw new AppException(e.toString());
       }
 
+
+      return response;
+   }
+
+   public BaseResponse<DoExamResponse> doExam(String examSecureId) {
+      BaseResponse<DoExamResponse> response = new BaseResponse<>();
+
+      ExamModel exam = examRepository.findBySecureIdAndDeletedAtIsNull(examSecureId);
+      UserExamRelModel userExam = userExamRepository.getUserExam(CurrentUser.get().getUserSecureId(), examSecureId);
+
+      if (exam == null) throw new AppException(NOT_FOUND_MESSAGE);
+      if (userExam == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+
+      try {
+         DoExamResponse examResponse = new DoExamResponse();
+         examResponse.setTitle(exam.getTitle());
+         examResponse.setTime(exam.getTime());
+         examResponse.setQuestions(questionService.getQuestionsByTemplate(exam.getTemplate()));
+
+         response.setSuccess(examResponse);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
 
       return response;
    }

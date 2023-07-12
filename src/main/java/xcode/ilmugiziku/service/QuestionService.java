@@ -4,18 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AnswerModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
+import xcode.ilmugiziku.domain.model.TemplateQuestionRelModel;
 import xcode.ilmugiziku.domain.repository.AnswerRepository;
 import xcode.ilmugiziku.domain.repository.QuestionRepository;
+import xcode.ilmugiziku.domain.repository.TemplateQuestionRepository;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateAnswerRequest;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
@@ -25,6 +27,7 @@ public class QuestionService {
 
    @Autowired private QuestionRepository questionRepository;
    @Autowired private AnswerRepository answerRepository;
+   @Autowired private TemplateQuestionRepository templateQuestionRepository;
 
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
@@ -124,4 +127,20 @@ public class QuestionService {
       return response;
    }
 
+   public List<QuestionResponse> getQuestionsByTemplate(String template) {
+      List<TemplateQuestionRelModel> templateQuestion = templateQuestionRepository.getTemplateQuestionByTemplate(template);
+      List<QuestionModel> questions = new ArrayList<>();
+
+      templateQuestion.forEach(e-> questions.add(questionRepository.findBySecureId(e.getQuestion())));
+
+      List<QuestionResponse> result = questionMapper.modelToResponses(questions);
+      result.forEach(e-> {
+         List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
+         List<AnswerResponse> responses = answerMapper.modelToResponses(models);
+
+         e.setAnswers(responses);
+      });
+
+      return result;
+   }
 }
