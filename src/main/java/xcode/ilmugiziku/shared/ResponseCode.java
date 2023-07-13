@@ -14,6 +14,7 @@ public class ResponseCode {
     public static final String RATING_EXIST = "Already rated it before";
     public static final String EXIST_MESSAGE = "Data exist";
     public static final String USER_COURSE_EXIST = "Course already purchased.";
+    public static final String EXAM_CANT_CANCEL = "Exam already on going, you cant cancel.";
     public static final String USER_WEBINAR_EXIST = "You already registered.";
     public static final String USER_EXAM_EXIST = "You already do this exam.";
     public static final String USER_EXAM_NOT_FOUND = "You have not done this exam yet.";

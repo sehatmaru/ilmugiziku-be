@@ -205,7 +205,8 @@ public class AdminApi {
                 .body(response);
     }
 
-    @PostMapping("/exam/time")
+    @Deprecated
+    @GetMapping("/exam/time")
     ResponseEntity<BaseResponse<Boolean>> setTime(
             @RequestParam @Validated String examSecureId,
             @RequestParam @Validated Date startTime,

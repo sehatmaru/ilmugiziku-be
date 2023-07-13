@@ -81,4 +81,16 @@ public class ExamApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/cancel")
+    ResponseEntity<BaseResponse<Boolean>> cancel (
+            @RequestParam @Validated String examSecureId
+    ) {
+        BaseResponse<Boolean> response = examService.cancel(examSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

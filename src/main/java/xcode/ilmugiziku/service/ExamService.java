@@ -48,6 +48,32 @@ public class ExamService {
       return response;
    }
 
+   public BaseResponse<Boolean> cancel(String examSecureId) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      ExamModel examModel = examRepository.findBySecureIdAndDeletedAtIsNull(examSecureId);
+      UserExamRelModel userExam = userExamRepository.getUserExam(CurrentUser.get().getUserSecureId(), examSecureId);
+
+      if (examModel == null) throw new AppException(NOT_FOUND_MESSAGE);
+      if (userExam == null) throw new AppException(NOT_AUTHORIZED_MESSAGE);
+      if (examModel.getStartAt().before(new Date()) || examModel.getEndAt().after(new Date())) throw new AppException(EXAM_CANT_CANCEL);
+
+      try {
+         userExam.setDeleted(true);
+
+         examModel.setCurrentParticipant(examModel.getCurrentParticipant()-1);
+
+         examRepository.save(examModel);
+         userExamRepository.save(userExam);
+
+         response.setSuccess(true);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
    public BaseResponse<ExamResultResponse> getExamResult(String examSecureId) {
       BaseResponse<ExamResultResponse> response = new BaseResponse<>();
 

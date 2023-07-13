@@ -89,11 +89,11 @@ public class CronService {
 
          cronJobModel.setSuccess(true);
          cronJobModel.setTotalEffectedData(totalEffectedData);
+
+         if (totalEffectedData > 0) cronJobRepository.save(cronJobModel);
       } catch (Exception e) {
          cronJobModel.setDescription(e.toString());
       }
-
-      cronJobRepository.save(cronJobModel);
    }
 
    /**
@@ -120,11 +120,11 @@ public class CronService {
 
          cronJobModel.setSuccess(true);
          cronJobModel.setTotalEffectedData(totalEffectedData);
+
+         if (totalEffectedData > 0) cronJobRepository.save(cronJobModel);
       } catch (Exception e) {
          cronJobModel.setDescription(e.toString());
       }
-
-      cronJobRepository.save(cronJobModel);
    }
 
 
@@ -154,11 +154,11 @@ public class CronService {
 
          cronJobModel.setSuccess(true);
          cronJobModel.setTotalEffectedData(totalEffectedData);
+
+         if (totalEffectedData > 0) cronJobRepository.save(cronJobModel);
       } catch (Exception e) {
          cronJobModel.setDescription(e.toString());
       }
-
-      cronJobRepository.save(cronJobModel);
    }
 
 }
