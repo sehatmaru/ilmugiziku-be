@@ -1,8 +1,10 @@
 package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.ExamModel;
+import xcode.ilmugiziku.domain.model.UserExamRelModel;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.response.exam.ExamResponse;
+import xcode.ilmugiziku.domain.response.exam.RankResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +73,24 @@ public class ExamMapper {
             model.setEndAt(request.getEndAt());
             model.setAvailable(model.isAvailable());
             model.setUpdatedAt(new Date());
+
+            return model;
+        } else {
+            return null;
+        }
+    }
+
+    public RankResponse modelToRankResponse(UserExamRelModel request, String name) {
+        if (request != null) {
+            RankResponse model = new RankResponse();
+            model.setDuration(request.getDuration());
+            model.setIncorrect(request.getIncorrect());
+            model.setCorrect(request.getCorrect());
+            model.setBlank(request.getBlank());
+            model.setScore(request.getScore());
+            model.setStartTime(request.getStartTime());
+            model.setFinishTime(request.getFinishTime());
+            model.setName(name);
 
             return model;
         } else {

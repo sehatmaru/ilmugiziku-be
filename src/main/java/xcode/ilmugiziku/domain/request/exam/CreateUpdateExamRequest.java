@@ -23,8 +23,10 @@ public class CreateUpdateExamRequest {
     @NotNull()
     private int time;
 
+    @NotNull()
     private Date startAt;
 
+    @NotNull()
     private Date endAt;
 
     public CreateUpdateExamRequest() {
