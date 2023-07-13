@@ -105,7 +105,15 @@ public class WebinarService {
 
       return response;
    }
-
+   /**
+    * purchase a webinar,
+    * its have some validation like
+    * if unpaidInvoice != null it means you cant purchase,
+    * user must pay his last invoice
+    * @param webinarSecureId string
+    * @param request body
+    * @return response
+    */
    public BaseResponse<PurchaseResponse> purchase(String webinarSecureId, PurchaseRequest request) {
       BaseResponse<PurchaseResponse> response = new BaseResponse<>();
 
@@ -157,6 +165,13 @@ public class WebinarService {
       return response;
    }
 
+   /**
+    * set the availability of a webinar
+    * used in admin
+    * @param webinarSecureId string
+    * @param isAvailable boolean
+    * @return boolean
+    */
    public BaseResponse<Boolean> setAvailability(String webinarSecureId, boolean isAvailable) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -185,6 +200,14 @@ public class WebinarService {
       return response;
    }
 
+   /**
+    * give rating to webinar,
+    * user can only give rating if he
+    * registered to the webinar
+    * @param webinarSecureId string
+    * @param rating int
+    * @return boolean
+    */
    public BaseResponse<Boolean> giveRating(String webinarSecureId, int rating) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

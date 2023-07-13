@@ -8,6 +8,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class InvoiceResponse {
-    private String packageName;
+    private String title;
     private BigDecimal totalAmount;
 }

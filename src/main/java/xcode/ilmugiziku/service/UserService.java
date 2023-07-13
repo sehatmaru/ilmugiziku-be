@@ -35,6 +35,11 @@ public class UserService {
 
    private final UserMapper userMapper = new UserMapper();
 
+   /**
+    * login by email/google account
+    * @param request body
+    * @return response
+    */
    public BaseResponse<LoginResponse> login(LoginRequest request) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
 
@@ -153,10 +158,6 @@ public class UserService {
       }
 
       return response;
-   }
-
-   public boolean isRoleAdmin(String secureId) {
-      return userRepository.findBySecureIdAndDeletedAtIsNull(secureId).getRole() == ADMIN;
    }
 
 }

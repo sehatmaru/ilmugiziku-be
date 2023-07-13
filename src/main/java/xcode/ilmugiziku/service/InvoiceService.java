@@ -53,7 +53,7 @@ public class InvoiceService {
       try {
          InvoiceResponse invoice = new InvoiceResponse();
          invoice.setTotalAmount(model.getPrice());
-         invoice.setPackageName(model.getTitle());
+         invoice.setTitle(model.getTitle());
 
          response.setSuccess(invoice);
       } catch (Exception e){
@@ -63,6 +63,15 @@ public class InvoiceService {
       return response;
    }
 
+   /**
+    * get the xendit callback,
+    * it will trigger by xendit invoice callback
+    * and will insert invoice to t_invoice
+    * based on the callback request.
+    * it can be webinar/course invoice
+    * @param request body
+    * @return invoice
+    */
    public BaseResponse<XenditInvoiceResponse> xenditCallback(XenditInvoiceRequest request) {
       BaseResponse<XenditInvoiceResponse> response = new BaseResponse<>();
 
@@ -122,6 +131,16 @@ public class InvoiceService {
       } else model.setDeleted(true);
    }
 
+   /**
+    * create the purchase invoice
+    * @param user body
+    * @param request body
+    * @param webinarModel body
+    * @param courseModel body
+    * @param type type
+    * @param secureId = invoice secure id
+    * @return response
+    */
    public PurchaseResponse createInvoice(UserModel user,
                                          PurchaseRequest request,
                                          WebinarModel webinarModel,
@@ -138,8 +157,6 @@ public class InvoiceService {
          Invoice invoice = xenditClient.invoice.create(
                  invoiceMapper.createInvoiceRequest(user, profileService.getUserFullName(), request, type, webinarModel, courseModel, secureId)
          );
-
-         System.out.println(invoice.toString());
 
          response.setInvoiceId(invoice.getId());
          response.setInvoiceUrl(invoice.getInvoiceUrl());

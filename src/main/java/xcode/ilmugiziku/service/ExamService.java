@@ -48,6 +48,13 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * cancel to participate in the exam,
+    * the exam must be not started yet
+    * and subtract the current participation
+    * @param examSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> cancel(String examSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -74,6 +81,13 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * get the exam result,
+    * will succeed if user already finished
+    * the exam
+    * @param examSecureId string
+    * @return response
+    */
    public BaseResponse<ExamResultResponse> getExamResult(String examSecureId) {
       BaseResponse<ExamResultResponse> response = new BaseResponse<>();
 
@@ -137,6 +151,12 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * delete the exam,
+    * the exam must be not started yet
+    * @param secureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> deleteExam(String secureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -159,6 +179,12 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * set exam template
+    * @param examSecureId string
+    * @param templateSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> setTemplate(String examSecureId, String templateSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -181,6 +207,15 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * @deprecated not use it anymore,
+    * must set time on create exam
+    * @param examSecureId string
+    * @param startTime date
+    * @param endTime date
+    * @return boolean
+    */
+   @Deprecated
    public BaseResponse<Boolean> setTime(String examSecureId, Date startTime, Date endTime) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -203,6 +238,13 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * apply for join the exam,
+    * the exam must be not started yet
+    * and there is still slot available
+    * @param examSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> apply(String examSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -235,6 +277,11 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * start the exam to retrieve the questions
+    * @param examSecureId string
+    * @return response
+    */
    public BaseResponse<DoExamResponse> startExam(String examSecureId) {
       BaseResponse<DoExamResponse> response = new BaseResponse<>();
 
@@ -264,6 +311,13 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * finish the exam to send the answer
+    * and calculated
+    * @param examSecureId string
+    * @param request body
+    * @return response
+    */
    public BaseResponse<ExamResultResponse> finishExam(String examSecureId, List<ExamResultRequest> request) {
       BaseResponse<ExamResultResponse> response = new BaseResponse<>();
 
@@ -323,6 +377,10 @@ public class ExamService {
       return response;
    }
 
+   /**
+    * recalculate rank position
+    * @param examSecureId string
+    */
    private void refreshRank(String examSecureId) {
       List<UserExamRelModel> userExam = userExamRepository.getUserExamRank(examSecureId);
 

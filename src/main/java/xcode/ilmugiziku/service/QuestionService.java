@@ -34,6 +34,11 @@ public class QuestionService {
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
 
+   /**
+    * get all question list
+    * answers included
+    * @return question list
+    */
    public BaseResponse<List<QuestionResponse>> getQuestionList() {
       BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
 
@@ -54,6 +59,13 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * create a question,
+    * it must have 5 answer
+    * and 1 correct answer
+    * @param request body
+    * @return boolean
+    */
    public BaseResponse<Boolean> createQuestion(List<CreateUpdateQuestionRequest> request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -77,6 +89,15 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * update the question,
+    * it will delete the existing
+    * question-answer relation on t_answer
+    * and insert the new answers relation
+    * @param questionSecureId string
+    * @param request body
+    * @return boolean
+    */
    public BaseResponse<Boolean> updateQuestion(String questionSecureId, CreateUpdateQuestionRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -108,6 +129,12 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * delete question,
+    * include delete answer on t_answer
+    * @param questionSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> deleteQuestion(String questionSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -129,6 +156,11 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * get all question based on template
+    * @param template = template secure id
+    * @return question list
+    */
    public List<QuestionResponse> getQuestionsByTemplate(String template) {
       List<TemplateQuestionRelModel> templateQuestion = templateQuestionRepository.getTemplateQuestionByTemplate(template);
       List<QuestionModel> questions = new ArrayList<>();
@@ -146,6 +178,12 @@ public class QuestionService {
       return result;
    }
 
+   /**
+    * calculate score based on
+    * submitted exam
+    * @param request body
+    * @return result
+    */
    public ExamResultResponse calculateScore(List<ExamResultRequest> request) {
       ExamResultResponse result = new ExamResultResponse();
 
