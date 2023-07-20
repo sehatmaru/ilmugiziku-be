@@ -8,6 +8,7 @@ import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.ProfileRepository;
 import xcode.ilmugiziku.domain.repository.TokenRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
+import xcode.ilmugiziku.domain.request.user.AdminLoginRequest;
 import xcode.ilmugiziku.domain.request.user.LoginRequest;
 import xcode.ilmugiziku.domain.request.user.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
@@ -20,13 +21,12 @@ import xcode.ilmugiziku.mapper.UserMapper;
 import java.util.List;
 
 import static xcode.ilmugiziku.domain.enums.RegistrationTypeEnum.GOOGLE;
-import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 import static xcode.ilmugiziku.domain.enums.RoleEnum.CONSUMER;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
 
 @Service
-public class UserService {
+public class AuthService {
 
    @Autowired private JwtService jwtService;
    @Autowired private UserRepository userRepository;
@@ -36,14 +36,14 @@ public class UserService {
    private final UserMapper userMapper = new UserMapper();
 
    /**
-    * login by email/google account
+    * login consumer by email/google account
     * @param request body
     * @return response
     */
-   public BaseResponse<LoginResponse> login(LoginRequest request) {
+   public BaseResponse<LoginResponse> loginConsumer(LoginRequest request) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
 
-      UserModel model = userRepository.findByEmailAndDeletedAtIsNull(request.getEmail());
+      UserModel model = userRepository.getActiveConsumerByEmail(request.getEmail());
 
       if (model == null) {
          throw new AppException(AUTH_ERROR_MESSAGE);
@@ -57,6 +57,29 @@ public class UserService {
          } else {
             response.setNotFound(AUTH_ERROR_MESSAGE);
          }
+      }
+
+      return response;
+   }
+
+   /**
+    * login admin
+    * @param request body
+    * @return response
+    */
+   public BaseResponse<LoginResponse> loginAdmin(AdminLoginRequest request) {
+      BaseResponse<LoginResponse> response = new BaseResponse<>();
+
+      UserModel model = userRepository.getActiveAdmin(request.getEmail());
+
+      if (model == null || !model.getPassword().equals(encrypt(request.getPassword()))) {
+         throw new AppException(AUTH_ERROR_MESSAGE);
+      }
+
+      try {
+         response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model)));
+      } catch (Exception e) {
+         throw new AppException(e.toString());
       }
 
       return response;
@@ -76,14 +99,11 @@ public class UserService {
 
    private BaseResponse<LoginResponse> getEmailAccount(UserModel model) {
       BaseResponse<LoginResponse> response = new BaseResponse<>();
-      
 
-      if (model.getRole() != ADMIN) {
-         TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
+      TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
 
-         if (tokenModel != null) {
-            throw new AppException(LOGIN_EXIST_MESSAGE);
-         }
+      if (tokenModel != null) {
+         throw new AppException(LOGIN_EXIST_MESSAGE);
       }
 
       response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model)));

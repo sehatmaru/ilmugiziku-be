@@ -21,6 +21,18 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
    List<UserModel> findByRoleAndDeletedAtIsNull(RoleEnum role);
 
    @Query(value = "SELECT * FROM t_user" +
+           " WHERE email = :email AND role = 'ADMIN'" +
+           " AND deleted_at IS NULL" +
+           " LIMIT 1", nativeQuery = true)
+   UserModel getActiveAdmin(String email);
+
+   @Query(value = "SELECT * FROM t_user" +
+           " WHERE email = :email AND role = 'CONSUMER'" +
+           " AND deleted_at IS NULL" +
+           " LIMIT 1", nativeQuery = true)
+   UserModel getActiveConsumerByEmail(String email);
+
+   @Query(value = "SELECT * FROM t_user" +
            " WHERE secure_id = :secureId AND deleted_at IS NULL" +
            " LIMIT 1", nativeQuery = true)
    UserModel getUserBySecureId(String secureId);

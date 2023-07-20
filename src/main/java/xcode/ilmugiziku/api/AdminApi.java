@@ -32,7 +32,7 @@ public class AdminApi {
 
     @Autowired private ExamService examService;
     @Autowired private QuestionService questionService;
-    @Autowired private UserService userService;
+    @Autowired private AuthService authService;
     @Autowired private TemplateService templateService;
     @Autowired private BenefitService benefitService;
     @Autowired private CourseService courseService;
@@ -330,7 +330,7 @@ public class AdminApi {
 
     @GetMapping("/consumer/list")
     ResponseEntity<BaseResponse<List<UserResponse>>> consumerList() {
-        BaseResponse<List<UserResponse>> response = userService.getUserList();
+        BaseResponse<List<UserResponse>> response = authService.getUserList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
