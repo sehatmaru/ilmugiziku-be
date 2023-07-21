@@ -14,14 +14,10 @@ import xcode.ilmugiziku.domain.request.user.RegisterRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.user.LoginResponse;
-import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.UserMapper;
 
-import java.util.List;
-
 import static xcode.ilmugiziku.domain.enums.RegistrationTypeEnum.GOOGLE;
-import static xcode.ilmugiziku.domain.enums.RoleEnum.CONSUMER;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.encrypt;
 
@@ -77,7 +73,7 @@ public class AuthService {
       }
 
       try {
-         response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model)));
+         response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()), saveToken(model)));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
@@ -106,7 +102,7 @@ public class AuthService {
          throw new AppException(LOGIN_EXIST_MESSAGE);
       }
 
-      response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model)));
+      response.setSuccess(userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()), saveToken(model)));
       
       return response;
    }
@@ -116,7 +112,7 @@ public class AuthService {
       TokenModel tokenModel = tokenRepository.getTokenByUser(model.getSecureId());
 
       if (tokenModel == null) {
-         response = userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()).orElse(null), saveToken(model));
+         response = userMapper.loginModelToLoginResponse(model, profileRepository.getProfileBySecureId(model.getSecureId()), saveToken(model));
       } else {
          throw new AppException(AUTH_ERROR_MESSAGE);
       }
@@ -139,20 +135,6 @@ public class AuthService {
          } else {
             throw new AppException(EMAIL_EXIST);
          }
-      } catch (Exception e) {
-         throw new AppException(e.toString());
-      }
-
-      return response;
-   }
-
-   public BaseResponse<List<UserResponse>> getUserList() {
-      BaseResponse<List<UserResponse>> response = new BaseResponse<>();
-
-      try {
-         List<UserModel> models = userRepository.findByRoleAndDeletedAtIsNull(CONSUMER);
-
-         response.setSuccess(userMapper.loginModelsToLoginResponses(models));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }

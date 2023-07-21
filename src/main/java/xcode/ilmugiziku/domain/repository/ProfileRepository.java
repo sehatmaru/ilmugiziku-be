@@ -13,7 +13,7 @@ public interface ProfileRepository extends JpaRepository<ProfileModel, String> {
     @Query(value = "SELECT * FROM t_profile" +
             " WHERE user_secure_id = :user AND deleted_at IS NULL" +
             " LIMIT 1", nativeQuery = true)
-    Optional<ProfileModel> getProfileBySecureId(String user);
+    ProfileModel getProfileBySecureId(String user);
 
     @Query(value = "SELECT * FROM t_profile" +
             " WHERE email = :email AND deleted_at IS NULL" +

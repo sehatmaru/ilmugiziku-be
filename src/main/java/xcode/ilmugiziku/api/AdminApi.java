@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.request.BaseRequest;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
@@ -37,6 +38,7 @@ public class AdminApi {
     @Autowired private BenefitService benefitService;
     @Autowired private CourseService courseService;
     @Autowired private WebinarService webinarService;
+    @Autowired private UserService userService;
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<Boolean>> createQuestion (
@@ -328,16 +330,6 @@ public class AdminApi {
                 .body(response);
     }
 
-    @GetMapping("/consumer/list")
-    ResponseEntity<BaseResponse<List<UserResponse>>> consumerList() {
-        BaseResponse<List<UserResponse>> response = authService.getUserList();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
-
     @PostMapping("/course/create")
     ResponseEntity<BaseResponse<CreateBaseResponse>> createCourse(
             @RequestBody @Validated CreateUpdateCourseRequest body
@@ -375,4 +367,17 @@ public class AdminApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
+    @GetMapping("/user/list")
+    ResponseEntity<BaseResponse<List<UserResponse>>> userList(
+            @RequestParam @Validated RoleEnum role
+    ) {
+        BaseResponse<List<UserResponse>> response = userService.getUserList(role);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
 }
