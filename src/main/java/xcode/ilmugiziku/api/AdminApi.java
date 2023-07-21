@@ -33,7 +33,6 @@ public class AdminApi {
 
     @Autowired private ExamService examService;
     @Autowired private QuestionService questionService;
-    @Autowired private AuthService authService;
     @Autowired private TemplateService templateService;
     @Autowired private BenefitService benefitService;
     @Autowired private CourseService courseService;
@@ -380,4 +379,16 @@ public class AdminApi {
                 .body(response);
     }
 
+    @GetMapping("/user/status/toggle")
+    ResponseEntity<BaseResponse<Boolean>> toggleStatus(
+            @RequestParam @Validated String secureId,
+            @RequestParam @Validated boolean status
+    ) {
+        BaseResponse<Boolean> response = userService.toggleStatus(secureId, status);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 }

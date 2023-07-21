@@ -15,4 +15,5 @@ public class UserResponse {
     private String token;
     private RegistrationTypeEnum type;
     private RoleEnum role;
+    private boolean active;
 }

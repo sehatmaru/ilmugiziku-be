@@ -22,13 +22,13 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
 
    @Query(value = "SELECT * FROM t_user" +
            " WHERE email = :email AND role = 'ADMIN'" +
-           " AND deleted_at IS NULL" +
+           " AND deleted_at IS NULL AND active = TRUE" +
            " LIMIT 1", nativeQuery = true)
    UserModel getActiveAdmin(String email);
 
    @Query(value = "SELECT * FROM t_user" +
            " WHERE email = :email AND role = 'CONSUMER'" +
-           " AND deleted_at IS NULL" +
+           " AND deleted_at IS NULL AND active = TRUE" +
            " LIMIT 1", nativeQuery = true)
    UserModel getActiveConsumerByEmail(String email);
 

@@ -13,6 +13,8 @@ import xcode.ilmugiziku.mapper.UserMapper;
 
 import java.util.List;
 
+import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
+
 @Service
 public class UserService {
 
@@ -35,6 +37,28 @@ public class UserService {
          }
 
          response.setSuccess(responses);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<Boolean> toggleStatus(String secureId, boolean status) {
+      BaseResponse<Boolean> response = new BaseResponse<>();
+
+      UserModel model = userRepository.findBySecureId(secureId);
+
+      if (model == null) {
+         throw new AppException(NOT_FOUND_MESSAGE);
+      }
+
+      try {
+         model.setActive(status);
+
+         userRepository.save(model);
+
+         response.setSuccess(true);
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
