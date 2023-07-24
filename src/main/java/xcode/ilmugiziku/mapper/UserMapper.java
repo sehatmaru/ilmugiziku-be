@@ -41,6 +41,7 @@ public class UserMapper {
             response.setType(request.getRegistrationType());
             response.setRole(request.getRole());
             response.setCreatedAt(new Date());
+            response.setActive(true);
 
             if (!request.getPassword().isEmpty()) {
                 response.setPassword(encrypt(request.getPassword()));
@@ -79,6 +80,7 @@ public class UserMapper {
                 response.setEmail(model.getEmail());
                 response.setType(model.getType());
                 response.setRole(model.getRole());
+                response.setActive(model.isActive());
 
                 responses.add(response);
             }

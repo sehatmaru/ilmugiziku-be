@@ -104,6 +104,12 @@ public class TemplateService {
       return response;
    }
 
+   /**
+    * add list of question to template
+    * @param templateSecureId string
+    * @param request = list of question
+    * @return boolean
+    */
    @Transactional()
    public BaseResponse<Boolean> setQuestions(String templateSecureId, List<BaseRequest> request) {
       BaseResponse<Boolean> response = new BaseResponse<>();

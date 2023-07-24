@@ -12,6 +12,11 @@ import static xcode.ilmugiziku.shared.Utils.getTomorrowDate;
 @Service
 public class JwtService {
 
+    /**
+     * generate JWT Token for auth
+     * @param user body
+     * @return token
+     */
     public String generateToken(UserModel user) {
         return Jwts.builder()
                 .setSubject(user.getSecureId())

@@ -11,7 +11,7 @@ import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
-import xcode.ilmugiziku.domain.response.WebinarResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 import xcode.ilmugiziku.mapper.WebinarMapper;
@@ -37,13 +37,13 @@ public class WebinarService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
-   public BaseResponse<List<WebinarResponse>> getWebinarList() {
-      BaseResponse<List<WebinarResponse>> response = new BaseResponse<>();
+   public BaseResponse<List<WebinarListResponse>> getWebinarList() {
+      BaseResponse<List<WebinarListResponse>> response = new BaseResponse<>();
 
       try {
          List<WebinarModel> models = webinarRepository.findAllByDeletedAtIsNull();
 
-         response.setSuccess(webinarMapper.modelsToResponses(models));
+         response.setSuccess(webinarMapper.modelsToListResponses(models));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
@@ -105,7 +105,15 @@ public class WebinarService {
 
       return response;
    }
-
+   /**
+    * purchase a webinar,
+    * its have some validation like
+    * if unpaidInvoice != null it means you cant purchase,
+    * user must pay his last invoice
+    * @param webinarSecureId string
+    * @param request body
+    * @return response
+    */
    public BaseResponse<PurchaseResponse> purchase(String webinarSecureId, PurchaseRequest request) {
       BaseResponse<PurchaseResponse> response = new BaseResponse<>();
 
@@ -157,6 +165,13 @@ public class WebinarService {
       return response;
    }
 
+   /**
+    * set the availability of a webinar
+    * used in admin
+    * @param webinarSecureId string
+    * @param isAvailable boolean
+    * @return boolean
+    */
    public BaseResponse<Boolean> setAvailability(String webinarSecureId, boolean isAvailable) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -185,6 +200,14 @@ public class WebinarService {
       return response;
    }
 
+   /**
+    * give rating to webinar,
+    * user can only give rating if he
+    * registered to the webinar
+    * @param webinarSecureId string
+    * @param rating int
+    * @return boolean
+    */
    public BaseResponse<Boolean> giveRating(String webinarSecureId, int rating) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

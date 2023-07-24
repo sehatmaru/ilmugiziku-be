@@ -27,10 +27,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userInterceptor).excludePathPatterns(
-                "/user/login",
-                "/user/register",
-                "/user/password/forgot",
-                "/user/password/reset",
+                "/auth/login",
+                "/auth/register",
+                "/auth/password/forgot",
+                "/auth/password/reset",
                 "/v2/api-docs",
                 "/swagger-resources/**",
                 "/swagger-ui.html",

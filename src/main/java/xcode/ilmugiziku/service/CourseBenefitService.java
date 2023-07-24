@@ -16,6 +16,11 @@ public class CourseBenefitService {
    @Autowired private BenefitRepository benefitRepository;
    @Autowired private CourseBenefitRepository courseBenefitRepository;
 
+   /**
+    * get all course benefit registered before
+    * @param course is courseSecureId
+    * @return course benefit list
+    */
    public List<BenefitModel> getCourseBenefits(String course) {
       List<BenefitModel> result = new ArrayList<>();
 

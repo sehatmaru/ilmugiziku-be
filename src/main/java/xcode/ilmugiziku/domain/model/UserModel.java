@@ -5,14 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
 import xcode.ilmugiziku.domain.enums.RoleEnum;
 
 import javax.persistence.*;
 import java.util.Date;
-
-import static xcode.ilmugiziku.domain.enums.RoleEnum.ADMIN;
 
 @Data
 @Builder
@@ -40,6 +37,7 @@ public class UserModel {
    private RegistrationTypeEnum type;
 
    @Column(name = "role")
+   @Enumerated(EnumType.STRING)
    private RoleEnum role;
 
    @Column(name = "active")
@@ -53,8 +51,4 @@ public class UserModel {
 
    @Column(name = "deleted_at")
    private Date deletedAt;
-
-   public boolean isAdmin() {
-      return role == ADMIN;
-   }
 }

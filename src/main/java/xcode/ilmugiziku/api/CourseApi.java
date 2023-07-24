@@ -6,13 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.request.SubmitRatingRequest;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
-import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
+import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.service.CourseService;
-import xcode.ilmugiziku.service.RatingService;
 
 import java.util.List;
 
@@ -20,12 +19,11 @@ import java.util.List;
 @RequestMapping(value = "course")
 public class CourseApi {
 
-    @Autowired private RatingService ratingService;
     @Autowired private CourseService courseService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
-        BaseResponse<List<CourseResponse>> response = courseService.getCourseList();
+    ResponseEntity<BaseResponse<List<CourseListResponse>>> list() {
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -44,20 +42,6 @@ public class CourseApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-
-    // TODO: 11/07/23  
-//    @PostMapping("/lesson/rating/set")
-//    ResponseEntity<BaseResponse<Double>> submitRating(
-//            @RequestParam @Validated String lessonSecureId,
-//            @RequestBody @Validated SubmitRatingRequest body
-//    ) {
-//        BaseResponse<Double> response = ratingService.submitRating(lessonSecureId, body);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(response);
-//    }
 
     @GetMapping("")
     ResponseEntity<BaseResponse<List<CourseResponse>>> getUserCourses() {

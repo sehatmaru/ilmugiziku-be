@@ -1,17 +1,18 @@
 package xcode.ilmugiziku.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.RatingModel;
-import xcode.ilmugiziku.domain.repository.RatingRepository;
 
 import java.util.List;
 
 @Service
 public class RatingService  {
 
-   @Autowired private RatingRepository ratingRepository;
-
+   /**
+    * recalculate webinar/course rating
+    * @param ratings = list of rating
+    * @return final rating
+    */
    public double calculateRatings(List<RatingModel> ratings) {
       double result;
 

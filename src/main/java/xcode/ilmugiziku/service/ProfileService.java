@@ -12,10 +12,14 @@ public class ProfileService {
     @Autowired private ProfileRepository profileRepository;
 
     public String getUserFullName() {
-        return profileRepository.getProfileBySecureId(CurrentUser.get().getUserSecureId()).map(ProfileModel::getFullName).orElse("");
+        return profileRepository.getProfileBySecureId(CurrentUser.get().getUserSecureId()).getFullName();
     }
 
     public String getUserFullName(String secureId) {
-        return profileRepository.getProfileBySecureId(secureId).map(ProfileModel::getFullName).orElse("");
+        return profileRepository.getProfileBySecureId(secureId).getFullName();
+    }
+
+    public ProfileModel getUserProfile(String secureId) {
+        return profileRepository.getProfileBySecureId(secureId);
     }
 }

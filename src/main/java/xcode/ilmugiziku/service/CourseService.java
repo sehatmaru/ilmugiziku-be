@@ -13,6 +13,7 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.BenefitMapper;
@@ -45,14 +46,18 @@ public class CourseService {
    private final BenefitMapper benefitMapper = new BenefitMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
-   public BaseResponse<List<CourseResponse>> getCourseList() {
-      BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
+   /**
+    * get courses list
+    * benefits included
+    * @return course list
+    */
+   public BaseResponse<List<CourseListResponse>> getCourseList() {
+      BaseResponse<List<CourseListResponse>> response = new BaseResponse<>();
 
       try {
          List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
-         List<CourseResponse> responses = courseMapper.modelsToResponses(models);
-
-         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
+         List<CourseListResponse> responses = courseMapper.modelsToListResponses(models);
+//         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
          response.setSuccess(responses);
       } catch (Exception e) {
@@ -62,6 +67,12 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * get course detail
+    * benefits included
+    * @param secureId is course secure id
+    * @return course detail
+    */
    public BaseResponse<CourseResponse> getCourse(String secureId) {
       BaseResponse<CourseResponse> response = new BaseResponse<>();
 
@@ -83,6 +94,13 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * create course
+    * include save the benefits
+    * to t_course_benefit_rel
+    * @param request body
+    * @return response
+    */
    public BaseResponse<CreateBaseResponse> createCourse(CreateUpdateCourseRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();
@@ -102,6 +120,15 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * update the course,
+    * set 'deleted' = true to the previous
+    * course-benefit relation on t_course_benefit_rel,
+    * then insert the new relation
+    * @param secureId is course secure id
+    * @param request body
+    * @return boolean
+    */
    public BaseResponse<Boolean> updateCourse(String secureId, CreateUpdateCourseRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -124,6 +151,12 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * to check the previous relation
+    * used in {@link #updateCourse}
+    * @param models = course-benefit rel list
+    * @param benefits = new benefit list
+    */
    private void checkPreviousCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits) {
       for (CourseBenefitRelModel prev : models) {
          boolean isAdded = false;
@@ -142,6 +175,13 @@ public class CourseService {
       }
    }
 
+   /**
+    * to register new course-benefit relation
+    * used in {@link #updateCourse}
+    * @param models = existing course-benefit relation list
+    * @param benefits = new benefit list
+    * @param secureId = course secure id
+    */
    private void checkNewCourseBenefit(List<CourseBenefitRelModel> models, List<BenefitRequest> benefits, String secureId) {
       for (BenefitRequest current : benefits) {
          boolean isAdded = false;
@@ -159,6 +199,10 @@ public class CourseService {
       }
    }
 
+   /**
+    * get all course that user already purchased
+    * @return course list
+    */
    public BaseResponse<List<CourseResponse>> getUserCourses() {
       BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
       List<CourseResponse> result;
@@ -181,6 +225,11 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * cancel the course that already purchased by user
+    * @param courseSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> cancelCourse(String courseSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -200,6 +249,15 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * purchase a course,
+    * its have some validation like
+    * if unpaidInvoice != null it means you cant purchase,
+    * user must pay his last invoice
+    * @param courseSecureId string
+    * @param request body
+    * @return response
+    */
    public BaseResponse<PurchaseResponse> purchase(String courseSecureId, PurchaseRequest request) {
       BaseResponse<PurchaseResponse> response = new BaseResponse<>();
 
@@ -251,6 +309,13 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * set the availability of a course
+    * used in admin
+    * @param courseSecureId string
+    * @param isAvailable boolean
+    * @return boolean
+    */
    public BaseResponse<Boolean> setAvailability(String courseSecureId, boolean isAvailable) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -279,6 +344,14 @@ public class CourseService {
       return response;
    }
 
+   /**
+    * give rating to course,
+    * user can only give rating if he
+    * registered to the course
+    * @param courseSecureId string
+    * @param rating int
+    * @return boolean
+    */
    public BaseResponse<Boolean> giveRating(String courseSecureId, int rating) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 

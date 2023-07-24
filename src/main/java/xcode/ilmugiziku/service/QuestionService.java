@@ -14,6 +14,7 @@ import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
@@ -34,17 +35,22 @@ public class QuestionService {
    private final QuestionMapper questionMapper = new QuestionMapper();
    private final AnswerMapper answerMapper = new AnswerMapper();
 
-   public BaseResponse<List<QuestionResponse>> getQuestionList() {
-      BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
+   /**
+    * get all question list
+    * answers included
+    * @return question list
+    */
+   public BaseResponse<List<QuestionListResponse>> getQuestionList() {
+      BaseResponse<List<QuestionListResponse>> response = new BaseResponse<>();
 
       try {
-         List<QuestionResponse> result = questionMapper.modelToResponses(questionRepository.findAll());
-         result.forEach(e-> {
-            List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
-            List<AnswerResponse> responses = answerMapper.modelToResponses(models);
-
-            e.setAnswers(responses);
-         });
+         List<QuestionListResponse> result = questionMapper.modelToListResponses(questionRepository.findAll());
+//         result.forEach(e-> {
+//            List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
+//            List<AnswerResponse> responses = answerMapper.modelToResponses(models);
+//
+//            e.setAnswers(responses);
+//         });
 
          response.setSuccess(result);
       } catch (Exception e) {
@@ -54,6 +60,13 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * create a question,
+    * it must have 5 answer
+    * and 1 correct answer
+    * @param request body
+    * @return boolean
+    */
    public BaseResponse<Boolean> createQuestion(List<CreateUpdateQuestionRequest> request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -77,6 +90,15 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * update the question,
+    * it will delete the existing
+    * question-answer relation on t_answer
+    * and insert the new answers relation
+    * @param questionSecureId string
+    * @param request body
+    * @return boolean
+    */
    public BaseResponse<Boolean> updateQuestion(String questionSecureId, CreateUpdateQuestionRequest request) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -108,6 +130,12 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * delete question,
+    * include delete answer on t_answer
+    * @param questionSecureId string
+    * @return boolean
+    */
    public BaseResponse<Boolean> deleteQuestion(String questionSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
@@ -129,6 +157,11 @@ public class QuestionService {
       return response;
    }
 
+   /**
+    * get all question based on template
+    * @param template = template secure id
+    * @return question list
+    */
    public List<QuestionResponse> getQuestionsByTemplate(String template) {
       List<TemplateQuestionRelModel> templateQuestion = templateQuestionRepository.getTemplateQuestionByTemplate(template);
       List<QuestionModel> questions = new ArrayList<>();
@@ -146,6 +179,12 @@ public class QuestionService {
       return result;
    }
 
+   /**
+    * calculate score based on
+    * submitted exam
+    * @param request body
+    * @return result
+    */
    public ExamResultResponse calculateScore(List<ExamResultRequest> request) {
       ExamResultResponse result = new ExamResultResponse();
 
