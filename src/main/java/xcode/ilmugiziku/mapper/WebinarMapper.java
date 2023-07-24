@@ -2,7 +2,8 @@ package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
-import xcode.ilmugiziku.domain.response.WebinarResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,35 @@ public class WebinarMapper {
 
             for (WebinarModel model : models) {
                 response.add(modelToResponse(model));
+            }
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public WebinarListResponse modelToListResponse(WebinarModel model) {
+        if (model != null) {
+            WebinarListResponse response = new WebinarListResponse();
+            response.setSecureId(model.getSecureId());
+            response.setTitle(model.getTitle());
+            response.setDate(model.getDate());
+            response.setAvailable(model.isAvailable());
+            response.setRating(model.getRating());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public List<WebinarListResponse> modelsToListResponses(List<WebinarModel> models) {
+        if (models != null) {
+            List<WebinarListResponse> response = new ArrayList<>();
+
+            for (WebinarModel model : models) {
+                response.add(modelToListResponse(model));
             }
 
             return response;

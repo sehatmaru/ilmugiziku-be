@@ -2,6 +2,7 @@ package xcode.ilmugiziku.mapper;
 
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 
 import java.util.ArrayList;
@@ -39,6 +40,35 @@ public class CourseMapper {
             return response;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    public List<CourseListResponse> modelsToListResponses(List<CourseModel> models) {
+        if (models != null) {
+            List<CourseListResponse> response = new ArrayList<>();
+
+            models.forEach(e -> response.add(modelToListResponse(e)));
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public CourseListResponse modelToListResponse(CourseModel model) {
+        if (model != null) {
+            CourseListResponse response = new CourseListResponse();
+            response.setSecureId(model.getSecureId());
+            response.setTitle(model.getTitle());
+            response.setPrice(model.getPrice());
+            response.setAvailable(model.isAvailable());
+            response.setCourseType(model.getCourseType());
+            response.setAvailable(model.isAvailable());
+            response.setRating(model.getRating());
+
+            return response;
+        } else {
+            return null;
         }
     }
 

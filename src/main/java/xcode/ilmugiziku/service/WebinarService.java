@@ -11,7 +11,7 @@ import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
-import xcode.ilmugiziku.domain.response.WebinarResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 import xcode.ilmugiziku.mapper.WebinarMapper;
@@ -37,13 +37,13 @@ public class WebinarService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
-   public BaseResponse<List<WebinarResponse>> getWebinarList() {
-      BaseResponse<List<WebinarResponse>> response = new BaseResponse<>();
+   public BaseResponse<List<WebinarListResponse>> getWebinarList() {
+      BaseResponse<List<WebinarListResponse>> response = new BaseResponse<>();
 
       try {
          List<WebinarModel> models = webinarRepository.findAllByDeletedAtIsNull();
 
-         response.setSuccess(webinarMapper.modelsToResponses(models));
+         response.setSuccess(webinarMapper.modelsToListResponses(models));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }

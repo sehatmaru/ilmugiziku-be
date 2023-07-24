@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.service.CourseService;
 
@@ -21,8 +22,8 @@ public class CourseApi {
     @Autowired private CourseService courseService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<CourseResponse>>> list() {
-        BaseResponse<List<CourseResponse>> response = courseService.getCourseList();
+    ResponseEntity<BaseResponse<List<CourseListResponse>>> list() {
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

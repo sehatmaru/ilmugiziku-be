@@ -14,6 +14,7 @@ import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
@@ -39,17 +40,17 @@ public class QuestionService {
     * answers included
     * @return question list
     */
-   public BaseResponse<List<QuestionResponse>> getQuestionList() {
-      BaseResponse<List<QuestionResponse>> response = new BaseResponse<>();
+   public BaseResponse<List<QuestionListResponse>> getQuestionList() {
+      BaseResponse<List<QuestionListResponse>> response = new BaseResponse<>();
 
       try {
-         List<QuestionResponse> result = questionMapper.modelToResponses(questionRepository.findAll());
-         result.forEach(e-> {
-            List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
-            List<AnswerResponse> responses = answerMapper.modelToResponses(models);
-
-            e.setAnswers(responses);
-         });
+         List<QuestionListResponse> result = questionMapper.modelToListResponses(questionRepository.findAll());
+//         result.forEach(e-> {
+//            List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
+//            List<AnswerResponse> responses = answerMapper.modelToResponses(models);
+//
+//            e.setAnswers(responses);
+//         });
 
          response.setSuccess(result);
       } catch (Exception e) {

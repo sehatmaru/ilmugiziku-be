@@ -13,6 +13,7 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.course.CourseBenefitResponse;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.course.CourseResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.BenefitMapper;
@@ -50,14 +51,13 @@ public class CourseService {
     * benefits included
     * @return course list
     */
-   public BaseResponse<List<CourseResponse>> getCourseList() {
-      BaseResponse<List<CourseResponse>> response = new BaseResponse<>();
+   public BaseResponse<List<CourseListResponse>> getCourseList() {
+      BaseResponse<List<CourseListResponse>> response = new BaseResponse<>();
 
       try {
          List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
-         List<CourseResponse> responses = courseMapper.modelsToResponses(models);
-
-         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
+         List<CourseListResponse> responses = courseMapper.modelsToListResponses(models);
+//         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
 
          response.setSuccess(responses);
       } catch (Exception e) {

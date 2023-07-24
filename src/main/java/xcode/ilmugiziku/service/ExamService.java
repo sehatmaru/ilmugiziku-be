@@ -34,13 +34,13 @@ public class ExamService {
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public BaseResponse<List<ExamResponse>> getExamList() {
-      BaseResponse<List<ExamResponse>> response = new BaseResponse<>();
+   public BaseResponse<List<ExamListResponse>> getExamList() {
+      BaseResponse<List<ExamListResponse>> response = new BaseResponse<>();
 
       try {
          List<ExamModel> models = examRepository.findAllByDeletedAtIsNull();
 
-         response.setSuccess(examMapper.modelsToResponses(models));
+         response.setSuccess(examMapper.modelsToListResponses(models));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }

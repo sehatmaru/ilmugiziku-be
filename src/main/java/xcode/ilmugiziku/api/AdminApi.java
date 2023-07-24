@@ -17,11 +17,12 @@ import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
-import xcode.ilmugiziku.domain.response.WebinarResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
-import xcode.ilmugiziku.domain.response.exam.ExamResponse;
-import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.domain.response.course.CourseListResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
+import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
 import xcode.ilmugiziku.service.*;
 
 import java.util.Date;
@@ -77,8 +78,8 @@ public class AdminApi {
     }
 
     @GetMapping("/question/list")
-    ResponseEntity<BaseResponse<List<QuestionResponse>>> getQuestionList() {
-        BaseResponse<List<QuestionResponse>> response = questionService.getQuestionList();
+    ResponseEntity<BaseResponse<List<QuestionListResponse>>> getQuestionList() {
+        BaseResponse<List<QuestionListResponse>> response = questionService.getQuestionList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -184,8 +185,8 @@ public class AdminApi {
     }
 
     @GetMapping("/exam/list")
-    ResponseEntity<BaseResponse<List<ExamResponse>>> getExamList() {
-        BaseResponse<List<ExamResponse>> response = examService.getExamList();
+    ResponseEntity<BaseResponse<List<ExamListResponse>>> getExamList() {
+        BaseResponse<List<ExamListResponse>> response = examService.getExamList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -320,8 +321,8 @@ public class AdminApi {
     }
 
     @GetMapping("/webinar/list")
-    ResponseEntity<BaseResponse<List<WebinarResponse>>> getWebinarList() {
-        BaseResponse<List<WebinarResponse>> response = webinarService.getWebinarList();
+    ResponseEntity<BaseResponse<List<WebinarListResponse>>> getWebinarList() {
+        BaseResponse<List<WebinarListResponse>> response = webinarService.getWebinarList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -334,6 +335,16 @@ public class AdminApi {
             @RequestBody @Validated CreateUpdateCourseRequest body
     ) {
         BaseResponse<CreateBaseResponse> response = courseService.createCourse(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/course/list")
+    ResponseEntity<BaseResponse<List<CourseListResponse>>> getCourseList() {
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

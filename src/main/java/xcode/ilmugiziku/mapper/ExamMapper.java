@@ -3,6 +3,7 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.model.ExamModel;
 import xcode.ilmugiziku.domain.model.UserExamRelModel;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
+import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.domain.response.exam.RankResponse;
 
@@ -56,6 +57,35 @@ public class ExamMapper {
 
             for (ExamModel model : models) {
                 response.add(modelToResponse(model));
+            }
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public ExamListResponse modelToListResponse(ExamModel model) {
+        if (model != null) {
+            ExamListResponse response = new ExamListResponse();
+            response.setSecureId(model.getSecureId());
+            response.setTitle(model.getTitle());
+            response.setAvailableSlot(model.getMaxParticipant() - model.getCurrentParticipant());
+            response.setTemplate(model.getTemplate());
+            response.setAvailable(model.isAvailable());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public List<ExamListResponse> modelsToListResponses(List<ExamModel> models) {
+        if (models != null) {
+            List<ExamListResponse> response = new ArrayList<>();
+
+            for (ExamModel model : models) {
+                response.add(modelToListResponse(model));
             }
 
             return response;

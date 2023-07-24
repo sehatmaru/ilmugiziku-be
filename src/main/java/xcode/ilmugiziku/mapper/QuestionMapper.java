@@ -3,6 +3,7 @@ package xcode.ilmugiziku.mapper;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
+import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 
 import java.util.*;
@@ -54,6 +55,34 @@ public class QuestionMapper {
     public QuestionResponse modelToResponse(QuestionModel model) {
         if (model != null) {
             QuestionResponse response = new QuestionResponse();
+            response.setSecureId(model.getSecureId());
+            response.setContent(model.getContent());
+            response.setCreatedBy(model.getCreatedBy());
+            response.setEditedBy(model.getEditedBy());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public List<QuestionListResponse> modelToListResponses(List<QuestionModel> models) {
+        if (models != null) {
+            List<QuestionListResponse> response = new ArrayList<>();
+
+            models.forEach(e -> response.add(modelToListResponse(e)));
+
+            if (!CurrentUser.get().isAdmin()) Collections.shuffle(response, new Random(System.nanoTime()));
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public QuestionListResponse modelToListResponse(QuestionModel model) {
+        if (model != null) {
+            QuestionListResponse response = new QuestionListResponse();
             response.setSecureId(model.getSecureId());
             response.setContent(model.getContent());
             response.setCreatedBy(model.getCreatedBy());
