@@ -5,6 +5,7 @@ import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class TemplateMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

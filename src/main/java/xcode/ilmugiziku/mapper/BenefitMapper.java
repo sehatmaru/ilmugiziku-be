@@ -38,7 +38,7 @@ public class BenefitMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

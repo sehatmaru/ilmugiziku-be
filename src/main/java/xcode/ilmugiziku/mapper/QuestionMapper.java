@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import org.springframework.beans.BeanUtils;
 import xcode.ilmugiziku.domain.dto.CurrentUser;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
@@ -55,10 +56,7 @@ public class QuestionMapper {
     public QuestionResponse modelToResponse(QuestionModel model) {
         if (model != null) {
             QuestionResponse response = new QuestionResponse();
-            response.setSecureId(model.getSecureId());
-            response.setContent(model.getContent());
-            response.setCreatedBy(model.getCreatedBy());
-            response.setEditedBy(model.getEditedBy());
+            BeanUtils.copyProperties(model, response);
 
             return response;
         } else {
@@ -83,10 +81,7 @@ public class QuestionMapper {
     public QuestionListResponse modelToListResponse(QuestionModel model) {
         if (model != null) {
             QuestionListResponse response = new QuestionListResponse();
-            response.setSecureId(model.getSecureId());
-            response.setContent(model.getContent());
-            response.setCreatedBy(model.getCreatedBy());
-            response.setEditedBy(model.getEditedBy());
+            BeanUtils.copyProperties(model, response);
 
             return response;
         } else {

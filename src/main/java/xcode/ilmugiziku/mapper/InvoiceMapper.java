@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import org.springframework.beans.BeanUtils;
 import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.model.InvoiceModel;
@@ -7,11 +8,10 @@ import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.model.WebinarModel;
 import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
+import xcode.ilmugiziku.domain.response.invoice.InvoiceListResponse;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static xcode.ilmugiziku.domain.enums.InvoiceStatusEnum.PENDING;
 import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.COURSE;
@@ -21,11 +21,9 @@ public class InvoiceMapper {
     public InvoiceModel createRequestToModel(PurchaseRequest request, PurchaseResponse invoice) {
         if (request != null) {
             InvoiceModel response = new InvoiceModel();
+            BeanUtils.copyProperties(invoice, response);
             response.setInvoiceStatus(PENDING);
             response.setCreatedAt(new Date());
-            response.setInvoiceId(invoice.getInvoiceId());
-            response.setInvoiceUrl(invoice.getInvoiceUrl());
-            response.setInvoiceDeadline(invoice.getInvoiceDeadline());
 
             return response;
         } else {
@@ -78,5 +76,31 @@ public class InvoiceMapper {
         params.forEach((key, value) -> System.out.println(key + " : " + value));
 
         return params;
+    }
+
+    public InvoiceListResponse modelToListResponse(InvoiceModel model) {
+        if (model != null) {
+            InvoiceListResponse response = new InvoiceListResponse();
+            BeanUtils.copyProperties(model, response);
+            response.setRelSecureId(model.isCourseInvoice() ? model.getUserCourse() : model.getUserWebinar());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public List<InvoiceListResponse> modelsToListResponses(List<InvoiceModel> models) {
+        if (models != null) {
+            List<InvoiceListResponse> response = new ArrayList<>();
+
+            for (InvoiceModel model : models) {
+                response.add(modelToListResponse(model));
+            }
+
+            return response;
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

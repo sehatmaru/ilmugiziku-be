@@ -17,12 +17,14 @@ import xcode.ilmugiziku.domain.request.PurchaseRequest;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
+import xcode.ilmugiziku.domain.response.invoice.InvoiceListResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
 import xcode.ilmugiziku.domain.response.invoice.XenditInvoiceResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.Date;
+import java.util.List;
 
 import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.INVOICE_NOT_FOUND_MESSAGE;
@@ -40,6 +42,33 @@ public class InvoiceService {
    @Autowired private Environment environment;
 
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
+
+   /**
+    * get invoices list
+    * @return response
+    */
+   public BaseResponse<List<InvoiceListResponse>> list() {
+      BaseResponse<List<InvoiceListResponse>> response = new BaseResponse<>();
+
+      List<InvoiceModel> invoices = invoiceRepository.findAll();
+
+      try {
+         List<InvoiceListResponse> responses = invoiceMapper.modelsToListResponses(invoices);
+         responses.forEach(e -> {
+            String userSecureId = e.isCourseInvoice()
+                    ? userCourseRepository.getUserCourseBySecureId(e.getRelSecureId()).getUser()
+                    : userWebinarRepository.getUserWebinarBySecureId(e.getRelSecureId()).getUser();
+
+            e.setConsumerName(profileService.getUserFullName(userSecureId));
+         });
+
+         response.setSuccess(responses);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
 
    public BaseResponse<InvoiceResponse> detailInvoice(CourseTypeEnum packageType) {
       BaseResponse<InvoiceResponse> response = new BaseResponse<>();
@@ -79,8 +108,8 @@ public class InvoiceService {
       InvoiceModel invoice = invoiceRepository.findByInvoiceIdAndDeletedAtIsNull(request.getId());
 
       if (invoice != null) {
-         UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(invoice.getUserCourse());
-         UserWebinarRelModel userWebinar = userWebinarRepository.getUserWebinarBySecureId(invoice.getUserWebinar());
+         UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourseBySecureId(invoice.getUserCourse());
+         UserWebinarRelModel userWebinar = userWebinarRepository.getActiveUserWebinarBySecureId(invoice.getUserWebinar());
 
          if (invoice.isCourseInvoice()) setUserCourse(userCourse, request.isPaid());
          else setUserWebinar(userWebinar, request.isPaid());

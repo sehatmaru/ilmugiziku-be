@@ -20,6 +20,7 @@ import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
+import xcode.ilmugiziku.domain.response.invoice.InvoiceListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
@@ -39,6 +40,7 @@ public class AdminApi {
     @Autowired private CourseService courseService;
     @Autowired private WebinarService webinarService;
     @Autowired private UserService userService;
+    @Autowired private InvoiceService invoiceService;
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<Boolean>> createQuestion (
@@ -396,6 +398,16 @@ public class AdminApi {
             @RequestParam @Validated boolean status
     ) {
         BaseResponse<Boolean> response = userService.toggleStatus(secureId, status);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/invoice/list")
+    ResponseEntity<BaseResponse<List<InvoiceListResponse>>> invoiceList() {
+        BaseResponse<List<InvoiceListResponse>> response = invoiceService.list();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

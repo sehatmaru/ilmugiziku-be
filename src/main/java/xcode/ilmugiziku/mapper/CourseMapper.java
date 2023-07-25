@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import org.springframework.beans.BeanUtils;
 import xcode.ilmugiziku.domain.model.CourseModel;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.response.course.CourseListResponse;
@@ -17,29 +18,11 @@ public class CourseMapper {
     public CourseResponse modelToResponse(CourseModel model) {
         if (model != null) {
             CourseResponse response = new CourseResponse();
-            response.setSecureId(model.getSecureId());
-            response.setTitle(model.getTitle());
-            response.setPrice(model.getPrice());
-            response.setAvailable(model.isAvailable());
-            response.setCourseType(model.getCourseType());
-            response.setAvailable(model.isAvailable());
-            response.setRating(model.getRating());
+            BeanUtils.copyProperties(model, response);
 
             return response;
         } else {
             return null;
-        }
-    }
-
-    public List<CourseResponse> modelsToResponses(List<CourseModel> models) {
-        if (models != null) {
-            List<CourseResponse> response = new ArrayList<>();
-
-            models.forEach(e -> response.add(modelToResponse(e)));
-
-            return response;
-        } else {
-            return Collections.emptyList();
         }
     }
 
@@ -58,13 +41,7 @@ public class CourseMapper {
     public CourseListResponse modelToListResponse(CourseModel model) {
         if (model != null) {
             CourseListResponse response = new CourseListResponse();
-            response.setSecureId(model.getSecureId());
-            response.setTitle(model.getTitle());
-            response.setPrice(model.getPrice());
-            response.setAvailable(model.isAvailable());
-            response.setCourseType(model.getCourseType());
-            response.setAvailable(model.isAvailable());
-            response.setRating(model.getRating());
+            BeanUtils.copyProperties(model,response);
 
             return response;
         } else {
@@ -75,10 +52,8 @@ public class CourseMapper {
     public CourseModel createRequestToModel(CreateUpdateCourseRequest request) {
         if (request != null) {
             CourseModel model = new CourseModel();
+            BeanUtils.copyProperties(request, model);
             model.setSecureId(generateSecureId());
-            model.setTitle(request.getTitle());
-            model.setPrice(request.getPrice());
-            model.setCourseType(request.getCourseType());
             model.setAvailable(true);
             model.setCreatedAt(new Date());
 
@@ -90,10 +65,7 @@ public class CourseMapper {
 
     public CourseModel updateRequestToModel(CourseModel model, CreateUpdateCourseRequest request) {
         if (request != null && model != null) {
-            model.setTitle(request.getTitle());
-            model.setPrice(request.getPrice());
-            model.setCourseType(request.getCourseType());
-            model.setAvailable(request.isOpen());
+            BeanUtils.copyProperties(request, model);
             model.setUpdatedAt(new Date());
 
             return model;
@@ -119,11 +91,7 @@ public class CourseMapper {
     public CourseResponse userCourseToResponse(CourseModel model) {
         if (model != null) {
             CourseResponse response = new CourseResponse();
-            response.setTitle(model.getTitle());
-            response.setSecureId(model.getSecureId());
-            response.setTitle(model.getTitle());
-            response.setPrice(model.getPrice());
-            response.setCourseType(model.getCourseType());
+            BeanUtils.copyProperties(model, response);
 
             return response;
         } else {
