@@ -127,8 +127,10 @@ public class AdminApi {
     }
 
     @GetMapping("/template/list")
-    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList() {
-        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList();
+    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList(
+            @RequestParam String name
+    ) {
+        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList(name);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

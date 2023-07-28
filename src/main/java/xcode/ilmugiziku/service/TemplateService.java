@@ -19,6 +19,7 @@ import xcode.ilmugiziku.mapper.TemplateMapper;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
@@ -32,11 +33,14 @@ public class TemplateService {
 
    private final TemplateMapper templateMapper = new TemplateMapper();
 
-   public BaseResponse<List<TemplateResponse>> getTemplateList() {
+   public BaseResponse<List<TemplateResponse>> getTemplateList(String name) {
       BaseResponse<List<TemplateResponse>> response = new BaseResponse<>();
 
       try {
-         List<TemplateModel> models = templateRepository.findAllByDeletedAtIsNull();
+         List<TemplateModel> models = templateRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+         models = models.stream()
+                 .filter(e -> e.getName().toLowerCase().contains(name.toLowerCase()))
+                 .collect(Collectors.toList());
 
          response.setSuccess(templateMapper.modelsToResponses(models));
       } catch (Exception e) {

@@ -11,6 +11,6 @@ public interface TemplateRepository extends JpaRepository<TemplateModel, String>
 
    TemplateModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<TemplateModel> findAllByDeletedAtIsNull();
+   List<TemplateModel> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
 
 }

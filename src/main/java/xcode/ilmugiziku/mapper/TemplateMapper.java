@@ -18,6 +18,7 @@ public class TemplateMapper {
             TemplateResponse response = new TemplateResponse();
             response.setSecureId(model.getSecureId());
             response.setName(model.getName());
+            response.setCreatedAt(model.getCreatedAt());
 
             return response;
         } else {

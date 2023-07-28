@@ -12,7 +12,8 @@ import java.util.Date;
 @Setter
 public class InvoiceDetailResponse {
     private String secureId;
-    private String user;
+    private String relSecureId;
+    private String consumerName;
     private String invoiceId;
     private String invoiceUrl;
     private Date paidDate;
