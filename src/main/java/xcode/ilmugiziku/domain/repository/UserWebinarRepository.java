@@ -20,7 +20,12 @@ public interface UserWebinarRepository extends JpaRepository<UserWebinarRelModel
    @Query(value = "SELECT * FROM t_user_webinar_rel" +
            " WHERE secure_id = :secureId" +
            " AND deleted = FALSE", nativeQuery = true)
+   UserWebinarRelModel getActiveUserWebinarBySecureId(String secureId);
+
+   @Query(value = "SELECT * FROM t_user_webinar_rel" +
+           " WHERE secure_id = :secureId", nativeQuery = true)
    UserWebinarRelModel getUserWebinarBySecureId(String secureId);
+
    @Query(value = "SELECT * FROM t_user_webinar_rel uw" +
            " LEFT JOIN t_invoice i ON i.user_webinar_secure_id = uw.secure_id" +
            " WHERE uw.user_secure_id = :user AND uw.webinar_secure_id = :webinar" +

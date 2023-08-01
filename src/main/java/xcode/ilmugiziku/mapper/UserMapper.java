@@ -1,7 +1,11 @@
 package xcode.ilmugiziku.mapper;
 
+import org.springframework.beans.BeanUtils;
+import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.ProfileModel;
 import xcode.ilmugiziku.domain.model.UserModel;
+import xcode.ilmugiziku.domain.request.user.AddUpdateAdminRequest;
 import xcode.ilmugiziku.domain.request.user.RegisterRequest;
 import xcode.ilmugiziku.domain.response.user.LoginResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
@@ -15,16 +19,13 @@ import static xcode.ilmugiziku.shared.Utils.encrypt;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class UserMapper {
+
+    private static final String DEFAULT_ADMIN_PASSWORD = "admin123";
     public LoginResponse loginModelToLoginResponse(UserModel userModel, ProfileModel profileModel, String token) {
         if (userModel != null && profileModel != null) {
             LoginResponse response = new LoginResponse();
-            response.setSecureId(userModel.getSecureId());
-            response.setFirstName(profileModel.getFirstName());
-            response.setLastName(profileModel.getLastName());
-            response.setRole(userModel.getRole());
-            response.setType(userModel.getType());
-            response.setGender(profileModel.getGender());
-            response.setEmail(profileModel.getEmail());
+            BeanUtils.copyProperties(userModel, response);
+            BeanUtils.copyProperties(profileModel, response);
             response.setAccessToken(token);
 
             return response;
@@ -36,10 +37,9 @@ public class UserMapper {
     public UserModel registerRequestToLoginModel(RegisterRequest request) {
         if (request != null) {
             UserModel response = new UserModel();
+            BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
-            response.setEmail(request.getEmail());
             response.setType(request.getRegistrationType());
-            response.setRole(request.getRole());
             response.setCreatedAt(new Date());
             response.setActive(true);
 
@@ -53,15 +53,44 @@ public class UserMapper {
         }
     }
 
+    public UserModel adminRequestToUserModel(AddUpdateAdminRequest request) {
+        if (request != null) {
+            UserModel response = new UserModel();
+            BeanUtils.copyProperties(request, response);
+            response.setSecureId(generateSecureId());
+            response.setType(RegistrationTypeEnum.EMAIL);
+            response.setRole(RoleEnum.ADMIN);
+            response.setCreatedAt(new Date());
+            response.setActive(true);
+            response.setPassword(encrypt(DEFAULT_ADMIN_PASSWORD));
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
     public ProfileModel registerRequestToProfileModel(RegisterRequest request, String userId) {
         if (request != null) {
             ProfileModel response = new ProfileModel();
+            BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
             response.setUser(userId);
-            response.setGender(request.getGender());
-            response.setEmail(request.getEmail());
-            response.setFirstName(request.getFirstName());
-            response.setLastName(request.getLastName());
+            response.setCreatedAt(new Date());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public ProfileModel adminRequestToProfileModel(AddUpdateAdminRequest request, String userId) {
+        if (request != null) {
+            ProfileModel response = new ProfileModel();
+            BeanUtils.copyProperties(request, response);
+            response.setSecureId(generateSecureId());
+            response.setUser(userId);
+            response.setGender("");
             response.setCreatedAt(new Date());
 
             return response;
@@ -76,11 +105,7 @@ public class UserMapper {
 
             for (UserModel model : models) {
                 UserResponse response = new UserResponse();
-                response.setSecureId(model.getSecureId());
-                response.setEmail(model.getEmail());
-                response.setType(model.getType());
-                response.setRole(model.getRole());
-                response.setActive(model.isActive());
+                BeanUtils.copyProperties(model, response);
 
                 responses.add(response);
             }

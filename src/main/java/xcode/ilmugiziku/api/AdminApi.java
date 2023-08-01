@@ -13,6 +13,7 @@ import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
 import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
+import xcode.ilmugiziku.domain.request.user.AddUpdateAdminRequest;
 import xcode.ilmugiziku.domain.request.webinar.CreateUpdateWebinarRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
@@ -20,6 +21,7 @@ import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
 import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
+import xcode.ilmugiziku.domain.response.invoice.InvoiceListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
@@ -39,6 +41,8 @@ public class AdminApi {
     @Autowired private CourseService courseService;
     @Autowired private WebinarService webinarService;
     @Autowired private UserService userService;
+    @Autowired private InvoiceService invoiceService;
+    @Autowired private AuthService authService;
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<Boolean>> createQuestion (
@@ -101,10 +105,10 @@ public class AdminApi {
 
     @PutMapping("/template/update")
     ResponseEntity<BaseResponse<Boolean>> updateTemplate(
-            @RequestParam @Validated String templateSecureId,
+            @RequestParam @Validated String secureId,
             @RequestBody @Validated CreateUpdateTemplateRequest body
     ) {
-        BaseResponse<Boolean> response = templateService.updateTemplate(templateSecureId, body);
+        BaseResponse<Boolean> response = templateService.updateTemplate(secureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -114,9 +118,9 @@ public class AdminApi {
 
     @DeleteMapping("/template/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteTemplate(
-            @RequestParam @Validated String templateSecureId
+            @RequestParam @Validated String secureId
     ) {
-        BaseResponse<Boolean> response = templateService.deleteTemplate(templateSecureId);
+        BaseResponse<Boolean> response = templateService.deleteTemplate(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -125,8 +129,10 @@ public class AdminApi {
     }
 
     @GetMapping("/template/list")
-    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList() {
-        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList();
+    ResponseEntity<BaseResponse<List<TemplateResponse>>> getTemplateList(
+            @RequestParam String name
+    ) {
+        BaseResponse<List<TemplateResponse>> response = templateService.getTemplateList(name);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -261,8 +267,9 @@ public class AdminApi {
 
     @GetMapping("/benefit/list")
     ResponseEntity<BaseResponse<List<BenefitResponse>>> getBenefitList(
+            @RequestParam String name
     ) {
-        BaseResponse<List<BenefitResponse>> response = benefitService.getBenefitList();
+        BaseResponse<List<BenefitResponse>> response = benefitService.getBenefitList(name);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -380,9 +387,13 @@ public class AdminApi {
 
     @GetMapping("/user/list")
     ResponseEntity<BaseResponse<List<UserResponse>>> userList(
-            @RequestParam @Validated RoleEnum role
+            @RequestParam @Validated RoleEnum role,
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String registrationType,
+            @RequestParam String status
     ) {
-        BaseResponse<List<UserResponse>> response = userService.getUserList(role);
+        BaseResponse<List<UserResponse>> response = userService.getUserList(role, name, email, registrationType, status);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -396,6 +407,26 @@ public class AdminApi {
             @RequestParam @Validated boolean status
     ) {
         BaseResponse<Boolean> response = userService.toggleStatus(secureId, status);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/invoice/list")
+    ResponseEntity<BaseResponse<List<InvoiceListResponse>>> invoiceList() {
+        BaseResponse<List<InvoiceListResponse>> response = invoiceService.list();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/user/add")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> addAdminUser(AddUpdateAdminRequest request) {
+        BaseResponse<CreateBaseResponse> response = authService.createAdmin(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

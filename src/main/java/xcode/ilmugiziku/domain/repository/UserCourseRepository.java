@@ -13,7 +13,7 @@ public interface UserCourseRepository extends JpaRepository<UserCourseRelModel, 
    @Query(value = "SELECT * FROM t_user_course_rel" +
            " WHERE secure_id = :secureId" +
            " AND deleted = FALSE", nativeQuery = true)
-   UserCourseRelModel getUserCourseBySecureId(String secureId);
+   UserCourseRelModel getActiveUserCourseBySecureId(String secureId);
 
    @Query(value = "SELECT * FROM t_user_course_rel" +
            " WHERE user_secure_id = :user AND active = TRUE" +
@@ -42,4 +42,8 @@ public interface UserCourseRepository extends JpaRepository<UserCourseRelModel, 
            " WHERE course_secure_id = :course" +
            " AND active = TRUE AND deleted = FALSE", nativeQuery = true)
    List<UserCourseRelModel> getAllActiveCourse(String course);
+
+   @Query(value = "SELECT * FROM t_user_course_rel" +
+           " WHERE course_secure_id = :course", nativeQuery = true)
+   UserCourseRelModel getUserCourseBySecureId(String course);
 }

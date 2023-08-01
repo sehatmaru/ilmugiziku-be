@@ -5,6 +5,8 @@ import lombok.Setter;
 import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
 import xcode.ilmugiziku.domain.enums.RoleEnum;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class UserResponse {
@@ -16,4 +18,5 @@ public class UserResponse {
     private RegistrationTypeEnum type;
     private RoleEnum role;
     private boolean active;
+    private Date createdAt;
 }

@@ -21,6 +21,7 @@ public class BenefitMapper {
             BenefitResponse response = new BenefitResponse();
             response.setSecureId(model.getSecureId());
             response.setDesc(model.getDescription());
+            response.setCreatedAt(model.getCreatedAt());
 
             return response;
         } else {
@@ -38,7 +39,7 @@ public class BenefitMapper {
 
             return response;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

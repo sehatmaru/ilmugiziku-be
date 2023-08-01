@@ -12,7 +12,7 @@ public interface BenefitRepository extends JpaRepository<BenefitModel, String> {
 
    BenefitModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<BenefitModel> findByDeletedAtIsNull();
+   List<BenefitModel> findByDeletedAtIsNullOrderByCreatedAtDesc();
 
    @Query(value = "SELECT * FROM t_benefit " +
            " WHERE secure_id = :benefit AND deleted_at IS NULL", nativeQuery = true)

@@ -233,7 +233,7 @@ public class CourseService {
    public BaseResponse<Boolean> cancelCourse(String courseSecureId) {
       BaseResponse<Boolean> response = new BaseResponse<>();
 
-      UserCourseRelModel userCourse = userCourseRepository.getUserCourseBySecureId(courseSecureId);
+      UserCourseRelModel userCourse = userCourseRepository.getActiveUserCourseBySecureId(courseSecureId);
 
       if (userCourse == null) throw new AppException(COURSE_NOT_FOUND_MESSAGE);
 

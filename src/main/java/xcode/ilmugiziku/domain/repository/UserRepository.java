@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
 
    UserModel findByEmailAndDeletedAtIsNull(String email);
 
-   List<UserModel> findByRoleAndDeletedAtIsNull(RoleEnum role);
+   List<UserModel> findByRoleAndDeletedAtIsNullOrderByCreatedAtDesc(RoleEnum role);
 
    @Query(value = "SELECT * FROM t_user" +
            " WHERE email = :email AND role = 'ADMIN'" +

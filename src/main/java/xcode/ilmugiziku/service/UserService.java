@@ -12,6 +12,8 @@ import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.UserMapper;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 
@@ -23,17 +25,36 @@ public class UserService {
 
    private final UserMapper userMapper = new UserMapper();
 
-   public BaseResponse<List<UserResponse>> getUserList(RoleEnum role) {
+   public BaseResponse<List<UserResponse>> getUserList(RoleEnum role, String name, String email, String registrationType, String status) {
       BaseResponse<List<UserResponse>> response = new BaseResponse<>();
 
       try {
-         List<UserModel> models = userRepository.findByRoleAndDeletedAtIsNull(role);
+         List<UserModel> models = userRepository.findByRoleAndDeletedAtIsNullOrderByCreatedAtDesc(role);
          List<UserResponse> responses = userMapper.loginModelsToLoginResponses(models);
 
          for (UserResponse user : responses) {
             ProfileModel profile = profileService.getUserProfile(user.getSecureId());
             user.setName(profile.getFullName());
             user.setGender(profile.getGender());
+         }
+
+         responses = responses.stream()
+                 .filter(e -> e.getName().toLowerCase().contains(name.toLowerCase()))
+                 .filter(e -> e.getEmail().toLowerCase().contains(email.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!status.isEmpty()) {
+            boolean active = Objects.equals(status, "active");
+
+            responses = responses.stream()
+                    .filter(e -> e.isActive() == active)
+                    .collect(Collectors.toList());
+         }
+
+         if (!registrationType.isEmpty()) {
+            responses = responses.stream()
+                    .filter(e -> e.getType().name().equalsIgnoreCase(registrationType))
+                    .collect(Collectors.toList());
          }
 
          response.setSuccess(responses);

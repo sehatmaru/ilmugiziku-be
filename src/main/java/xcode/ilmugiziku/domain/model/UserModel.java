@@ -46,8 +46,14 @@ public class UserModel {
    @Column(name = "created_at")
    private Date createdAt;
 
+   @Column(name = "created_by")
+   private String createdBy;
+
    @Column(name = "updated_at")
    private Date updatedAt;
+
+   @Column(name = "updated_by")
+   private Date updatedBy;
 
    @Column(name = "deleted_at")
    private Date deletedAt;
