@@ -1,5 +1,6 @@
 package xcode.ilmugiziku.mapper;
 
+import org.springframework.beans.BeanUtils;
 import xcode.ilmugiziku.domain.model.TemplateModel;
 import xcode.ilmugiziku.domain.request.template.CreateUpdateTemplateRequest;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
@@ -16,9 +17,7 @@ public class TemplateMapper {
     public TemplateResponse modelToResponse(TemplateModel model) {
         if (model != null) {
             TemplateResponse response = new TemplateResponse();
-            response.setSecureId(model.getSecureId());
-            response.setName(model.getName());
-            response.setCreatedAt(model.getCreatedAt());
+            BeanUtils.copyProperties(model, response);
 
             return response;
         } else {

@@ -1,8 +1,11 @@
 package xcode.ilmugiziku.mapper;
 
 import org.springframework.beans.BeanUtils;
+import xcode.ilmugiziku.domain.enums.RegistrationTypeEnum;
+import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.model.ProfileModel;
 import xcode.ilmugiziku.domain.model.UserModel;
+import xcode.ilmugiziku.domain.request.user.AddUpdateAdminRequest;
 import xcode.ilmugiziku.domain.request.user.RegisterRequest;
 import xcode.ilmugiziku.domain.response.user.LoginResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
@@ -16,6 +19,8 @@ import static xcode.ilmugiziku.shared.Utils.encrypt;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class UserMapper {
+
+    private static final String DEFAULT_ADMIN_PASSWORD = "admin123";
     public LoginResponse loginModelToLoginResponse(UserModel userModel, ProfileModel profileModel, String token) {
         if (userModel != null && profileModel != null) {
             LoginResponse response = new LoginResponse();
@@ -48,12 +53,44 @@ public class UserMapper {
         }
     }
 
+    public UserModel adminRequestToUserModel(AddUpdateAdminRequest request) {
+        if (request != null) {
+            UserModel response = new UserModel();
+            BeanUtils.copyProperties(request, response);
+            response.setSecureId(generateSecureId());
+            response.setType(RegistrationTypeEnum.EMAIL);
+            response.setRole(RoleEnum.ADMIN);
+            response.setCreatedAt(new Date());
+            response.setActive(true);
+            response.setPassword(encrypt(DEFAULT_ADMIN_PASSWORD));
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
     public ProfileModel registerRequestToProfileModel(RegisterRequest request, String userId) {
         if (request != null) {
             ProfileModel response = new ProfileModel();
             BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
             response.setUser(userId);
+            response.setCreatedAt(new Date());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    public ProfileModel adminRequestToProfileModel(AddUpdateAdminRequest request, String userId) {
+        if (request != null) {
+            ProfileModel response = new ProfileModel();
+            BeanUtils.copyProperties(request, response);
+            response.setSecureId(generateSecureId());
+            response.setUser(userId);
+            response.setGender("");
             response.setCreatedAt(new Date());
 
             return response;

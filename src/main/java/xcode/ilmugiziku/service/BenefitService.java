@@ -13,6 +13,7 @@ import xcode.ilmugiziku.mapper.BenefitMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.NOT_FOUND_MESSAGE;
 
@@ -23,10 +24,13 @@ public class BenefitService {
 
    private final BenefitMapper packageFeatureMapper = new BenefitMapper();
 
-   public BaseResponse<List<BenefitResponse>> getBenefitList() {
+   public BaseResponse<List<BenefitResponse>> getBenefitList(String name) {
       BaseResponse<List<BenefitResponse>> response = new BaseResponse<>();
 
-      List<BenefitModel> models = benefitRepository.findByDeletedAtIsNull();
+      List<BenefitModel> models = benefitRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
+      models = models.stream()
+              .filter(e -> e.getDescription().toLowerCase().contains(name.toLowerCase()))
+              .collect(Collectors.toList());
 
       response.setSuccess(packageFeatureMapper.modelsToResponses(models));
 

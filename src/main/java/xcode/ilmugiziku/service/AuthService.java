@@ -8,6 +8,7 @@ import xcode.ilmugiziku.domain.model.UserModel;
 import xcode.ilmugiziku.domain.repository.ProfileRepository;
 import xcode.ilmugiziku.domain.repository.TokenRepository;
 import xcode.ilmugiziku.domain.repository.UserRepository;
+import xcode.ilmugiziku.domain.request.user.AddUpdateAdminRequest;
 import xcode.ilmugiziku.domain.request.user.AdminLoginRequest;
 import xcode.ilmugiziku.domain.request.user.LoginRequest;
 import xcode.ilmugiziku.domain.request.user.RegisterRequest;
@@ -129,6 +130,30 @@ public class AuthService {
             UserModel model = userMapper.registerRequestToLoginModel(request);
             userRepository.save(model);
             profileRepository.save(userMapper.registerRequestToProfileModel(request, model.getSecureId()));
+
+            createResponse.setSecureId(model.getSecureId());
+            response.setSuccess(createResponse);
+         } else {
+            throw new AppException(EMAIL_EXIST);
+         }
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<CreateBaseResponse> createAdmin(AddUpdateAdminRequest request) {
+      BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
+      CreateBaseResponse createResponse = new CreateBaseResponse();
+
+      try {
+         if (userRepository.findByEmailAndDeletedAtIsNull(request.getEmail()) == null) {
+            UserModel model = userMapper.adminRequestToUserModel(request);
+            model.setCreatedBy(CurrentUser.get().getUserSecureId());
+
+            userRepository.save(model);
+            profileRepository.save(userMapper.adminRequestToProfileModel(request, model.getSecureId()));
 
             createResponse.setSecureId(model.getSecureId());
             response.setSuccess(createResponse);
