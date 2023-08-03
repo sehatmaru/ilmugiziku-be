@@ -22,6 +22,7 @@ import xcode.ilmugiziku.mapper.QuestionMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 
@@ -40,7 +41,7 @@ public class QuestionService {
     * answers included
     * @return question list
     */
-   public BaseResponse<List<QuestionListResponse>> getQuestionList() {
+   public BaseResponse<List<QuestionListResponse>> getQuestionList(String content) {
       BaseResponse<List<QuestionListResponse>> response = new BaseResponse<>();
 
       try {
@@ -51,6 +52,10 @@ public class QuestionService {
 //
 //            e.setAnswers(responses);
 //         });
+
+         result = result.stream()
+                 .filter(e -> e.getContent().toLowerCase().contains(content.toLowerCase()))
+                 .collect(Collectors.toList());
 
          response.setSuccess(result);
       } catch (Exception e) {

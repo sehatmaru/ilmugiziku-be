@@ -23,6 +23,8 @@ import xcode.ilmugiziku.mapper.InvoiceMapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.COURSE;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
@@ -51,13 +53,23 @@ public class CourseService {
     * benefits included
     * @return course list
     */
-   public BaseResponse<List<CourseListResponse>> getCourseList() {
+   public BaseResponse<List<CourseListResponse>> getCourseList(String title, String category) {
       BaseResponse<List<CourseListResponse>> response = new BaseResponse<>();
 
       try {
          List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
          List<CourseListResponse> responses = courseMapper.modelsToListResponses(models);
 //         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
+
+         responses = responses.stream()
+                 .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!category.isEmpty()) {
+            responses = responses.stream()
+                    .filter(e -> e.getCourseType().name().equalsIgnoreCase(category))
+                    .collect(Collectors.toList());
+         }
 
          response.setSuccess(responses);
       } catch (Exception e) {

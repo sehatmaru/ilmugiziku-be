@@ -22,8 +22,11 @@ public class CourseApi {
     @Autowired private CourseService courseService;
 
     @GetMapping("/list")
-    ResponseEntity<BaseResponse<List<CourseListResponse>>> list() {
-        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList();
+    ResponseEntity<BaseResponse<List<CourseListResponse>>> list(
+            @RequestParam @Validated String title,
+            @RequestParam @Validated String category
+    ) {
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList(title, category);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

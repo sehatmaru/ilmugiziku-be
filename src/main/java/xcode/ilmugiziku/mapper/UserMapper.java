@@ -59,6 +59,7 @@ public class UserMapper {
             BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
             response.setType(RegistrationTypeEnum.EMAIL);
+            response.setEmail(request.getEmail());
             response.setRole(RoleEnum.ADMIN);
             response.setCreatedAt(new Date());
             response.setActive(true);

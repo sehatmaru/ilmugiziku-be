@@ -82,8 +82,10 @@ public class AdminApi {
     }
 
     @GetMapping("/question/list")
-    ResponseEntity<BaseResponse<List<QuestionListResponse>>> getQuestionList() {
-        BaseResponse<List<QuestionListResponse>> response = questionService.getQuestionList();
+    ResponseEntity<BaseResponse<List<QuestionListResponse>>> getQuestionList(
+            @RequestParam @Validated String content
+    ) {
+        BaseResponse<List<QuestionListResponse>> response = questionService.getQuestionList(content);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -350,8 +352,11 @@ public class AdminApi {
     }
 
     @GetMapping("/course/list")
-    ResponseEntity<BaseResponse<List<CourseListResponse>>> getCourseList() {
-        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList();
+    ResponseEntity<BaseResponse<List<CourseListResponse>>> getCourseList(
+            @RequestParam @Validated String title,
+            @RequestParam @Validated String category
+    ) {
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList(title, category);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -415,8 +420,13 @@ public class AdminApi {
     }
 
     @GetMapping("/invoice/list")
-    ResponseEntity<BaseResponse<List<InvoiceListResponse>>> invoiceList() {
-        BaseResponse<List<InvoiceListResponse>> response = invoiceService.list();
+    ResponseEntity<BaseResponse<List<InvoiceListResponse>>> invoiceList(
+            @RequestParam String status,
+            @RequestParam String customerName,
+            @RequestParam String invoiceId,
+            @RequestParam String category
+    ) {
+        BaseResponse<List<InvoiceListResponse>> response = invoiceService.list(status, customerName, invoiceId, category);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -425,7 +435,9 @@ public class AdminApi {
     }
 
     @PostMapping("/user/add")
-    ResponseEntity<BaseResponse<CreateBaseResponse>> addAdminUser(AddUpdateAdminRequest request) {
+    ResponseEntity<BaseResponse<CreateBaseResponse>> addAdminUser(
+            @RequestBody @Validated AddUpdateAdminRequest request
+    ) {
         BaseResponse<CreateBaseResponse> response = authService.createAdmin(request);
 
         return ResponseEntity

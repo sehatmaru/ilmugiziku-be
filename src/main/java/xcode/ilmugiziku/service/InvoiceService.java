@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
+import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
@@ -25,6 +26,8 @@ import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
 import static xcode.ilmugiziku.shared.ResponseCode.INVOICE_NOT_FOUND_MESSAGE;
@@ -47,7 +50,7 @@ public class InvoiceService {
     * get invoices list
     * @return response
     */
-   public BaseResponse<List<InvoiceListResponse>> list() {
+   public BaseResponse<List<InvoiceListResponse>> list(String status, String customerName, String invoiceId, String category) {
       BaseResponse<List<InvoiceListResponse>> response = new BaseResponse<>();
 
       List<InvoiceModel> invoices = invoiceRepository.findAll();
@@ -61,6 +64,23 @@ public class InvoiceService {
 
             e.setConsumerName(profileService.getUserFullName(userSecureId));
          });
+
+         responses = responses.stream()
+                 .filter(e -> e.getConsumerName().toLowerCase().contains(customerName.toLowerCase()))
+                 .filter(e -> e.getInvoiceId().toLowerCase().contains(invoiceId.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!status.isEmpty()) {
+            responses = responses.stream()
+                    .filter(e -> e.getInvoiceStatus().name().equalsIgnoreCase(status))
+                    .collect(Collectors.toList());
+         }
+
+         if (!category.isEmpty()) {
+            responses = responses.stream()
+                    .filter(e -> e.getInvoiceType().name().equalsIgnoreCase(category))
+                    .collect(Collectors.toList());
+         }
 
          response.setSuccess(responses);
       } catch (Exception e){
