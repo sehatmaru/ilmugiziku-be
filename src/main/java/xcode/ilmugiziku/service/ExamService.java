@@ -19,6 +19,8 @@ import xcode.ilmugiziku.mapper.ExamMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
@@ -34,11 +36,23 @@ public class ExamService {
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public BaseResponse<List<ExamListResponse>> getExamList() {
+   public BaseResponse<List<ExamListResponse>> getExamList(String title, String status) {
       BaseResponse<List<ExamListResponse>> response = new BaseResponse<>();
 
       try {
          List<ExamModel> models = examRepository.findAllByDeletedAtIsNull();
+
+         models = models.stream()
+                 .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!status.isEmpty()) {
+            boolean available = Objects.equals(status, "available");
+
+            models = models.stream()
+                    .filter(e -> e.isAvailable() == available)
+                    .collect(Collectors.toList());
+         }
 
          response.setSuccess(examMapper.modelsToListResponses(models));
       } catch (Exception e) {

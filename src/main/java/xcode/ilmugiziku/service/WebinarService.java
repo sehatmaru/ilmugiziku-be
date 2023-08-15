@@ -18,6 +18,8 @@ import xcode.ilmugiziku.mapper.WebinarMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.domain.enums.LearningTypeEnum.WEBINAR;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
@@ -37,11 +39,23 @@ public class WebinarService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
-   public BaseResponse<List<WebinarListResponse>> getWebinarList() {
+   public BaseResponse<List<WebinarListResponse>> getWebinarList(String title, String status) {
       BaseResponse<List<WebinarListResponse>> response = new BaseResponse<>();
 
       try {
          List<WebinarModel> models = webinarRepository.findAllByDeletedAtIsNull();
+
+         models = models.stream()
+                 .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!status.isEmpty()) {
+            boolean available = Objects.equals(status, "available");
+
+            models = models.stream()
+                    .filter(e -> e.isAvailable() == available)
+                    .collect(Collectors.toList());
+         }
 
          response.setSuccess(webinarMapper.modelsToListResponses(models));
       } catch (Exception e) {

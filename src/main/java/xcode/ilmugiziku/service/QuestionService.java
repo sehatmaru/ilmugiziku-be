@@ -38,24 +38,23 @@ public class QuestionService {
 
    /**
     * get all question list
-    * answers included
     * @return question list
     */
-   public BaseResponse<List<QuestionListResponse>> getQuestionList(String content) {
+   public BaseResponse<List<QuestionListResponse>> getQuestionList(String content, String category) {
       BaseResponse<List<QuestionListResponse>> response = new BaseResponse<>();
 
       try {
-         List<QuestionListResponse> result = questionMapper.modelToListResponses(questionRepository.findAll());
-//         result.forEach(e-> {
-//            List<AnswerModel> models = answerRepository.getAnswersByQuestion(e.getSecureId());
-//            List<AnswerResponse> responses = answerMapper.modelToResponses(models);
-//
-//            e.setAnswers(responses);
-//         });
+         List<QuestionListResponse> result = questionMapper.modelToListResponses(questionRepository.findAllQuestions());
 
          result = result.stream()
                  .filter(e -> e.getContent().toLowerCase().contains(content.toLowerCase()))
                  .collect(Collectors.toList());
+
+         if (!category.isEmpty()) {
+            result = result.stream()
+                    .filter(e -> e.getCategory().name().equalsIgnoreCase(category))
+                    .collect(Collectors.toList());
+         }
 
          response.setSuccess(result);
       } catch (Exception e) {
@@ -155,6 +154,33 @@ public class QuestionService {
          questionRepository.delete(model);
 
          response.setSuccess(true);
+      } catch (Exception e){
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   /**
+    * detail question with answers
+    * @param questionSecureId string
+    * @return detail
+    */
+   public BaseResponse<QuestionResponse> getQuestionDetail(String questionSecureId) {
+      BaseResponse<QuestionResponse> response = new BaseResponse<>();
+
+      QuestionModel question = questionRepository.findBySecureId(questionSecureId);
+
+      if (question == null) throw new AppException(NOT_FOUND_MESSAGE);
+
+      try {
+         QuestionResponse result = questionMapper.modelToResponse(question);
+         List<AnswerModel> models = answerRepository.getAnswersByQuestion(questionSecureId);
+         List<AnswerResponse> responses = answerMapper.modelToResponses(models);
+
+         result.setAnswers(responses);
+
+         response.setSuccess(result);
       } catch (Exception e){
          throw new AppException(e.toString());
       }
