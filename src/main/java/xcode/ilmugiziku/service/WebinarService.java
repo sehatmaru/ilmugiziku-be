@@ -12,6 +12,7 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.PurchaseResponse;
 import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.InvoiceMapper;
 import xcode.ilmugiziku.mapper.WebinarMapper;
@@ -43,7 +44,7 @@ public class WebinarService {
       BaseResponse<List<WebinarListResponse>> response = new BaseResponse<>();
 
       try {
-         List<WebinarModel> models = webinarRepository.findAllByDeletedAtIsNull();
+         List<WebinarModel> models = webinarRepository.findAllByDeletedAtIsNullOrderByUpdatedAtDesc();
 
          models = models.stream()
                  .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
@@ -58,6 +59,22 @@ public class WebinarService {
          }
 
          response.setSuccess(webinarMapper.modelsToListResponses(models));
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<WebinarResponse> getWebinarDetail(String secureId) {
+      BaseResponse<WebinarResponse> response = new BaseResponse<>();
+
+      WebinarModel model = webinarRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model == null) throw new AppException(NOT_FOUND_MESSAGE);
+
+      try {
+         response.setSuccess(webinarMapper.modelToResponse(model));
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
@@ -119,6 +136,7 @@ public class WebinarService {
 
       return response;
    }
+
    /**
     * purchase a webinar,
     * its have some validation like

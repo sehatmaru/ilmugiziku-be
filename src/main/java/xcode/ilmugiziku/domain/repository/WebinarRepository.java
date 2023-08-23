@@ -11,5 +11,5 @@ public interface WebinarRepository extends JpaRepository<WebinarModel, String> {
 
    WebinarModel findBySecureIdAndDeletedAtIsNull(String secureId);
 
-   List<WebinarModel> findAllByDeletedAtIsNull();
+   List<WebinarModel> findAllByDeletedAtIsNullOrderByUpdatedAtDesc();
 }

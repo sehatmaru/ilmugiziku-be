@@ -26,6 +26,7 @@ import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
 import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.domain.response.webinar.WebinarListResponse;
+import xcode.ilmugiziku.domain.response.webinar.WebinarResponse;
 import xcode.ilmugiziku.service.*;
 
 import java.util.Date;
@@ -59,10 +60,10 @@ public class AdminApi {
 
     @PutMapping("/question/update")
     ResponseEntity<BaseResponse<Boolean>> updateQuestion(
-            @RequestParam @Validated String questionSecureId,
+            @RequestParam @Validated String secureId,
             @RequestBody @Validated CreateUpdateQuestionRequest body
     ) {
-        BaseResponse<Boolean> response = questionService.updateQuestion(questionSecureId, body);
+        BaseResponse<Boolean> response = questionService.updateQuestion(secureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -72,9 +73,9 @@ public class AdminApi {
 
     @DeleteMapping("/question/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteQuestion(
-            @RequestParam @Validated String questionSecureId
+            @RequestParam @Validated String secureId
     ) {
-        BaseResponse<Boolean> response = questionService.deleteQuestion(questionSecureId);
+        BaseResponse<Boolean> response = questionService.deleteQuestion(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -158,10 +159,10 @@ public class AdminApi {
 
     @PostMapping("/template/question")
     ResponseEntity<BaseResponse<Boolean>> setTemplateQuestions(
-            @RequestParam @Validated String templateSecureId,
+            @RequestParam @Validated String secureId,
             @RequestBody @Validated List<BaseRequest> request
     ) {
-        BaseResponse<Boolean> response = templateService.setQuestions(templateSecureId, request);
+        BaseResponse<Boolean> response = templateService.setQuestions(secureId, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -183,10 +184,10 @@ public class AdminApi {
 
     @PutMapping("/exam/update")
     ResponseEntity<BaseResponse<Boolean>> updateExam(
-            @RequestParam @Validated String examSecureId,
+            @RequestParam @Validated String secureId,
             @RequestBody @Validated CreateUpdateExamRequest body
     ) {
-        BaseResponse<Boolean> response = examService.updateExam(examSecureId, body);
+        BaseResponse<Boolean> response = examService.updateExam(secureId, body);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -196,9 +197,9 @@ public class AdminApi {
 
     @DeleteMapping("/exam/delete")
     ResponseEntity<BaseResponse<Boolean>> deleteExam(
-            @RequestParam @Validated String examSecureId
+            @RequestParam @Validated String secureId
     ) {
-        BaseResponse<Boolean> response = examService.deleteExam(examSecureId);
+        BaseResponse<Boolean> response = examService.deleteExam(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -235,11 +236,11 @@ public class AdminApi {
     @Deprecated
     @GetMapping("/exam/time")
     ResponseEntity<BaseResponse<Boolean>> setTime(
-            @RequestParam @Validated String examSecureId,
+            @RequestParam @Validated String secureId,
             @RequestParam @Validated Date startTime,
             @RequestParam @Validated Date endTime
     ) {
-        BaseResponse<Boolean> response = examService.setTime(examSecureId, startTime, endTime);
+        BaseResponse<Boolean> response = examService.setTime(secureId, startTime, endTime);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -346,6 +347,18 @@ public class AdminApi {
                 .body(response);
     }
 
+    @GetMapping("/webinar/detail")
+    ResponseEntity<BaseResponse<WebinarResponse>> getWebinarDetail(
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<WebinarResponse> response = webinarService.getWebinarDetail(secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @GetMapping("/webinar/list")
     ResponseEntity<BaseResponse<List<WebinarListResponse>>> getWebinarList(
             @RequestParam String title,
@@ -386,10 +399,10 @@ public class AdminApi {
 
     @GetMapping("/webinar/availability")
     ResponseEntity<BaseResponse<Boolean>> webinarAvailability(
-            @RequestParam @Validated String webinarSecureId,
+            @RequestParam @Validated String secureId,
             @RequestParam @Validated boolean isAvailable
     ) {
-        BaseResponse<Boolean> response = webinarService.setAvailability(webinarSecureId, isAvailable);
+        BaseResponse<Boolean> response = webinarService.setAvailability(secureId, isAvailable);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -399,10 +412,10 @@ public class AdminApi {
 
     @GetMapping("/course/availability")
     ResponseEntity<BaseResponse<Boolean>> courseAvailability(
-            @RequestParam @Validated String courseSecureId,
+            @RequestParam @Validated String secureId,
             @RequestParam @Validated boolean isAvailable
     ) {
-        BaseResponse<Boolean> response = courseService.setAvailability(courseSecureId, isAvailable);
+        BaseResponse<Boolean> response = courseService.setAvailability(secureId, isAvailable);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

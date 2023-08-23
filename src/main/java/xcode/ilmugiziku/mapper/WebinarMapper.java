@@ -15,10 +15,23 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
 public class WebinarMapper {
 
+    public WebinarResponse modelToResponse(WebinarModel model) {
+        if (model != null) {
+            WebinarResponse response = new WebinarResponse();
+            BeanUtils.copyProperties(model, response);
+            response.setCategory(model.getCourseType());
+
+            return response;
+        } else {
+            return null;
+        }
+    }
+
     public WebinarListResponse modelToListResponse(WebinarModel model) {
         if (model != null) {
             WebinarListResponse response = new WebinarListResponse();
             BeanUtils.copyProperties(model, response);
+            response.setCategory(model.getCourseType());
 
             return response;
         } else {
@@ -47,6 +60,7 @@ public class WebinarMapper {
             response.setSecureId(generateSecureId());
             response.setAvailable(true);
             response.setCreatedAt(new Date());
+            response.setUpdatedAt(new Date());
 
             return response;
         } else {
