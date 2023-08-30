@@ -5,12 +5,13 @@ import xcode.ilmugiziku.domain.model.ExamModel;
 import xcode.ilmugiziku.domain.model.UserExamRelModel;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.domain.response.exam.RankResponse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -52,6 +53,23 @@ public class ExamMapper {
             return response;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    public ExamResponse modelToResponse(ExamModel model) {
+        if (model != null) {
+            ExamResponse response = new ExamResponse();
+            BeanUtils.copyProperties(model, response);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            response.setStartAt(dateFormat.format(model.getStartAt()));
+            response.setEndAt(dateFormat.format(model.getEndAt()));
+            response.setAvailableSlot(model.getMaxParticipant() - model.getCurrentParticipant());
+            response.setTotalSlot(model.getMaxParticipant());
+
+            return response;
+        } else {
+            return null;
         }
     }
 

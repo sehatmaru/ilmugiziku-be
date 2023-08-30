@@ -62,6 +62,22 @@ public class ExamService {
       return response;
    }
 
+   public BaseResponse<ExamResponse> getExamDetail(String secureId) {
+      BaseResponse<ExamResponse> response = new BaseResponse<>();
+
+      ExamModel model = examRepository.findBySecureIdAndDeletedAtIsNull(secureId);
+
+      if (model == null) throw new AppException(NOT_FOUND_MESSAGE);
+
+      try {
+         response.setSuccess(examMapper.modelToResponse(model));
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
    /**
     * cancel to participate in the exam,
     * the exam must be not started yet
@@ -311,7 +327,7 @@ public class ExamService {
       try {
          DoExamResponse examResponse = new DoExamResponse();
          examResponse.setTitle(exam.getTitle());
-         examResponse.setTime(exam.getTime());
+         examResponse.setDuration(exam.getDuration());
          examResponse.setQuestions(questionService.getQuestionsByTemplate(exam.getTemplate()));
 
          userExam.setStartTime(new Date());

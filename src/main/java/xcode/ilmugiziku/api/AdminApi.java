@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.enums.RoleEnum;
 import xcode.ilmugiziku.domain.request.BaseRequest;
 import xcode.ilmugiziku.domain.request.benefit.CreateUpdateBenefitRequest;
+import xcode.ilmugiziku.domain.request.category.CreateUpdateCategoryRequest;
 import xcode.ilmugiziku.domain.request.course.CreateUpdateCourseRequest;
 import xcode.ilmugiziku.domain.request.exam.CreateUpdateExamRequest;
 import xcode.ilmugiziku.domain.request.question.CreateUpdateQuestionRequest;
@@ -19,8 +20,10 @@ import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.CreateBaseResponse;
 import xcode.ilmugiziku.domain.response.TemplateResponse;
 import xcode.ilmugiziku.domain.response.benefit.BenefitResponse;
+import xcode.ilmugiziku.domain.response.category.CategoryResponse;
 import xcode.ilmugiziku.domain.response.course.CourseListResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
@@ -45,6 +48,7 @@ public class AdminApi {
     @Autowired private UserService userService;
     @Autowired private InvoiceService invoiceService;
     @Autowired private AuthService authService;
+    @Autowired private CategoryService categoryService;
 
     @PostMapping("/question/create")
     ResponseEntity<BaseResponse<Boolean>> createQuestion (
@@ -213,6 +217,18 @@ public class AdminApi {
             @RequestParam String status
     ) {
         BaseResponse<List<ExamListResponse>> response = examService.getExamList(title, status);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/exam/detail")
+    ResponseEntity<BaseResponse<ExamResponse>> getExamDetail(
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<ExamResponse> response = examService.getExamDetail(secureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -472,6 +488,55 @@ public class AdminApi {
             @RequestBody @Validated AddUpdateAdminRequest request
     ) {
         BaseResponse<CreateBaseResponse> response = authService.createAdmin(request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/category/create")
+    ResponseEntity<BaseResponse<CreateBaseResponse>> createCategory (
+            @RequestBody @Validated CreateUpdateCategoryRequest body
+    ) {
+        BaseResponse<CreateBaseResponse> response = categoryService.createCategory(body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PutMapping("/category/update")
+    ResponseEntity<BaseResponse<Boolean>> updateCategory(
+            @RequestParam @Validated String secureId,
+            @RequestBody @Validated CreateUpdateCategoryRequest body
+    ) {
+        BaseResponse<Boolean> response = categoryService.updateCategory(secureId, body);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @DeleteMapping("/category/delete")
+    ResponseEntity<BaseResponse<Boolean>> deleteCategory(
+            @RequestParam @Validated String secureId
+    ) {
+        BaseResponse<Boolean> response = categoryService.deleteCategory(secureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/category/list")
+    ResponseEntity<BaseResponse<List<CategoryResponse>>> getCategoryList(
+            @RequestParam @Validated String title
+    ) {
+        BaseResponse<List<CategoryResponse>> response = categoryService.getCategoryList(title);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

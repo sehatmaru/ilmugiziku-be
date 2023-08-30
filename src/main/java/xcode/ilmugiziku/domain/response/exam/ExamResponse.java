@@ -12,9 +12,12 @@ public class ExamResponse {
     private String title;
     private String template;
     private boolean available;
+    private int duration;
     private int availableSlot;
-    private Date startAt;
-    private Date endAt;
+    private int totalSlot;
+    private String startAt;
+    private String endAt;
+    private String startAtFormatted;
+    private String endAtFormatted;
     private Date createdAt;
-    private Date updatedAt;
 }

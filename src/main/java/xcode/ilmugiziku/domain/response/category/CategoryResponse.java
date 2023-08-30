@@ -1,4 +1,4 @@
-package xcode.ilmugiziku.domain.response.exam;
+package xcode.ilmugiziku.domain.response.category;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,11 +7,9 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ExamListResponse {
+public class CategoryResponse {
     private String secureId;
     private String title;
-    private String template;
-    private boolean available;
-    private int availableSlot;
     private Date createdAt;
+    private Date updatedAt;
 }

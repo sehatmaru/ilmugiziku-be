@@ -10,6 +10,6 @@ import java.util.List;
 @Setter
 public class DoExamResponse {
     private String title;
-    private int time;
+    private int duration;
     private List<QuestionResponse> questions;
 }

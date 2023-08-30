@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "t_exam")
+@Table(name = "t_category")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExamModel {
+public class CategoryModel {
 
    @Id @Column(name = "id", length = 36) @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private int id;
@@ -27,27 +27,6 @@ public class ExamModel {
    @Column(name = "title")
    private String title;
 
-   @Column(name = "template_secure_id")
-   private String template;
-
-   @Column(name = "available")
-   private boolean available;
-
-   @Column(name = "max_participant")
-   private int maxParticipant;
-
-   @Column(name = "current_participant")
-   private int currentParticipant;
-
-   @Column(name = "start_at")
-   private Date startAt;
-
-   @Column(name = "end_at")
-   private Date endAt;
-
-   @Column(name = "duration")
-   private int duration;
-
    @Column(name = "created_at")
    private Date createdAt;
 
@@ -57,7 +36,4 @@ public class ExamModel {
    @Column(name = "deleted_at")
    private Date deletedAt;
 
-   public boolean isFull() {
-      return currentParticipant >= maxParticipant;
-   }
 }
