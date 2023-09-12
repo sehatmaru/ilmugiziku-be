@@ -17,15 +17,9 @@ public class RegisterRequest {
     @NotBlank()
     private String lastName;
     @NotBlank()
-    private String gender;
-    @NotBlank()
     private String email;
     @NotBlank()
     private String password;
-    @NotNull()
-    private RegistrationTypeEnum registrationType;
-    @NotNull()
-    private RoleEnum role;
 
     public RegisterRequest() {
     }

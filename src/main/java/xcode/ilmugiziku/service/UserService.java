@@ -35,7 +35,6 @@ public class UserService {
          for (UserResponse user : responses) {
             ProfileModel profile = profileService.getUserProfile(user.getSecureId());
             user.setName(profile.getFullName());
-            user.setGender(profile.getGender());
          }
 
          responses = responses.stream()

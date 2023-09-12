@@ -39,7 +39,8 @@ public class UserMapper {
             UserModel response = new UserModel();
             BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
-            response.setType(request.getRegistrationType());
+            response.setType(RegistrationTypeEnum.EMAIL);
+            response.setRole(RoleEnum.CONSUMER);
             response.setCreatedAt(new Date());
             response.setActive(true);
 
@@ -91,7 +92,6 @@ public class UserMapper {
             BeanUtils.copyProperties(request, response);
             response.setSecureId(generateSecureId());
             response.setUser(userId);
-            response.setGender("");
             response.setCreatedAt(new Date());
 
             return response;
