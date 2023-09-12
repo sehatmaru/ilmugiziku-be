@@ -29,6 +29,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class WebinarService {
 
+   @Autowired private CategoryService categoryService;
    @Autowired private InvoiceService invoiceService;
    @Autowired private RatingService ratingService;
    @Autowired private WebinarRepository webinarRepository;
@@ -40,7 +41,7 @@ public class WebinarService {
    private final WebinarMapper webinarMapper = new WebinarMapper();
    private final InvoiceMapper invoiceMapper = new InvoiceMapper();
 
-   public BaseResponse<List<WebinarListResponse>> getWebinarList(String title, String status) {
+   public BaseResponse<List<WebinarListResponse>> getWebinarList(String title, String status, String categorySecureId) {
       BaseResponse<List<WebinarListResponse>> response = new BaseResponse<>();
 
       try {
@@ -58,7 +59,24 @@ public class WebinarService {
                     .collect(Collectors.toList());
          }
 
-         response.setSuccess(webinarMapper.modelsToListResponses(models));
+         if (!categorySecureId.isEmpty()) {
+            models = models.stream()
+                    .filter(e -> e.getCategory().equals(categorySecureId))
+                    .collect(Collectors.toList());
+         }
+
+         if (!status.isEmpty()) {
+            boolean available = Objects.equals(status, "available");
+
+            models = models.stream()
+                    .filter(e -> e.isAvailable() == available)
+                    .collect(Collectors.toList());
+         }
+
+         List<WebinarListResponse> responses = webinarMapper.modelsToListResponses(models);
+         responses.forEach(e -> e.setCategory(categoryService.getCategoryName(e.getCategorySecureId())));
+
+         response.setSuccess(responses);
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
@@ -74,7 +92,10 @@ public class WebinarService {
       if (model == null) throw new AppException(NOT_FOUND_MESSAGE);
 
       try {
-         response.setSuccess(webinarMapper.modelToResponse(model));
+         WebinarResponse webinar = webinarMapper.modelToResponse(model);
+         webinar.setCategory(categoryService.getCategoryName(webinar.getCategorySecureId()));
+
+         response.setSuccess(webinar);
       } catch (Exception e) {
          throw new AppException(e.toString());
       }

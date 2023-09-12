@@ -2,7 +2,6 @@ package xcode.ilmugiziku.domain.request.course;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,7 +16,7 @@ public class CreateUpdateCourseRequest {
     @NotNull()
     private BigDecimal price;
     private boolean open;
-    private CourseTypeEnum courseType;
+    private String category;
     private List<BenefitRequest> benefits;
 
     public CreateUpdateCourseRequest() {

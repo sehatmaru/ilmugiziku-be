@@ -28,6 +28,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class ExamService {
 
+   @Autowired private CategoryService categoryService;
    @Autowired private QuestionService questionService;
    @Autowired private ProfileService profileService;
    @Autowired private ExamRepository examRepository;
@@ -36,7 +37,7 @@ public class ExamService {
 
    private final ExamMapper examMapper = new ExamMapper();
 
-   public BaseResponse<List<ExamListResponse>> getExamList(String title, String status) {
+   public BaseResponse<List<ExamListResponse>> getExamList(String title, String status, String categorySecureId) {
       BaseResponse<List<ExamListResponse>> response = new BaseResponse<>();
 
       try {
@@ -46,6 +47,12 @@ public class ExamService {
                  .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
                  .collect(Collectors.toList());
 
+         if (!categorySecureId.isEmpty()) {
+            models = models.stream()
+                    .filter(e -> e.getCategory().equals(categorySecureId))
+                    .collect(Collectors.toList());
+         }
+
          if (!status.isEmpty()) {
             boolean available = Objects.equals(status, "available");
 
@@ -54,7 +61,10 @@ public class ExamService {
                     .collect(Collectors.toList());
          }
 
-         response.setSuccess(examMapper.modelsToListResponses(models));
+         List<ExamListResponse> responses = examMapper.modelsToListResponses(models);
+         responses.forEach(e -> e.setCategory(categoryService.getCategoryName(e.getCategorySecureId())));
+
+         response.setSuccess(responses);
       } catch (Exception e) {
          throw new AppException(e.toString());
       }
@@ -70,7 +80,10 @@ public class ExamService {
       if (model == null) throw new AppException(NOT_FOUND_MESSAGE);
 
       try {
-         response.setSuccess(examMapper.modelToResponse(model));
+         ExamResponse exam = examMapper.modelToResponse(model);
+         exam.setCategory(categoryService.getCategoryName(exam.getCategorySecureId()));
+
+         response.setSuccess(exam);
       } catch (Exception e) {
          throw new AppException(e.toString());
       }

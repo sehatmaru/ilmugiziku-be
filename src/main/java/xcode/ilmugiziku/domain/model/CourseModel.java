@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -38,9 +37,8 @@ public class CourseModel {
    @Column(name = "rating")
    private double rating;
 
-   @Column(name = "course_type")
-   @Enumerated(EnumType.STRING)
-   private CourseTypeEnum courseType;
+   @Column(name = "category_secure_id")
+   private String category;
 
    @Column(name = "created_at")
    private Date createdAt;

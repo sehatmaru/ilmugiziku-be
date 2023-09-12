@@ -3,6 +3,7 @@ package xcode.ilmugiziku.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xcode.ilmugiziku.domain.model.AnswerModel;
+import xcode.ilmugiziku.domain.model.ProfileModel;
 import xcode.ilmugiziku.domain.model.QuestionModel;
 import xcode.ilmugiziku.domain.model.TemplateQuestionRelModel;
 import xcode.ilmugiziku.domain.repository.AnswerRepository;
@@ -16,6 +17,7 @@ import xcode.ilmugiziku.domain.response.answer.AnswerResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionListResponse;
 import xcode.ilmugiziku.domain.response.question.QuestionResponse;
+import xcode.ilmugiziku.domain.response.user.UserResponse;
 import xcode.ilmugiziku.exception.AppException;
 import xcode.ilmugiziku.mapper.AnswerMapper;
 import xcode.ilmugiziku.mapper.QuestionMapper;
@@ -29,6 +31,7 @@ import static xcode.ilmugiziku.shared.ResponseCode.*;
 @Service
 public class QuestionService {
 
+   @Autowired private CategoryService categoryService;
    @Autowired private QuestionRepository questionRepository;
    @Autowired private AnswerRepository answerRepository;
    @Autowired private TemplateQuestionRepository templateQuestionRepository;
@@ -40,19 +43,20 @@ public class QuestionService {
     * get all question list
     * @return question list
     */
-   public BaseResponse<List<QuestionListResponse>> getQuestionList(String content, String category) {
+   public BaseResponse<List<QuestionListResponse>> getQuestionList(String content, String categorySecureId) {
       BaseResponse<List<QuestionListResponse>> response = new BaseResponse<>();
 
       try {
          List<QuestionListResponse> result = questionMapper.modelToListResponses(questionRepository.findAllQuestions());
+         result.forEach(e -> e.setCategory(categoryService.getCategoryName(e.getCategorySecureId())));
 
          result = result.stream()
                  .filter(e -> e.getContent().toLowerCase().contains(content.toLowerCase()))
                  .collect(Collectors.toList());
 
-         if (!category.isEmpty()) {
+         if (!categorySecureId.isEmpty()) {
             result = result.stream()
-                    .filter(e -> e.getCategory().name().equalsIgnoreCase(category))
+                    .filter(e -> e.getCategory().equals(categorySecureId))
                     .collect(Collectors.toList());
          }
 
@@ -80,6 +84,7 @@ public class QuestionService {
             if (!e.isOneCorrectAnswer()) throw new AppException(MULTIPLE_CORRECT_ANSWER_ERROR_MESSAGE);
 
             QuestionModel model = questionMapper.createRequestToModel(e);
+            model.setCategory(categoryService.getCategoryName(model.getCategory()));
             List<AnswerModel> answers = answerMapper.createRequestToModels(e.getAnswers(), model.getSecureId());
 
             questionRepository.save(model);
@@ -175,6 +180,7 @@ public class QuestionService {
 
       try {
          QuestionResponse result = questionMapper.modelToResponse(question);
+         result.setCategory(categoryService.getCategoryName(result.getCategorySecureId()));
          List<AnswerModel> models = answerRepository.getAnswersByQuestion(questionSecureId);
          List<AnswerResponse> responses = answerMapper.modelToResponses(models);
 

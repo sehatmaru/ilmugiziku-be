@@ -18,7 +18,6 @@ public class QuestionMapper {
             QuestionModel model = new QuestionModel();
             model.setSecureId(generateSecureId());
             model.setContent(request.getContent());
-            model.setCategory(request.getCategory());
             model.setCreatedBy(CurrentUser.get().getUserSecureId());
             model.setCreatedAt(new Date());
             model.setUpdatedAt(new Date());
@@ -32,7 +31,6 @@ public class QuestionMapper {
     public QuestionModel updateRequestToModel(QuestionModel model, CreateUpdateQuestionRequest request) {
         if (request != null && model != null) {
             model.setContent(request.getContent());
-            model.setCategory(request.getCategory());
             model.setEditedBy(CurrentUser.get().getUserSecureId());
             model.setUpdatedAt(new Date());
 
@@ -60,6 +58,7 @@ public class QuestionMapper {
         if (model != null) {
             QuestionResponse response = new QuestionResponse();
             BeanUtils.copyProperties(model, response);
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {
@@ -85,6 +84,7 @@ public class QuestionMapper {
         if (model != null) {
             QuestionListResponse response = new QuestionListResponse();
             BeanUtils.copyProperties(model, response);
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {

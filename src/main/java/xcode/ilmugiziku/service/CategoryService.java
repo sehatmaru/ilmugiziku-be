@@ -92,4 +92,8 @@ public class CategoryService {
 
       return response;
    }
+
+   public String getCategoryName(String secureId) {
+      return categoryRepository.findBySecureIdAndDeletedAtIsNull(secureId).getTitle();
+   }
 }

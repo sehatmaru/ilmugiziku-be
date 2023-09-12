@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 import xcode.ilmugiziku.domain.request.invoice.XenditInvoiceRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.invoice.InvoiceResponse;
@@ -21,9 +20,9 @@ public class InvoiceApi {
 
     @GetMapping("/detail")
     ResponseEntity<BaseResponse<InvoiceResponse>> detail(
-            @RequestParam @Validated CourseTypeEnum packageType
+            @RequestParam @Validated String categorySecureId
     ) {
-        BaseResponse<InvoiceResponse> response = invoiceService.detailInvoice(packageType);
+        BaseResponse<InvoiceResponse> response = invoiceService.detailInvoice(categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

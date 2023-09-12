@@ -2,7 +2,6 @@ package xcode.ilmugiziku.domain.request.webinar;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,7 +19,7 @@ public class CreateUpdateWebinarRequest {
     private Date date;
     private String meetingId;
     private String passcode;
-    private CourseTypeEnum courseType;
+    private String category;
     @NotNull()
     private BigDecimal price;
     private boolean isOpen;

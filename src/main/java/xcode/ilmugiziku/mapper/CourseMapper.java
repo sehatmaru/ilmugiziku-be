@@ -19,6 +19,7 @@ public class CourseMapper {
         if (model != null) {
             CourseResponse response = new CourseResponse();
             BeanUtils.copyProperties(model, response);
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {
@@ -42,6 +43,7 @@ public class CourseMapper {
         if (model != null) {
             CourseListResponse response = new CourseListResponse();
             BeanUtils.copyProperties(model,response);
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {

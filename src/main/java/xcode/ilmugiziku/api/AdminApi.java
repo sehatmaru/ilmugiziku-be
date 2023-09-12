@@ -102,9 +102,9 @@ public class AdminApi {
     @GetMapping("/question/list")
     ResponseEntity<BaseResponse<List<QuestionListResponse>>> getQuestionList(
             @RequestParam @Validated String content,
-            @RequestParam @Validated String category
+            @RequestParam @Validated String categorySecureId
     ) {
-        BaseResponse<List<QuestionListResponse>> response = questionService.getQuestionList(content, category);
+        BaseResponse<List<QuestionListResponse>> response = questionService.getQuestionList(content, categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -214,9 +214,10 @@ public class AdminApi {
     @GetMapping("/exam/list")
     ResponseEntity<BaseResponse<List<ExamListResponse>>> getExamList(
             @RequestParam String title,
-            @RequestParam String status
+            @RequestParam String status,
+            @RequestParam String categorySecureId
     ) {
-        BaseResponse<List<ExamListResponse>> response = examService.getExamList(title, status);
+        BaseResponse<List<ExamListResponse>> response = examService.getExamList(title, status, categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -378,9 +379,10 @@ public class AdminApi {
     @GetMapping("/webinar/list")
     ResponseEntity<BaseResponse<List<WebinarListResponse>>> getWebinarList(
             @RequestParam String title,
-            @RequestParam String status
+            @RequestParam String status,
+            @RequestParam String categorySecureId
     ) {
-        BaseResponse<List<WebinarListResponse>> response = webinarService.getWebinarList(title, status);
+        BaseResponse<List<WebinarListResponse>> response = webinarService.getWebinarList(title, status, categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -403,9 +405,9 @@ public class AdminApi {
     @GetMapping("/course/list")
     ResponseEntity<BaseResponse<List<CourseListResponse>>> getCourseList(
             @RequestParam @Validated String title,
-            @RequestParam @Validated String category
+            @RequestParam @Validated String categorySecureId
     ) {
-        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList(title, category);
+        BaseResponse<List<CourseListResponse>> response = courseService.getCourseList(title, categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

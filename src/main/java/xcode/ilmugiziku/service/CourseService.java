@@ -33,6 +33,7 @@ import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 @Service
 public class CourseService {
 
+   @Autowired private CategoryService categoryService;
    @Autowired private InvoiceService invoiceService;
    @Autowired private RatingService ratingService;
    @Autowired private CourseBenefitService courseBenefitService;
@@ -53,21 +54,24 @@ public class CourseService {
     * benefits included
     * @return course list
     */
-   public BaseResponse<List<CourseListResponse>> getCourseList(String title, String category) {
+   public BaseResponse<List<CourseListResponse>> getCourseList(String title, String categorySecureId) {
       BaseResponse<List<CourseListResponse>> response = new BaseResponse<>();
 
       try {
          List<CourseModel> models = courseRepository.findByDeletedAtIsNull();
          List<CourseListResponse> responses = courseMapper.modelsToListResponses(models);
-//         responses.forEach(e -> e.setBenefits(benefitMapper.benefitsToResponses(courseBenefitService.getCourseBenefits(e.getSecureId()))));
+
+         responses.forEach(e -> {
+            e.setCategory(categoryService.getCategoryName(e.getCategorySecureId()));
+         });
 
          responses = responses.stream()
                  .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
                  .collect(Collectors.toList());
 
-         if (!category.isEmpty()) {
+         if (!categorySecureId.isEmpty()) {
             responses = responses.stream()
-                    .filter(e -> e.getCourseType().name().equalsIgnoreCase(category))
+                    .filter(e -> e.getCategorySecureId().equals(categorySecureId))
                     .collect(Collectors.toList());
          }
 
@@ -90,6 +94,7 @@ public class CourseService {
 
       CourseModel model = courseRepository.findBySecureIdAndDeletedAtIsNull(secureId);
       CourseResponse result = courseMapper.modelToResponse(model);
+      result.setCategory(categoryService.getCategoryName(result.getCategorySecureId()));
 
       for (CourseBenefitResponse feature: result.getBenefits()) {
          BenefitModel featureModel = benefitRepository.findBySecureIdAndDeletedAtIsNull(feature.getSecureId());

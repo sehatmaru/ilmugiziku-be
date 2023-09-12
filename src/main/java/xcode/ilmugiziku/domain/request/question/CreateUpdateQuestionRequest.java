@@ -2,7 +2,6 @@ package xcode.ilmugiziku.domain.request.question;
 
 import lombok.Getter;
 import lombok.Setter;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -16,7 +15,7 @@ public class CreateUpdateQuestionRequest {
 
     private List<CreateUpdateAnswerRequest> answers;
 
-    private CourseTypeEnum category;
+    private String category;
 
     public CreateUpdateQuestionRequest() {}
 

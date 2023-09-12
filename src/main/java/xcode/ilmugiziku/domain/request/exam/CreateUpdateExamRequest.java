@@ -14,6 +14,7 @@ public class CreateUpdateExamRequest {
     @NotBlank()
     private String title;
     private String template;
+    private String category;
 
     private boolean available;
 

@@ -19,7 +19,7 @@ public class WebinarMapper {
         if (model != null) {
             WebinarResponse response = new WebinarResponse();
             BeanUtils.copyProperties(model, response);
-            response.setCategory(model.getCourseType());
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {
@@ -31,7 +31,7 @@ public class WebinarMapper {
         if (model != null) {
             WebinarListResponse response = new WebinarListResponse();
             BeanUtils.copyProperties(model, response);
-            response.setCategory(model.getCourseType());
+            response.setCategorySecureId(model.getCategory());
 
             return response;
         } else {

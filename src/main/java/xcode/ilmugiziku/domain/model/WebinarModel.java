@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -29,9 +28,8 @@ public class WebinarModel {
    @Column(name = "link")
    private String link;
 
-   @Column(name = "course_type")
-   @Enumerated(EnumType.STRING)
-   private CourseTypeEnum courseType;
+   @Column(name = "category_secure_id")
+   private String category;
 
    @Column(name = "title")
    private String title;

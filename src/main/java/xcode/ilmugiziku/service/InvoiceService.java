@@ -6,8 +6,6 @@ import com.xendit.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
-import xcode.ilmugiziku.domain.enums.InvoiceStatusEnum;
 import xcode.ilmugiziku.domain.enums.LearningTypeEnum;
 import xcode.ilmugiziku.domain.model.*;
 import xcode.ilmugiziku.domain.repository.CourseRepository;
@@ -26,7 +24,6 @@ import xcode.ilmugiziku.mapper.InvoiceMapper;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static xcode.ilmugiziku.shared.ResponseCode.COURSE_NOT_FOUND_MESSAGE;
@@ -90,10 +87,10 @@ public class InvoiceService {
       return response;
    }
 
-   public BaseResponse<InvoiceResponse> detailInvoice(CourseTypeEnum packageType) {
+   public BaseResponse<InvoiceResponse> detailInvoice(String categorySecureId) {
       BaseResponse<InvoiceResponse> response = new BaseResponse<>();
 
-      CourseModel model = courseRepository.findByCourseTypeAndDeletedAtIsNull(packageType);
+      CourseModel model = courseRepository.findByCategoryAndDeletedAtIsNull(categorySecureId);
 
       if (model == null) {
          throw new AppException(COURSE_NOT_FOUND_MESSAGE);

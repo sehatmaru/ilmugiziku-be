@@ -34,6 +34,7 @@ public class ExamMapper {
         if (model != null) {
             ExamListResponse response = new ExamListResponse();
             BeanUtils.copyProperties(model, response);
+            response.setCategorySecureId(model.getCategory());
             response.setAvailableSlot(model.getMaxParticipant() - model.getCurrentParticipant());
 
             return response;

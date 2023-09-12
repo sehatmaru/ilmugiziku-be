@@ -11,6 +11,8 @@ public class ExamResponse {
     private String secureId;
     private String title;
     private String template;
+    private String category;
+    private String categorySecureId;
     private boolean available;
     private int duration;
     private int availableSlot;

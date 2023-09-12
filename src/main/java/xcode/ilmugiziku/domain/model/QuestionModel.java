@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import xcode.ilmugiziku.domain.enums.CourseTypeEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,9 +27,8 @@ public class QuestionModel {
    @Column(name = "content")
    private String content;
 
-   @Column(name = "category")
-   @Enumerated(EnumType.STRING)
-   private CourseTypeEnum category;
+   @Column(name = "category_secure_id")
+   private String category;
 
    @Column(name = "created_by")
    private String createdBy;

@@ -27,6 +27,9 @@ public class ExamModel {
    @Column(name = "title")
    private String title;
 
+   @Column(name = "category_secure_id")
+   private String category;
+
    @Column(name = "template_secure_id")
    private String template;
 
