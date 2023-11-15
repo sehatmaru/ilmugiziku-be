@@ -8,8 +8,10 @@ spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver
         username: ENC(Te/HiLESkKgrvPIThZ3Yzg==)
-        password: ENC(eqxpsnpiLriw7Z3bsS3/a3bfDRmkWB7RyrlA1m0ynys=)
-        url: ENC(Nm0Av1XQ7V5sqK9wtBpUbTzD2qZrOtsu6xJs9t9+Nwd2xN9cRMI0SLCWK/7N/CzMjcpuGQ7/BzckA88b17c0dNJ1EDT56B1K)
+#        password: ENC(eqxpsnpiLriw7Z3bsS3/a3bfDRmkWB7RyrlA1m0ynys=)
+#        url: ENC(Nm0Av1XQ7V5sqK9wtBpUbTzD2qZrOtsu6xJs9t9+Nwd2xN9cRMI0SLCWK/7N/CzMjcpuGQ7/BzckA88b17c0dNJ1EDT56B1K)
+        url: jdbc:mysql://127.0.0.1:3306/xcodev?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        password: Xcode-123
     mail:
         host: smtp.gmail.com
         port: 587
@@ -38,6 +40,7 @@ jasypt:
     encryptor:
         algorithm: PBEWithMD5AndDES
         iv-generator-classname: org.jasypt.iv.NoIvGenerator
+        password: xcode
 xendit:
     token: ENC(/n6LplARZeQHl1JXFq3kS6Nj0SwFHK+wej7kClLSCgiH3Vl0DGLPk1hO3aLa/U86XhUYmocOTCVlRyr4oyXsVDj0JiJI8E5IWSGttTrxxuFL+Kcrvzkd/8GqLoE1mZmX)
     callback: ENC(0byBPs4X5IDFvlKLW9znS/fZywFR+OUyLw+9WeLAsk745pWTFGqu4N/z8zZ0hNw/zRYWeSpGg97jdeQvkWFX3w==)

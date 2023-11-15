@@ -8,11 +8,11 @@
 		<version>2.1.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from service -->
 	</parent>
-	<groupId>ilmugiziku-be</groupId>
-	<artifactId>ilmugiziku-be</artifactId>
+	<groupId>marsiajar-be</groupId>
+	<artifactId>marsiajar-be</artifactId>
 	<version>1.0</version>
-	<name>ilmugiziku-be</name>
-	<description>ilmugiziku-be</description>
+	<name>marsiajar-be</name>
+	<description>marsiajar-be</description>
 
 	<properties>
 		<java.version>1.8</java.version>
