@@ -1,9 +1,6 @@
 package xcode.ilmugiziku.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -60,7 +57,22 @@ public class ExamModel {
    @Column(name = "deleted_at")
    private Date deletedAt;
 
+   private String userSecureId;
+   private Date finishTime;
+
    public boolean isFull() {
       return currentParticipant >= maxParticipant;
+   }
+
+   public ExamModel(String userSecureId, Date finishTime, String examSecureId, Date startAt, Date endAt, String title, boolean available, int currentParticipant, String categorySecureId) {
+      this.userSecureId = userSecureId;
+      this.finishTime = finishTime;
+      this.secureId = examSecureId;
+      this.title = title;
+      this.startAt = startAt;
+      this.endAt = endAt;
+      this.available = available;
+      this.currentParticipant = currentParticipant;
+      this.category = categorySecureId;
    }
 }

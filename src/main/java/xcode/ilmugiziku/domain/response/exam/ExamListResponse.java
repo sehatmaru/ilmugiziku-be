@@ -14,6 +14,13 @@ public class ExamListResponse {
     private String category;
     private String categorySecureId;
     private boolean available;
+    private boolean registered;
+    private String userSecureId;
+    private Date finishTime;
+    private String status;
+    private String statusColor;
+    private Date startTime;
+    private Date endTime;
     private int availableSlot;
     private Date createdAt;
 }

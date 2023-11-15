@@ -36,6 +36,9 @@ public class ExamMapper {
             BeanUtils.copyProperties(model, response);
             response.setCategorySecureId(model.getCategory());
             response.setAvailableSlot(model.getMaxParticipant() - model.getCurrentParticipant());
+            response.setStartTime(model.getStartAt());
+            response.setEndTime(model.getEndAt());
+            response.setUserSecureId(model.getUserSecureId());
 
             return response;
         } else {

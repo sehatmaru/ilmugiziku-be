@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static xcode.ilmugiziku.domain.enums.ColorEnum.*;
+import static xcode.ilmugiziku.domain.enums.ExamStatusEnum.*;
 import static xcode.ilmugiziku.shared.ResponseCode.*;
 import static xcode.ilmugiziku.shared.Utils.generateSecureId;
 
@@ -41,7 +43,7 @@ public class ExamService {
       BaseResponse<List<ExamListResponse>> response = new BaseResponse<>();
 
       try {
-         List<ExamModel> models = examRepository.findAllByDeletedAtIsNull();
+         List<ExamModel> models = examRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
 
          models = models.stream()
                  .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
@@ -63,6 +65,59 @@ public class ExamService {
 
          List<ExamListResponse> responses = examMapper.modelsToListResponses(models);
          responses.forEach(e -> e.setCategory(categoryService.getCategoryName(e.getCategorySecureId())));
+
+         response.setSuccess(responses);
+      } catch (Exception e) {
+         throw new AppException(e.toString());
+      }
+
+      return response;
+   }
+
+   public BaseResponse<List<ExamListResponse>> getExamList(String title, String categorySecureId) {
+      BaseResponse<List<ExamListResponse>> response = new BaseResponse<>();
+
+      try {
+         List<ExamModel> models = examRepository.getAllSorted(CurrentUser.get().getUserSecureId());
+
+         models = models.stream()
+                 .filter(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()))
+                 .collect(Collectors.toList());
+
+         if (!categorySecureId.isEmpty()) {
+            models = models.stream()
+                    .filter(e -> e.getCategory().equals(categorySecureId))
+                    .collect(Collectors.toList());
+         }
+
+         List<ExamListResponse> responses = examMapper.modelsToListResponses(models);
+         responses.forEach(e -> {
+            e.setCategory(categoryService.getCategoryName(e.getCategorySecureId()));
+
+            Date currentDate = new Date();
+
+            if(currentDate.before(e.getStartTime())) e.setStatus(UPCOMING.desc());
+            if(currentDate.after(e.getEndTime())) e.setStatus(CLOSED.desc());
+
+            if (e.getUserSecureId().isEmpty()){
+               if (currentDate.after(e.getStartTime()) && currentDate.before(e.getEndTime())) e.setStatus(NOT_REGISTERED.desc());
+            } else {
+               e.setRegistered(true);
+
+               if (currentDate.after(e.getStartTime()) && currentDate.before(e.getEndTime())) {
+                  e.setStatus(e.getFinishTime() == null ? ON_GOING.desc() : COMPLETED.desc());
+               } else {
+                  e.setStatus(REGISTERED.desc());
+               }
+
+               if (currentDate.after(e.getEndTime())) e.setStatus(CLOSED.desc());
+            }
+
+            if (e.getStatus().equals(UPCOMING.desc())) e.setStatusColor(SECONDARY.desc());
+            else if (e.getStatus().equals(REGISTERED.desc()) || e.getStatus().equals(COMPLETED.desc())) e.setStatusColor(SUCCESS.desc());
+            else if (e.getStatus().equals(CLOSED.desc())) e.setStatusColor(DARK.desc());
+            else e.setStatusColor(INFO.desc());
+         });
 
          response.setSuccess(responses);
       } catch (Exception e) {
@@ -157,7 +212,7 @@ public class ExamService {
 
       return response;
    }
-   
+
    public BaseResponse<CreateBaseResponse> createExam(CreateUpdateExamRequest request) {
       BaseResponse<CreateBaseResponse> response = new BaseResponse<>();
       CreateBaseResponse createResponse = new CreateBaseResponse();

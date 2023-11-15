@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import xcode.ilmugiziku.domain.request.exam.ExamResultRequest;
 import xcode.ilmugiziku.domain.response.BaseResponse;
 import xcode.ilmugiziku.domain.response.exam.DoExamResponse;
+import xcode.ilmugiziku.domain.response.exam.ExamListResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamRankResponse;
 import xcode.ilmugiziku.domain.response.exam.ExamResultResponse;
 import xcode.ilmugiziku.service.ExamService;
@@ -87,6 +88,19 @@ public class ExamApi {
             @RequestParam @Validated String examSecureId
     ) {
         BaseResponse<Boolean> response = examService.cancel(examSecureId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/list")
+    ResponseEntity<BaseResponse<List<ExamListResponse>>> list(
+            @RequestParam String title,
+            @RequestParam String categorySecureId
+    ) {
+        BaseResponse<List<ExamListResponse>> response = examService.getExamList(title, categorySecureId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
